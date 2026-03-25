@@ -1,0 +1,1505 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Roteiro SP</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f4f0;color:#1a1a18;min-height:100vh;-webkit-tap-highlight-color:transparent}
+.app{max-width:520px;margin:0 auto;background:#fff;min-height:100vh;box-shadow:0 0 40px rgba(0,0,0,.08)}
+/* TOP */
+.top-bar{padding:1rem 1.25rem .75rem;border-bottom:.5px solid #e5e4e0;position:sticky;top:0;background:#fff;z-index:20}
+.app-title{font-size:15px;font-weight:600;display:flex;align-items:center;gap:8px;margin-bottom:.75rem}
+.origin-bar{display:flex;align-items:center;gap:8px;padding:7px 11px;background:#f5f4f0;border-radius:10px;margin-bottom:.625rem}
+.origin-dot{width:7px;height:7px;border-radius:50%;background:#888;flex-shrink:0}
+.origin-label{font-size:11px;color:#888;white-space:nowrap}
+.origin-val{font-size:13px;font-weight:500;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.link-btn{font-size:12px;color:#185FA5;background:none;border:none;cursor:pointer;font-family:inherit;white-space:nowrap}
+.edit-row{display:none;gap:6px;align-items:center;margin-bottom:.625rem}
+.edit-row.visible{display:flex}
+.edit-row input{flex:1;font-size:13px;padding:7px 10px;border-radius:8px;border:.5px solid #ccc;background:#fafaf8;font-family:inherit}
+.edit-row button{font-size:12px;padding:7px 12px;border-radius:8px;border:.5px solid #ccc;background:#f0f0ec;cursor:pointer;font-family:inherit}
+.tabs{display:flex;gap:6px}
+.tab{flex:1;padding:7px;border-radius:8px;border:.5px solid #ddd;background:transparent;cursor:pointer;font-size:13px;color:#666;font-family:inherit;transition:all .15s;text-align:center}
+.tab.active{background:#1a1a18;color:#fff;border-color:#1a1a18;font-weight:500}
+/* FILTER */
+.filter-bar{padding:.75rem 1.25rem .5rem;border-bottom:.5px solid #e5e4e0;overflow-x:auto;white-space:nowrap;scrollbar-width:none}
+.filter-bar::-webkit-scrollbar{display:none}
+.filter-pill{display:inline-flex;align-items:center;gap:4px;padding:5px 11px;border-radius:20px;border:.5px solid #ddd;background:#fff;font-size:12px;color:#555;cursor:pointer;font-family:inherit;margin-right:6px;transition:all .15s;white-space:nowrap}
+.filter-pill.active{background:#1a1a18;color:#fff;border-color:#1a1a18}
+.filter-pill .dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+/* PANELS */
+.panel{padding:1rem 1.25rem 5rem;display:none}
+.panel.visible{display:block}
+/* SUMMARY */
+.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:1rem}
+.stat{background:#f5f4f0;border-radius:10px;padding:.625rem .875rem}
+.stat-label{font-size:10px;color:#888;text-transform:uppercase;letter-spacing:.04em;margin-bottom:2px}
+.stat-val{font-size:17px;font-weight:600}
+/* ROUTE BTN */
+.full-route-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:10px;background:#e8f0fe;border:.5px solid #aac4f7;border-radius:10px;font-size:13px;color:#185FA5;font-weight:500;font-family:inherit;cursor:pointer;margin-bottom:.75rem;text-decoration:none}
+.full-route-btn:hover{background:#d2e3fc}
+/* OPTIMIZE BTN */
+.optimize-btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:9px;background:#f3e5f5;border:.5px solid #ce93d8;border-radius:10px;font-size:13px;color:#7b1fa2;font-weight:500;font-family:inherit;cursor:pointer;margin-bottom:1rem}
+.optimize-btn:hover{background:#e8d5f0}
+.optimize-btn:disabled{background:#f5f4f0;color:#bbb;border-color:#ddd;cursor:not-allowed}
+/* SUGGEST TOAST */
+.suggest-bar{background:#fff8e1;border:.5px solid #ffe082;border-radius:10px;padding:.75rem 1rem;margin-bottom:.75rem;font-size:12px;display:none}
+.suggest-bar.visible{display:block}
+.suggest-bar strong{color:#f57f17;display:block;margin-bottom:4px}
+.suggest-actions{display:flex;gap:6px;margin-top:8px}
+.suggest-actions button{font-size:12px;padding:5px 12px;border-radius:6px;border:.5px solid #ddd;background:#fff;cursor:pointer;font-family:inherit}
+.suggest-apply{background:#f57f17!important;color:#fff!important;border-color:#f57f17!important}
+/* GROUP */
+.group-header{display:flex;align-items:center;gap:8px;margin:1.25rem 0 .625rem;cursor:pointer;user-select:none}
+.group-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.group-label{font-size:12px;font-weight:600;color:#444;flex:1}
+.group-count{font-size:11px;color:#999;background:#f5f4f0;padding:1px 8px;border-radius:20px}
+.group-chevron{font-size:9px;color:#bbb;transition:transform .2s}
+.group-header.collapsed .group-chevron{transform:rotate(-90deg)}
+/* CARDS */
+.card-list{list-style:none}
+.dest-card{background:#fff;border:.5px solid #e5e4e0;border-radius:12px;overflow:hidden;margin-bottom:8px;transition:box-shadow .15s,opacity .15s}
+.dest-card.dragging{opacity:.5;box-shadow:0 8px 24px rgba(0,0,0,.12)}
+.dest-card.drag-over{border-color:#185FA5;border-style:dashed}
+.card-head{display:flex;align-items:center;gap:9px;padding:.75rem 1rem}
+.drag-handle{cursor:grab;color:#ccc;font-size:14px;flex-shrink:0;user-select:none;touch-action:none;padding:2px 2px}
+.drag-handle:active{cursor:grabbing}
+.step-num{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0}
+.card-title-wrap{flex:1;min-width:0;cursor:pointer}
+.card-name{font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card-addr{font-size:11px;color:#888;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
+.ctag{font-size:10px;padding:2px 7px;border-radius:10px;font-weight:500}
+.card-right{display:flex;align-items:center;gap:5px;flex-shrink:0;cursor:pointer}
+.card-time{font-size:11px;font-weight:500;color:#888}
+.chevron{font-size:9px;color:#ccc;transition:transform .2s}
+.dest-card.expanded .chevron{transform:rotate(180deg)}
+.card-body{display:none;border-top:.5px solid #e5e4e0;padding:.875rem 1rem}
+.dest-card.expanded .card-body{display:block}
+.info-row{display:flex;gap:8px;margin-bottom:7px;font-size:13px;line-height:1.4}
+.info-icon{flex-shrink:0;width:18px;text-align:center}
+.info-text{color:#333}
+.info-text.muted{color:#888}
+.badge{display:inline-block;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:500;margin:3px 0 8px}
+.badge-free{background:#e8f5e9;color:#2e7d32}
+.badge-tip{background:#fff8e1;color:#f57f17}
+.badge-warn{background:#fce4ec;color:#c62828}
+.nav-btn-leg{display:flex;align-items:center;justify-content:center;gap:5px;width:100%;padding:8px;background:#e8f0fe;border:.5px solid #aac4f7;border-radius:8px;font-size:12px;color:#185FA5;font-weight:500;font-family:inherit;cursor:pointer;text-decoration:none;margin-top:10px}
+.aff-card{border:.5px solid #b2dfdb;border-radius:10px;padding:.625rem .875rem;margin-top:8px;background:#f0faf8;display:flex;align-items:center;gap:10px}
+.aff-text{flex:1;font-size:12px;color:#444}
+.aff-btn{font-size:12px;background:#00897b;color:#fff;border:none;border-radius:6px;padding:5px 10px;cursor:pointer;font-family:inherit;white-space:nowrap}
+.status-actions{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
+.status-btn{padding:8px;border-radius:8px;border:.5px solid #ddd;background:#f9f9f7;font-size:12px;font-family:inherit;cursor:pointer;text-align:center;color:#444}
+.status-btn:hover{background:#f0f0ec}
+.sep{display:flex;align-items:center;gap:8px;color:#bbb;font-size:11px;padding:0 4px;margin-bottom:8px}
+.sep-line{flex:1;height:.5px;background:#e5e4e0}
+/* SPONSORED */
+.sponsored-card{border:1.5px solid #c5cae9;border-radius:12px;overflow:hidden;margin-bottom:12px;background:#f8f9ff}
+.sponsored-head{display:flex;align-items:center;gap:10px;padding:.75rem 1rem}
+.sp-badge{font-size:10px;background:#e8eaf6;color:#283593;padding:2px 7px;border-radius:10px;font-weight:500;flex-shrink:0}
+.sp-info{flex:1;min-width:0}
+.sp-title{font-size:13px;font-weight:500}
+.sp-desc{font-size:12px;color:#555;margin-top:2px}
+.sp-cta{font-size:12px;background:#3949ab;color:#fff;border:none;border-radius:6px;padding:6px 12px;cursor:pointer;font-family:inherit;white-space:nowrap}
+/* ADD FORM */
+.add-btn-main{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:11px;border:1.5px dashed #ccc;border-radius:12px;background:transparent;color:#666;font-size:13px;font-family:inherit;cursor:pointer;transition:all .15s;margin-bottom:10px}
+.add-btn-main:hover{border-color:#888;color:#333;background:#fafaf8}
+.add-form{display:none;background:#f9f9f7;border:.5px solid #e0e0dc;border-radius:12px;padding:1rem;margin-bottom:10px}
+.add-form.visible{display:block}
+.add-form label,.form-label{font-size:11px;color:#888;display:block;margin-bottom:3px;text-transform:uppercase;letter-spacing:.04em}
+.add-form input,.add-form textarea,.add-form select{width:100%;font-size:13px;padding:7px 10px;border-radius:8px;border:.5px solid #ccc;background:#fff;font-family:inherit;margin-bottom:10px;resize:none}
+.add-form textarea{height:55px}
+.form-row{display:flex;gap:8px}
+.form-row>div{flex:1}
+.form-actions{display:flex;gap:8px;margin-top:4px}
+.form-actions button{flex:1;padding:8px;border-radius:8px;border:.5px solid #ccc;font-size:13px;font-family:inherit;cursor:pointer}
+.btn-save{background:#1a1a18;color:#fff;border-color:#1a1a18}
+.btn-cancel{background:#f0f0ec;color:#444}
+.tag-picker{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.tpick{padding:4px 10px;border-radius:20px;border:.5px solid #ddd;font-size:12px;cursor:pointer;font-family:inherit;background:#fff;color:#444;transition:all .12s}
+.tpick.sel{border-width:1.5px;font-weight:500}
+/* BANK */
+.bank-panel{padding:1rem 1.25rem 5rem;display:none}
+.bank-panel.visible{display:block}
+.bank-section{margin-bottom:1.5rem}
+.bank-title{font-size:12px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.75rem;display:flex;align-items:center;gap:8px}
+.bank-title span{background:#f5f4f0;border-radius:20px;padding:1px 8px;font-size:11px;color:#888}
+.bank-card{background:#f9f9f7;border:.5px solid #e0e0dc;border-radius:10px;padding:.75rem 1rem;margin-bottom:8px;display:flex;align-items:flex-start;gap:10px}
+.bank-icon{font-size:18px;flex-shrink:0;margin-top:1px}
+.bank-info{flex:1;min-width:0}
+.bank-name{font-size:13px;font-weight:500}
+.bank-addr{font-size:11px;color:#888;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bank-date{font-size:11px;color:#185FA5;margin-top:3px}
+.bank-actions{display:flex;flex-direction:column;gap:5px;flex-shrink:0}
+.bank-act-btn{font-size:11px;padding:4px 10px;border-radius:6px;border:.5px solid #ddd;background:#fff;cursor:pointer;font-family:inherit;white-space:nowrap;color:#333}
+.bank-act-btn.activate{background:#1a1a18;color:#fff;border-color:#1a1a18}
+/* SEARCH */
+.search-panel{padding:1rem 1.25rem 5rem;display:none}
+.search-panel.visible{display:block}
+.search-wrap{position:relative;margin-bottom:1rem}
+.search-wrap input{width:100%;font-size:14px;padding:10px 14px 10px 38px;border-radius:10px;border:.5px solid #ddd;background:#f9f9f7;font-family:inherit;outline:none}
+.search-wrap input:focus{border-color:#185FA5;background:#fff}
+.search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:15px;pointer-events:none;color:#aaa}
+.search-clear{position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:12px;color:#aaa;background:none;border:none;cursor:pointer;font-family:inherit;padding:2px 6px;display:none}
+.search-meta{font-size:12px;color:#888;margin-bottom:.875rem}
+.search-result{background:#fff;border:.5px solid #e5e4e0;border-radius:12px;padding:.875rem 1rem;margin-bottom:8px;cursor:pointer}
+.search-result:hover{border-color:#ccc}
+.sr-name{font-size:13px;font-weight:500;margin-bottom:2px}
+.sr-addr{font-size:11px;color:#888;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sr-meta{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.sr-status{font-size:10px;padding:2px 7px;border-radius:10px;font-weight:500}
+.sr-status.ativo{background:#e8f5e9;color:#2e7d32}
+.sr-status.agendado{background:#e3f2fd;color:#1565c0}
+.sr-status.someday{background:#faeeda;color:#854f0b}
+.sr-status.arquivado{background:#f5f4f0;color:#888}
+.sr-tab{font-size:10px;color:#999}
+.search-empty{text-align:center;padding:3rem 0;color:#bbb;font-size:13px}
+mark{background:#fff3cd;color:#1a1a18;border-radius:3px;padding:0 2px}
+/* SETTINGS */
+.cfg-panel{padding:1rem 1.25rem 5rem;display:none}
+.cfg-panel.visible{display:block}
+.cfg-section{margin-bottom:1.75rem}
+.cfg-title{font-size:13px;font-weight:600;color:#1a1a18;margin-bottom:.875rem;padding-bottom:8px;border-bottom:.5px solid #e5e4e0}
+.cfg-card{background:#f9f9f7;border:.5px solid #e0e0dc;border-radius:12px;padding:1rem;margin-bottom:8px}
+.cfg-card h4{font-size:13px;font-weight:500;margin-bottom:4px}
+.cfg-card p{font-size:12px;color:#666;line-height:1.5;margin-bottom:10px}
+.cfg-card input,.cfg-card select{width:100%;font-size:13px;padding:8px 10px;border-radius:8px;border:.5px solid #ccc;background:#fff;font-family:inherit;margin-bottom:8px}
+.cfg-status{font-size:12px;padding:6px 10px;border-radius:8px;margin-bottom:8px;display:none}
+.cfg-status.ok{background:#e8f5e9;color:#2e7d32;display:block}
+.cfg-status.err{background:#fce4ec;color:#c62828;display:block}
+/* IMAGE DROP */
+.img-drop-zone{border:2px dashed #ccc;border-radius:12px;padding:1.5rem 1rem;text-align:center;cursor:pointer;transition:all .15s;margin-bottom:.75rem;position:relative}
+.img-drop-zone:hover,.img-drop-zone.dragover{border-color:#185FA5;background:#f0f6ff}
+.img-drop-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.dz-icon{font-size:28px;margin-bottom:8px}
+.dz-text{font-size:13px;color:#666;line-height:1.5}
+.dz-sub{font-size:11px;color:#aaa;margin-top:4px}
+.img-preview{width:100%;border-radius:10px;max-height:200px;object-fit:cover;margin-bottom:.75rem;display:none}
+.extract-btn{width:100%;padding:10px;border-radius:8px;background:#1a1a18;color:#fff;border:none;font-size:13px;font-family:inherit;cursor:pointer;font-weight:500;display:none}
+.extract-btn:disabled{background:#ccc;cursor:not-allowed}
+.extract-loading{display:none;text-align:center;padding:1rem 0;font-size:13px;color:#888}
+.spinner{display:inline-block;width:16px;height:16px;border:2px solid #ddd;border-top-color:#185FA5;border-radius:50%;animation:spin .7s linear infinite;margin-right:6px;vertical-align:middle}
+@keyframes spin{to{transform:rotate(360deg)}}
+.extracted-preview{background:#f0f6ff;border:.5px solid #aac4f7;border-radius:12px;padding:1rem;margin-bottom:.75rem;display:none}
+.ep-title{font-size:12px;font-weight:600;color:#185FA5;margin-bottom:.75rem}
+.ep-row{display:flex;gap:8px;margin-bottom:7px;font-size:12px}
+.ep-label{color:#888;flex-shrink:0;width:80px}
+.ep-val{color:#1a1a18;flex:1;font-weight:500}
+.ep-actions{display:flex;gap:8px;margin-top:.75rem}
+.ep-actions button{flex:1;padding:8px;border-radius:8px;border:.5px solid #ccc;font-size:12px;font-family:inherit;cursor:pointer}
+.ep-use{background:#1a1a18;color:#fff;border-color:#1a1a18;font-weight:500}
+.ep-discard{background:#f0f0ec;color:#444}
+/* MONO */
+.mono-panel{padding:1rem 1.25rem 5rem;display:none}
+.mono-panel.visible{display:block}
+.mono-section{margin-bottom:1.75rem}
+.mono-title{font-size:13px;font-weight:600;color:#1a1a18;margin-bottom:.875rem;padding-bottom:8px;border-bottom:.5px solid #e5e4e0}
+.mono-card{background:#f9f9f7;border:.5px solid #e0e0dc;border-radius:12px;padding:1rem;margin-bottom:8px}
+.mono-card h4{font-size:13px;font-weight:500;margin-bottom:4px}
+.mono-card p{font-size:12px;color:#666;line-height:1.5;margin-bottom:10px}
+.mono-card input,.mono-card select{width:100%;font-size:13px;padding:7px 10px;border-radius:8px;border:.5px solid #ccc;background:#fff;font-family:inherit;margin-bottom:8px}
+.action-btn{width:100%;padding:9px;border-radius:8px;border:.5px solid #ccc;background:#fff;font-size:13px;font-family:inherit;cursor:pointer;color:#185FA5;font-weight:500;margin-bottom:6px}
+.action-btn:hover{background:#f0f0ec}
+.action-btn.primary{background:#1a1a18;color:#fff;border-color:#1a1a18}
+.action-btn.danger{color:#c0392b}
+/* INFLUENCERS */
+.infl-panel{padding:1rem 1.25rem 5rem;display:none}
+.infl-panel.visible{display:block}
+.infl-section{margin-bottom:1.75rem}
+.infl-title{font-size:13px;font-weight:600;color:#1a1a18;margin-bottom:.875rem;padding-bottom:8px;border-bottom:.5px solid #e5e4e0}
+.infl-empty{text-align:center;padding:2.5rem 0;color:#bbb;font-size:13px}
+.infl-card{background:#f9f9f7;border:.5px solid #e0e0dc;border-radius:14px;padding:.875rem 1rem;margin-bottom:10px;position:relative}
+.infl-card-head{display:flex;align-items:center;gap:10px;margin-bottom:.5rem}
+.infl-avatar{width:44px;height:44px;border-radius:50%;object-fit:cover;background:#e5e4e0;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:20px;overflow:hidden}
+.infl-avatar img{width:100%;height:100%;object-fit:cover}
+.infl-meta{flex:1;min-width:0}
+.infl-handle{font-size:13px;font-weight:600;color:#1a1a18}
+.infl-followers{font-size:11px;color:#888;margin-top:1px}
+.infl-nicho{display:inline-block;font-size:10px;padding:2px 8px;border-radius:10px;background:#e8eaf6;color:#283593;font-weight:500;margin-top:3px}
+.infl-actions{display:flex;gap:5px;flex-shrink:0}
+.infl-icon-btn{width:30px;height:30px;border-radius:8px;border:.5px solid #ddd;background:#fff;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center}
+.infl-linked-locals{display:flex;flex-wrap:wrap;gap:5px;margin-top:.5rem}
+.infl-local-tag{font-size:11px;padding:3px 9px;border-radius:10px;background:#f0f6ff;color:#185FA5;border:.5px solid #aac4f7;cursor:pointer}
+.infl-local-tag:hover{background:#dce9fd}
+.infl-link-btn{font-size:11px;padding:3px 10px;border-radius:10px;background:#fff;color:#888;border:.5px solid #ddd;cursor:pointer}
+.infl-link-btn:hover{background:#f5f4f0}
+.infl-proposta-btn{width:100%;margin-top:.625rem;padding:8px;border-radius:9px;border:.5px solid #c5cae9;background:#f0f2ff;color:#3949ab;font-size:12px;font-family:inherit;cursor:pointer;font-weight:500}
+.infl-proposta-btn:hover{background:#e3e6fd}
+/* influencer mini card inside dest-card */
+.infl-mini{display:flex;align-items:center;gap:8px;background:#fafafe;border:.5px solid #c5cae9;border-radius:9px;padding:6px 10px;margin-top:8px}
+.infl-mini-avatar{width:30px;height:30px;border-radius:50%;background:#e5e4e0;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;overflow:hidden}
+.infl-mini-avatar img{width:100%;height:100%;object-fit:cover}
+.infl-mini-info{flex:1;min-width:0}
+.infl-mini-handle{font-size:12px;font-weight:600;color:#3949ab}
+.infl-mini-followers{font-size:10px;color:#888}
+.infl-mini-ig{font-size:11px;color:#185FA5;background:none;border:none;cursor:pointer;font-family:inherit;padding:0;text-decoration:underline}
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:100;align-items:flex-end;justify-content:center}
+.modal-overlay.visible{display:flex}
+.modal{background:#fff;border-radius:16px 16px 0 0;padding:1.25rem;width:100%;max-width:520px}
+.modal-title{font-size:14px;font-weight:600;margin-bottom:1rem}
+.modal label{font-size:11px;color:#888;display:block;margin-bottom:3px;text-transform:uppercase;letter-spacing:.04em}
+.modal input{width:100%;font-size:13px;padding:8px 10px;border-radius:8px;border:.5px solid #ccc;background:#fafaf8;font-family:inherit;margin-bottom:12px}
+.modal-actions{display:flex;gap:8px}
+.modal-actions button{flex:1;padding:9px;border-radius:8px;border:.5px solid #ccc;font-size:13px;font-family:inherit;cursor:pointer}
+
+/* NOTES SYSTEM */
+.notes-section{margin-top:10px;border-top:.5px solid #e5e4e0;padding-top:10px}
+.notes-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.notes-label{font-size:11px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.04em}
+.add-note-btn{font-size:11px;color:#185FA5;background:none;border:none;cursor:pointer;font-family:inherit;padding:2px 6px}
+.note-entry{background:#fafaf8;border:.5px solid #e5e4e0;border-radius:8px;padding:.625rem .75rem;margin-bottom:6px;position:relative}
+.note-entry:hover .note-delete{opacity:1}
+.note-meta{display:flex;align-items:center;gap:6px;margin-bottom:4px;flex-wrap:wrap}
+.note-source{font-size:11px;font-weight:500;color:#185FA5;background:#e8f0fe;padding:2px 7px;border-radius:10px}
+.note-date{font-size:10px;color:#bbb}
+.note-text{font-size:12px;color:#333;line-height:1.5;white-space:pre-wrap}
+.note-delete{opacity:0;position:absolute;top:6px;right:8px;font-size:11px;color:#bbb;background:none;border:none;cursor:pointer;font-family:inherit;transition:opacity .15s}
+.note-delete:hover{color:#c0392b}
+.note-empty{font-size:12px;color:#bbb;padding:4px 0}
+/* NOTE ADD FORM */
+.note-form{background:#f0f6ff;border:.5px solid #aac4f7;border-radius:8px;padding:.75rem;margin-top:6px;display:none}
+.note-form.visible{display:block}
+.note-form label{font-size:11px;color:#888;display:block;margin-bottom:3px;text-transform:uppercase;letter-spacing:.04em}
+.note-form input,.note-form textarea,.note-form select{width:100%;font-size:13px;padding:6px 9px;border-radius:7px;border:.5px solid #ccc;background:#fff;font-family:inherit;margin-bottom:8px;resize:none}
+.note-form textarea{height:70px}
+.note-form-actions{display:flex;gap:6px}
+.note-form-actions button{flex:1;padding:7px;border-radius:7px;border:.5px solid #ccc;font-size:12px;font-family:inherit;cursor:pointer}
+.nf-save{background:#185FA5;color:#fff;border-color:#185FA5;font-weight:500}
+.nf-cancel{background:#f0f0ec;color:#444}
+/* NOTE BADGE on card head */
+.note-badge{font-size:10px;background:#e8f0fe;color:#185FA5;padding:1px 6px;border-radius:8px;font-weight:500;flex-shrink:0}
+
+/* BOTTOM NAV */
+.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:520px;background:#fff;border-top:.5px solid #e5e4e0;display:flex;z-index:30}
+.bnav-btn{flex:1;padding:10px 2px 12px;border:none;background:transparent;cursor:pointer;font-family:inherit;display:flex;flex-direction:column;align-items:center;gap:3px;color:#999;font-size:9px}
+.bnav-btn.active{color:#1a1a18}
+.bnav-btn span:first-child{font-size:17px}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top-bar">
+    <div class="app-title">📍 Roteiro SP</div>
+    <div class="origin-bar">
+      <div class="origin-dot"></div>
+      <span class="origin-label">De</span>
+      <span class="origin-val" id="origin-display">Av. Lacerda Franco, 1170 – Cambuci</span>
+      <button class="link-btn" onclick="toggleEdit()">alterar</button>
+    </div>
+    <div class="edit-row" id="origin-edit">
+      <input type="text" id="origin-input" placeholder="Seu endereço de partida, São Paulo"/>
+      <button onclick="saveOrigin()">ok</button>
+    </div>
+    <div class="tabs" id="day-tabs">
+      <button class="tab active" onclick="switchTab('semana',this)">📅 Semana</button>
+      <button class="tab" onclick="switchTab('fds',this)">🎉 Fim de semana</button>
+    </div>
+  </div>
+  <div class="filter-bar" id="filter-bar"></div>
+
+  <div id="panel-semana" class="panel visible"></div>
+  <div id="panel-fds"    class="panel"></div>
+  <div id="panel-bank"   class="bank-panel"></div>
+  <div id="panel-search" class="search-panel">
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="search-input" placeholder="Nome, bairro, categoria, dica…" oninput="doSearch(this.value)" autocomplete="off"/>
+      <button class="search-clear" id="search-clear" onclick="clearSearch()">✕</button>
+    </div>
+    <div class="search-meta" id="search-meta">Digite para buscar em todos os locais salvos.</div>
+    <div id="search-results"></div>
+  </div>
+
+  <!-- SETTINGS -->
+  <div id="panel-cfg" class="cfg-panel">
+    <div class="cfg-section">
+      <div class="cfg-title">🤖 Inteligência Artificial</div>
+      <div class="cfg-card">
+        <h4>Provedor de IA</h4>
+        <p>Escolha qual API usar. Groq é gratuita para modelos Llama.</p>
+        <select id="cfg-provider" onchange="toggleProviderFields()">
+          <option value="anthropic">Anthropic (Claude) — melhor qualidade</option>
+          <option value="groq">Groq (Llama) — gratuito</option>
+        </select>
+        <div id="anthropic-fields">
+          <label class="form-label">API Key Anthropic</label>
+          <input type="password" id="cfg-anthropic-key" placeholder="sk-ant-api03-…" autocomplete="off"/>
+          <p style="font-size:11px;color:#888;margin-bottom:8px">Obtenha em <strong>console.anthropic.com</strong> → API Keys</p>
+        </div>
+        <div id="groq-fields" style="display:none">
+          <label class="form-label">API Key Groq</label>
+          <input type="password" id="cfg-groq-key" placeholder="gsk_…" autocomplete="off"/>
+          <label class="form-label">Modelo</label>
+          <select id="cfg-groq-model">
+            <option value="meta-llama/llama-4-scout-17b-16e-instruct">Llama 4 Scout (imagens + texto, gratuito) ✨</option>
+            <option value="meta-llama/llama-4-maverick-17b-128e-instruct">Llama 4 Maverick (imagens + texto, mais capaz)</option>
+            <option value="llama-3.3-70b-versatile">Llama 3.3 70B (texto, rápido)</option>
+            <option value="llama-3.1-8b-instant">Llama 3.1 8B Instant (texto, ultra rápido)</option>
+          </select>
+          <p style="font-size:11px;color:#888;margin-bottom:8px">Obtenha em <strong>console.groq.com</strong> → API Keys</p>
+        </div>
+        <div class="cfg-status" id="cfg-status"></div>
+        <button class="action-btn primary" onclick="saveApiKeys()" style="margin-bottom:8px">💾 Salvar configurações</button>
+        <button class="action-btn" onclick="testApi()">🧪 Testar conexão</button>
+      </div>
+    </div>
+    <div class="cfg-section">
+      <div class="cfg-title">📸 Extrair local de imagem</div>
+      <div class="cfg-card">
+        <h4>Print do Instagram → formulário preenchido</h4>
+        <p>Arraste, cole (Ctrl+V) ou selecione da galeria. A IA extrai nome, endereço, horários e categorias.</p>
+        <div class="img-drop-zone" id="drop-zone" ondragover="dzOver(event)" ondragleave="dzLeave(event)" ondrop="dzDrop(event)">
+          <input type="file" accept="image/*" onchange="dzFile(event)"/>
+          <div class="dz-icon">📷</div>
+          <div class="dz-text">Arraste aqui ou toque para abrir a galeria</div>
+          <div class="dz-sub">Ctrl+V também funciona</div>
+        </div>
+        <img id="img-preview" class="img-preview"/>
+        <button class="extract-btn" id="extract-btn" onclick="extractFromImage()">✨ Extrair com IA</button>
+        <div class="extract-loading" id="extract-loading"><span class="spinner"></span>Analisando imagem…</div>
+        <div class="extracted-preview" id="extracted-preview">
+          <div class="ep-title">✅ Confirme os dados antes de salvar</div>
+          <div id="ep-content"></div>
+          <div class="ep-actions">
+            <button class="ep-discard" onclick="discardExtracted()">Descartar</button>
+            <button class="ep-use" onclick="useExtracted()">Usar no roteiro →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="cfg-section">
+      <div class="cfg-title">💾 Salvar / Carregar Roteiro</div>
+      <div class="cfg-card">
+        <h4>Salvamento automático</h4>
+        <p>O roteiro é salvo automaticamente no navegador. Use os botões abaixo para backup ou compartilhamento.</p>
+        <button class="action-btn primary" onclick="saveToFile()">⬇️ Exportar roteiro (.json)</button>
+        <button class="action-btn" onclick="document.getElementById('import-input').click()">📂 Importar roteiro (.json)</button>
+        <input type="file" id="import-input" accept=".json" style="display:none" onchange="importFromFile(event)"/>
+        <button class="action-btn danger" onclick="clearSavedData()">🗑 Apagar dados salvos</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MONETIZE -->
+  <div id="panel-mono" class="mono-panel">
+    <div class="mono-section">
+      <div class="mono-title">💰 Vender roteiros personalizados</div>
+      <div class="mono-card">
+        <h4>Gerar link de venda</h4>
+        <p>Cole o link da sua plataforma (Hotmart, Kiwify, Pix…) e copie a mensagem para WhatsApp.</p>
+        <input type="text" id="pay-link" placeholder="https://hotmart.com/produto/…"/>
+        <input type="text" id="pay-price" placeholder="Preço, ex: R$ 29,90"/>
+        <button class="action-btn" onclick="copyPayMsg()">📋 Copiar mensagem de venda</button>
+        <button class="action-btn primary" onclick="exportHTML()">⬇️ Exportar HTML para entregar</button>
+      </div>
+    </div>
+    <div class="mono-section">
+      <div class="mono-title">🤝 Afiliados</div>
+      <div class="mono-card">
+        <h4>Link de comissão por reserva</h4>
+        <select id="aff-select"><option value="">Selecione o local…</option></select>
+        <input type="text" id="aff-link" placeholder="Seu link de afiliado"/>
+        <input type="text" id="aff-cta" placeholder="Texto do botão, ex: Reservar com desconto"/>
+        <button class="action-btn" onclick="saveAffiliate()">✅ Salvar</button>
+      </div>
+    </div>
+    <div class="mono-section">
+      <div class="mono-title">📣 Parceiro patrocinado</div>
+      <div class="mono-card">
+        <input type="text" id="sp-nome" placeholder="Nome do negócio"/>
+        <input type="text" id="sp-desc" placeholder="Ex: 10% off com código ROTEIROSP"/>
+        <input type="text" id="sp-link" placeholder="Link do site ou cupom"/>
+        <input type="text" id="sp-cta"  placeholder="Texto do botão"/>
+        <button class="action-btn" onclick="saveSponsored()">✅ Publicar parceiro</button>
+        <button class="action-btn danger" onclick="removeSponsored()">🗑 Remover parceiro</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- INFLUENCIADORES -->
+  <div id="panel-infl" class="infl-panel">
+    <div class="infl-section">
+      <div class="infl-title">👤 Influenciadores parceiros</div>
+      <button class="add-btn-main" onclick="toggleInflForm()">＋ Adicionar influenciador</button>
+      <div class="add-form" id="add-infl-form">
+        <label>@ Handle do Instagram</label>
+        <input id="inf-handle" placeholder="@nomedo influenciador"/>
+        <div class="form-row">
+          <div><label>Nº de seguidores</label><input id="inf-followers" placeholder="Ex: 120k"/></div>
+          <div><label>Nicho</label><input id="inf-nicho" placeholder="Ex: Gastronomia"/></div>
+        </div>
+        <label>Link do Instagram</label>
+        <input id="inf-ig" placeholder="https://instagram.com/…"/>
+        <label>Link de afiliado (para o proprietário)</label>
+        <input id="inf-aff" placeholder="https://…"/>
+        <label>Foto de perfil (URL, opcional)</label>
+        <input id="inf-foto" placeholder="https://…"/>
+        <div class="form-actions">
+          <button class="btn-cancel" onclick="toggleInflForm()">Cancelar</button>
+          <button class="btn-save" onclick="saveInfluencer()">Salvar</button>
+        </div>
+      </div>
+      <div id="infl-list"></div>
+    </div>
+  </div>
+
+  <!-- MODAL EDITAR INFLUENCIADOR -->
+  <div class="modal-overlay" id="modal-edit-infl">
+    <div class="modal" style="max-height:85vh;overflow-y:auto">
+      <div class="modal-title">✏️ Editar influenciador</div>
+      <label>@ Handle do Instagram</label>
+      <input id="edit-inf-handle" placeholder="@handle"/>
+      <div style="display:flex;gap:8px">
+        <div style="flex:1"><label>Nº de seguidores</label><input id="edit-inf-followers" placeholder="Ex: 120k"/></div>
+        <div style="flex:1"><label>Nicho</label><input id="edit-inf-nicho" placeholder="Ex: Gastronomia"/></div>
+      </div>
+      <label>Link do Instagram</label>
+      <input id="edit-inf-ig" placeholder="https://instagram.com/…"/>
+      <label>Link de afiliado</label>
+      <input id="edit-inf-aff" placeholder="https://…"/>
+      <label>Foto de perfil (URL)</label>
+      <input id="edit-inf-foto" placeholder="https://…"/>
+      <div class="modal-actions">
+        <button class="btn-cancel" onclick="closeEditInflModal()">Cancelar</button>
+        <button class="btn-save" onclick="saveEditInfl()">💾 Salvar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL VINCULAR INFLUENCIADOR -->
+  <div class="modal-overlay" id="modal-infl-link">
+    <div class="modal" style="max-height:80vh;overflow-y:auto">
+      <div class="modal-title">🔗 Vincular influenciador ao local</div>
+      <div id="modal-infl-link-body"></div>
+      <div class="modal-actions" style="margin-top:10px">
+        <button class="btn-cancel" onclick="closeInflLinkModal()">Fechar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL PROPOSTA -->
+  <div class="modal-overlay" id="modal-proposta">
+    <div class="modal" style="max-height:85vh;overflow-y:auto">
+      <div class="modal-title">📩 Proposta de parceria</div>
+      <div id="modal-proposta-body" style="font-size:13px;line-height:1.6;white-space:pre-wrap;background:#f9f9f7;border-radius:10px;padding:.875rem;margin-bottom:12px;color:#333"></div>
+      <div class="modal-actions">
+        <button class="btn-cancel" onclick="closeProposta()">Fechar</button>
+        <button class="btn-save" onclick="copyProposta()">📋 Copiar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom-nav">
+    <button class="bnav-btn active" id="nav-roteiro" onclick="showView('roteiro')"><span>🗺️</span><span>Roteiro</span></button>
+    <button class="bnav-btn"        id="nav-bank"    onclick="showView('bank')"   ><span>📦</span><span>Banco</span></button>
+    <button class="bnav-btn"        id="nav-infl"    onclick="showView('infl')"   ><span>👤</span><span>Influenc.</span></button>
+    <button class="bnav-btn"        id="nav-mono"    onclick="showView('mono')"   ><span>💰</span><span>Ganhar</span></button>
+    <button class="bnav-btn"        id="nav-cfg"     onclick="showView('cfg')"    ><span>⚙️</span><span>Config</span></button>
+  </div>
+</div>
+
+
+<!-- NOTES MODAL -->
+<div class="modal-overlay" id="modal-notes">
+  <div class="modal" style="max-height:80vh;overflow-y:auto">
+    <div class="modal-title" id="modal-notes-title">📝 Informações adicionais</div>
+    <div id="modal-notes-list"></div>
+    <div class="notes-header" style="margin-top:10px">
+      <span class="notes-label">Nova entrada</span>
+    </div>
+    <div class="note-form visible" id="modal-note-form">
+      <label>Fonte / Contexto</label>
+      <input type="text" id="mnf-source" placeholder="Ex: dica do João, conversa no Instagram, pesquisa própria"/>
+      <label>Anotação</label>
+      <textarea id="mnf-text" placeholder="Cole a conversa, anote a dica, escreva o que quiser…"></textarea>
+      <div class="note-form-actions">
+        <button class="nf-cancel" onclick="closeNotesModal()">Fechar</button>
+        <button class="nf-save" onclick="saveNote()">💾 Salvar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-schedule">
+  <div class="modal">
+    <div class="modal-title">📅 Agendar visita</div>
+    <label>Data</label><input type="date" id="modal-date"/>
+    <label>Observação (opcional)</label><input type="text" id="modal-note" placeholder="Ex: Levar ingresso impresso"/>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
+      <button class="btn-save"   onclick="confirmSchedule()">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── CATEGORIES ────────────────────────────────────────────────────────────────
+const CAT_GROUPS = [
+  { id:'gastro', label:'Gastronomia', icon:'🍴', color:'#3b6d11', bg:'#eaf3de', cats:[
+    { id:'almoco_rapido', label:'Almoço Rápido e Barato', icon:'🥘', color:'#3b6d11', bg:'#eaf3de' },
+    { id:'jantar_rapido', label:'Jantar Rápido e Barato', icon:'🍜', color:'#185fa5', bg:'#e6f1fb' },
+    { id:'exp_gastro',    label:'Experiência Gastronômica', icon:'🍽️', color:'#854f0b', bg:'#faeeda' },
+  ]},
+  { id:'eventos', label:'Eventos', icon:'🎭', color:'#534ab7', bg:'#eeedfe', cats:[
+    { id:'evento_dia',    label:'Eventos Dia',         icon:'☀️', color:'#854f0b', bg:'#faeeda' },
+    { id:'evento_noite',  label:'Eventos Noite',       icon:'🌙', color:'#534ab7', bg:'#eeedfe' },
+    { id:'evento_gratis', label:'Gratuitos',           icon:'🆓', color:'#2e7d32', bg:'#e8f5e9' },
+    { id:'evento_pago',   label:'Pagos',               icon:'🎟️', color:'#c0392b', bg:'#fce4ec' },
+    { id:'evento_musica', label:'Com Música',          icon:'🎵', color:'#7b1fa2', bg:'#f3e5f5' },
+    { id:'speakeasy',     label:'Speakeasy',           icon:'🥃', color:'#4e342e', bg:'#efebe9' },
+    { id:'show',          label:'Shows',               icon:'🎤', color:'#c0392b', bg:'#fce4ec' },
+    { id:'eletronico',    label:'Música Eletrônica',   icon:'🎧', color:'#1565c0', bg:'#e3f2fd' },
+  ]},
+];
+const CAT_MAP = {};
+CAT_GROUPS.forEach(g=>g.cats.forEach(c=>{CAT_MAP[c.id]=c;}));
+const ALL_CATS = CAT_GROUPS.flatMap(g=>g.cats);
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let currentTab='semana', activeFilter='all', modalTarget=null;
+let collapsedGroups={}, dragId=null, dragTab=null;
+let formSelectedCats={}, currentImageB64=null, extractedData=null, extractedTab='semana';
+
+const DEFAULT_STATE = {
+  origin:'Av. Lacerda Franco, 1170 – Cambuci, São Paulo',
+  sponsored:null, affiliates:{}, influencers:[],
+  semana:[
+    {id:'s1',nome:'Conceição Discos & Comes',cats:['almoco_rapido','exp_gastro'],icon:'🍚',hora:'12h00',dur:'1h30',dist:'3,5 km',transporte:'Ônibus (~10 min) ou a pé (~45 min)',end:'R. Imac. Conceição, 151 – Vila Buarque, São Paulo',nota:'Almoço com a chef Talitha. Arroz, música e alma. Ter–Sáb.',rating:'4.4',aviso:'Fecha às 17h!',badge:null,badgeType:null,status:'ativo',schedDate:null,schedNote:null},
+    {id:'s2',nome:'Farol Santander',cats:['evento_dia'],icon:'🏙️',hora:'14h00',dur:'1h30',dist:'1,5 km',transporte:'A pé (~20 min)',end:'R. João Brícola, 24 – Centro Histórico, São Paulo',nota:'Vista 360° do topo do Edifício Altino Arantes. Seg–Sáb 9h–19h.',rating:'4.7',aviso:null,badge:null,badgeType:null,status:'ativo',schedDate:null,schedNote:null},
+    {id:'s3',nome:'Notre Vin',cats:['jantar_rapido','exp_gastro','evento_noite','evento_musica','speakeasy'],icon:'🍷',hora:'19h00',dur:'2h',dist:'11 km',transporte:'Metrô + Uber (~30 min)',end:'R. João Moura, 1086 – Pinheiros, São Paulo',nota:'Wine bar com jazz ao vivo. Ter/qua: peça uma taça, ganha outra.',rating:'4.6',aviso:'Aberto a partir das 18h. Fechado seg/dom.',badge:'Double Trouble – ter/qua',badgeType:'tip',status:'ativo',schedDate:null,schedNote:null},
+    {id:'s4',nome:'Vila Secreta – Raful de Raful',cats:['evento_dia','evento_pago'],icon:'🏚️',hora:'(autônoma)',dur:'1h',dist:'1 km',transporte:'A pé (~12 min)',end:'R. Rubi, 50 – Aclimação, São Paulo',nota:'Vila histórica escondida. Coleção de 1700–1960. R$35.',rating:'4.9',aviso:'Visitas: sex 15h e sáb 10h apenas.',badge:'Sex 15h · Sáb 10h',badgeType:'warn',status:'ativo',schedDate:null,schedNote:null},
+  ],
+  fds:[
+    {id:'f1',nome:'Vila Secreta – Raful de Raful',cats:['evento_dia','evento_pago'],icon:'🏚️',hora:'10h00 (sáb)',dur:'1h',dist:'1 km',transporte:'A pé (~12 min)',end:'R. Rubi, 50 – Aclimação, São Paulo',nota:'Visita guiada. R$35. Crianças até 10 anos grátis.',rating:'4.9',aviso:'Único horário no fds.',badge:'Sábados 10h',badgeType:'warn',status:'ativo',schedDate:null,schedNote:null},
+    {id:'f2',nome:'Conceição Discos & Comes',cats:['almoco_rapido','exp_gastro'],icon:'🍚',hora:'12h00',dur:'1h30',dist:'3,5 km',transporte:'Ônibus (~10 min) ou a pé (~45 min)',end:'R. Imac. Conceição, 151 – Vila Buarque, São Paulo',nota:'Almoço imperdível com a chef Talitha. Ter–Sáb.',rating:'4.4',aviso:'Fecha às 17h. Fila no sáb.',badge:null,badgeType:null,status:'ativo',schedDate:null,schedNote:null},
+    {id:'f3',nome:'Casa Bradesco – Sou Outro do Outro',cats:['evento_dia','evento_pago','evento_gratis'],icon:'🖼️',hora:'14h30',dur:'1h30',dist:'2 km',transporte:'A pé (~25 min)',end:'Alameda Rio Claro, 190 – Bela Vista, São Paulo',nota:'Exposição de Es Devlin. Labirinto de espelhos. Até 27/jul.',rating:'4.5',aviso:'Ter–Dom 12h–20h. Ingressos a partir de R$25.',badge:'Gratuito às terças',badgeType:'free',status:'ativo',schedDate:null,schedNote:null},
+    {id:'f4',nome:'Catedral da Sé – Luminiscence',cats:['evento_noite','evento_pago','evento_musica'],icon:'✨',hora:'20h30',dur:'1h',dist:'3 km',transporte:'Metrô Ana Rosa → Sé (~12 min)',end:'Praça da Sé – Centro, São Paulo',nota:'Show de luzes imersivo. Sessões a partir das 20h40.',rating:'4.7',aviso:'Confirme sessões em catedraldasesp.com.',badge:'15% off às segundas',badgeType:'free',status:'ativo',schedDate:null,schedNote:null},
+    {id:'f5',nome:'Le Club SP – Ashibah',cats:['evento_noite','evento_pago','eletronico','show'],icon:'🎧',hora:'23h00',dur:'3h',dist:'10 km',transporte:'Uber (~20 min)',end:'Av. Brig. Faria Lima, 4509 – Rooftop, São Paulo',nota:'Balada rooftop. Ashibah: sets hipnóticos e intensos.',rating:'4.4',aviso:'Abre 22h30. Apenas sex/sáb.',badge:null,badgeType:null,status:'ativo',schedDate:null,schedNote:null},
+  ],
+};
+
+let state = JSON.parse(JSON.stringify(DEFAULT_STATE));
+
+// ── PERSIST ───────────────────────────────────────────────────────────────────
+function persist() {
+  try { localStorage.setItem('roteirosp_state', JSON.stringify(state)); } catch(e){}
+}
+function loadPersisted() {
+  try {
+    const s = localStorage.getItem('roteirosp_state');
+    if (s) { state = JSON.parse(s); if(!state.influencers) state.influencers=[]; }
+  } catch(e){}
+}
+function saveToFile() {
+  const blob = new Blob([JSON.stringify(state,null,2)],{type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'roteiro-sp-'+new Date().toISOString().slice(0,10)+'.json';
+  a.click(); URL.revokeObjectURL(a.href);
+}
+function importFromFile(e) {
+  const f = e.target.files[0]; if(!f) return;
+  const r = new FileReader();
+  r.onload = ev => {
+    try {
+      const imported = JSON.parse(ev.target.result);
+      if (!imported.semana || !imported.fds) { alert('Arquivo inválido.'); return; }
+      state = imported; persist(); render();
+      alert('✅ Roteiro carregado com sucesso!');
+    } catch(err) { alert('Erro ao importar: '+err.message); }
+  };
+  r.readAsText(f);
+}
+function clearSavedData() {
+  if (!confirm('Apagar todos os dados salvos e voltar ao padrão?')) return;
+  localStorage.removeItem('roteirosp_state');
+  state = JSON.parse(JSON.stringify(DEFAULT_STATE));
+  render(); alert('Dados apagados.');
+}
+
+// ── MAPS ──────────────────────────────────────────────────────────────────────
+function activeItems(tab) { return state[tab].filter(d=>d.status==='ativo'); }
+function filteredActive(tab) {
+  const items = activeItems(tab);
+  if (activeFilter==='all') return items;
+  const grp = CAT_GROUPS.find(g=>g.id===activeFilter);
+  if (grp) return items.filter(d=>d.cats&&d.cats.some(c=>grp.cats.map(x=>x.id).includes(c)));
+  return items.filter(d=>d.cats&&d.cats.includes(activeFilter));
+}
+function fullRouteUrl(tab) {
+  const data=filteredActive(tab); if(!data.length) return '#';
+  const orig=encodeURIComponent(state.origin);
+  const dest=encodeURIComponent(data[data.length-1].end);
+  const wps=data.slice(0,-1).map(d=>encodeURIComponent(d.end)).join('|');
+  return `https://www.google.com/maps/dir/?api=1&origin=${orig}&destination=${dest}&travelmode=transit`+(wps?`&waypoints=${wps}`:'');
+}
+function legUrl(items,i) {
+  const from=i===0?state.origin:items[i-1].end;
+  return `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(from)}&destination=${encodeURIComponent(items[i].end)}&travelmode=transit`;
+}
+
+// ── OPTIMIZATION ──────────────────────────────────────────────────────────────
+let pendingSuggestion = null;
+
+function haversine(a, b) {
+  // rough distance using lat/lng keywords in address strings — fallback: use AI
+  return Math.random()*5+1; // placeholder when no geocoding available
+}
+
+async function optimizeRoute(tab) {
+  const btn = document.getElementById('opt-btn-'+tab);
+  if (btn) { btn.disabled=true; btn.textContent='⏳ Otimizando…'; }
+  const items = activeItems(tab);
+  if (items.length < 2) { alert('Adicione pelo menos 2 locais para otimizar.'); if(btn){btn.disabled=false;btn.textContent='✨ Otimizar rota e categorias';} return; }
+  const key = getActiveKey();
+  if (!key) { alert('Configure uma API Key em ⚙️ Config para usar a otimização.'); if(btn){btn.disabled=false;btn.textContent='✨ Otimizar rota e categorias';} return; }
+  const prompt = `Você é um especialista em roteiros urbanos em São Paulo.
+Analise esta lista de locais e sugira:
+1. A MELHOR ORDEM de visitas considerando proximidade geográfica, horários de funcionamento e fluxo lógico do dia (almoço → tarde → noite).
+2. CATEGORIAS FALTANTES: para cada local, se estiver faltando categorias relevantes da lista disponível, sugira adicioná-las.
+
+Locais (em ordem atual):
+${items.map((d,i)=>`${i+1}. ${d.nome} | ${d.end} | Hora: ${d.hora} | Cats: ${(d.cats||[]).join(',')||'nenhuma'}`).join('\n')}
+
+Categorias disponíveis: ${ALL_CATS.map(c=>c.id+':'+c.label).join(', ')}
+
+Responda SOMENTE em JSON válido:
+{
+  "ordem": [lista de ids na ordem sugerida, ex: ["s2","s1","s3"]],
+  "justificativa": "frase curta explicando a ordem",
+  "categorias": [{"id":"id_do_local","adicionar":["cat_id1","cat_id2"]}],
+  "resumo_cats": "frase curta sobre as categorias sugeridas"
+}`;
+
+  try {
+    const raw = await callAI(prompt);
+    const clean = raw.replace(/```json|```/g,'').trim();
+    const result = JSON.parse(clean);
+    pendingSuggestion = { tab, result };
+    showSuggestion(tab, result);
+  } catch(e) {
+    alert('Erro na otimização: '+e.message);
+  } finally {
+    if(btn){btn.disabled=false;btn.textContent='✨ Otimizar rota e categorias';}
+  }
+}
+
+function showSuggestion(tab, result) {
+  const bar = document.getElementById('suggest-bar-'+tab);
+  if (!bar) return;
+  bar.innerHTML = `<strong>💡 Sugestão da IA</strong>
+    <div style="margin-bottom:4px">🗺️ <b>Rota:</b> ${result.justificativa||''}</div>
+    ${result.resumo_cats?`<div>🏷️ <b>Categorias:</b> ${result.resumo_cats}</div>`:''}
+    <div class="suggest-actions">
+      <button onclick="discardSuggestion('${tab}')">Ignorar</button>
+      <button class="suggest-apply" onclick="applySuggestion('${tab}')">✅ Aplicar sugestão</button>
+    </div>`;
+  bar.classList.add('visible');
+}
+
+function applySuggestion(tab) {
+  if (!pendingSuggestion || pendingSuggestion.tab !== tab) return;
+  const { result } = pendingSuggestion;
+  // reorder
+  if (result.ordem && result.ordem.length) {
+    const active = activeItems(tab);
+    const nonActive = state[tab].filter(d=>d.status!=='ativo');
+    const reordered = result.ordem.map(id=>active.find(d=>d.id===id)).filter(Boolean);
+    // append any active items not in the suggestion
+    active.forEach(d=>{ if(!reordered.find(x=>x.id===d.id)) reordered.push(d); });
+    state[tab] = [...reordered, ...nonActive];
+  }
+  // add categories
+  if (result.categorias) {
+    result.categorias.forEach(({id,adicionar})=>{
+      const item = state[tab].find(d=>d.id===id);
+      if (!item) return;
+      item.cats = item.cats || [];
+      (adicionar||[]).forEach(c=>{ if(!item.cats.includes(c)) item.cats.push(c); });
+    });
+  }
+  pendingSuggestion = null;
+  persist();
+  renderPanel(tab);
+}
+
+function discardSuggestion(tab) {
+  pendingSuggestion = null;
+  const bar = document.getElementById('suggest-bar-'+tab);
+  if (bar) bar.classList.remove('visible');
+}
+
+// ── AI CALLS ──────────────────────────────────────────────────────────────────
+function getProvider() { return localStorage.getItem('sp_provider')||'anthropic'; }
+function getActiveKey() {
+  return getProvider()==='groq'
+    ? localStorage.getItem('sp_groq_key')||''
+    : localStorage.getItem('sp_anthropic_key')||'';
+}
+function getGroqModel() { return localStorage.getItem('sp_groq_model')||'meta-llama/llama-4-scout-17b-16e-instruct'; }
+
+async function callAI(prompt, imageB64) {
+  const provider = getProvider();
+  const key = getActiveKey();
+  if (!key) throw new Error('Nenhuma API Key configurada. Vá em ⚙️ Config.');
+
+  if (provider === 'groq') {
+    const model = getGroqModel();
+    const content = imageB64
+      ? [{type:'text',text:prompt},{type:'image_url',image_url:{url:`data:image/jpeg;base64,${imageB64}`}}]
+      : prompt;
+    const r = await fetch('https://api.groq.com/openai/v1/chat/completions',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},
+      body:JSON.stringify({model,max_tokens:600,messages:[{role:'user',content}]})
+    });
+    const d = await r.json();
+    if (d.error) throw new Error(d.error.message);
+    return d.choices?.[0]?.message?.content||'';
+  } else {
+    const msgContent = imageB64
+      ? [{type:'image',source:{type:'base64',media_type:'image/jpeg',data:imageB64}},{type:'text',text:prompt}]
+      : [{type:'text',text:prompt}];
+    const r = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:600,messages:[{role:'user',content:msgContent}]})
+    });
+    const d = await r.json();
+    if (d.error) throw new Error(d.error.message);
+    return d.content?.[0]?.text||'';
+  }
+}
+
+// ── SETTINGS ─────────────────────────────────────────────────────────────────
+function toggleProviderFields() {
+  const p = document.getElementById('cfg-provider').value;
+  document.getElementById('anthropic-fields').style.display = p==='anthropic'?'block':'none';
+  document.getElementById('groq-fields').style.display      = p==='groq'?'block':'none';
+}
+function saveApiKeys() {
+  const p  = document.getElementById('cfg-provider').value;
+  const ak = document.getElementById('cfg-anthropic-key').value.trim();
+  const gk = document.getElementById('cfg-groq-key').value.trim();
+  const gm = document.getElementById('cfg-groq-model').value;
+  localStorage.setItem('sp_provider', p);
+  if (ak) localStorage.setItem('sp_anthropic_key', ak);
+  if (gk) localStorage.setItem('sp_groq_key', gk);
+  localStorage.setItem('sp_groq_model', gm);
+  showCfgStatus('✅ Configurações salvas!','ok');
+}
+function loadApiKeys() {
+  // Migrate deprecated Groq models to current ones
+  const DEPRECATED_MODELS = [
+    'llama-3.2-11b-vision-preview',
+    'llama-3.2-90b-vision-preview',
+    'mixtral-8x7b-32768',
+    'llama3-70b-8192',
+    'llama3-8b-8192',
+  ];
+  const savedModel = localStorage.getItem('sp_groq_model');
+  if (savedModel && DEPRECATED_MODELS.includes(savedModel)) {
+    localStorage.setItem('sp_groq_model', 'meta-llama/llama-4-scout-17b-16e-instruct');
+  }
+  const p  = localStorage.getItem('sp_provider')||'anthropic';
+  const ak = localStorage.getItem('sp_anthropic_key')||'';
+  const gk = localStorage.getItem('sp_groq_key')||'';
+  const gm = localStorage.getItem('sp_groq_model')||'meta-llama/llama-4-scout-17b-16e-instruct';
+  document.getElementById('cfg-provider').value = p;
+  if (ak) document.getElementById('cfg-anthropic-key').value = ak;
+  if (gk) document.getElementById('cfg-groq-key').value = gk;
+  document.getElementById('cfg-groq-model').value = gm;
+  toggleProviderFields();
+  // Show warning if provider is groq and model select value didn't match (fallback case)
+  const sel = document.getElementById('cfg-groq-model');
+  if (!sel.value) sel.value = 'meta-llama/llama-4-scout-17b-16e-instruct';
+}
+async function testApi() {
+  showCfgStatus('Testando…','ok');
+  try {
+    const result = await callAI('Responda apenas: OK');
+    if (result.includes('OK')||result.length>0) showCfgStatus('✅ Conexão funcionando!','ok');
+    else showCfgStatus('Resposta inesperada: '+result,'err');
+  } catch(e) { showCfgStatus('Erro: '+e.message,'err'); }
+}
+function showCfgStatus(msg,type) {
+  const el=document.getElementById('cfg-status');
+  el.textContent=msg; el.className='cfg-status '+type;
+  setTimeout(()=>{el.className='cfg-status';},5000);
+}
+
+// ── IMAGE EXTRACTION ──────────────────────────────────────────────────────────
+function dzOver(e){e.preventDefault();document.getElementById('drop-zone').classList.add('dragover');}
+function dzLeave(e){document.getElementById('drop-zone').classList.remove('dragover');}
+function dzDrop(e){e.preventDefault();dzLeave(e);const f=e.dataTransfer.files[0];if(f&&f.type.startsWith('image/'))loadImageFile(f);}
+function dzFile(e){const f=e.target.files[0];if(f)loadImageFile(f);}
+function loadImageFile(file) {
+  const r=new FileReader();
+  r.onload=ev=>{
+    currentImageB64=ev.target.result.split(',')[1];
+    const p=document.getElementById('img-preview');
+    p.src=ev.target.result; p.style.display='block';
+    document.getElementById('extract-btn').style.display='block';
+    document.getElementById('extracted-preview').style.display='none';
+  };
+  r.readAsDataURL(file);
+}
+document.addEventListener('paste',e=>{
+  const img=[...(e.clipboardData?.items||[])].find(i=>i.type.startsWith('image/'));
+  if(img){loadImageFile(img.getAsFile());showView('cfg');}
+});
+async function extractFromImage() {
+  if(!currentImageB64){alert('Selecione uma imagem.');return;}
+  const key=getActiveKey();
+  if(!key){showCfgStatus('Configure uma API Key primeiro.','err');return;}
+  document.getElementById('extract-btn').disabled=true;
+  document.getElementById('extract-loading').style.display='block';
+  document.getElementById('extracted-preview').style.display='none';
+  const prompt=`Analise este post do Instagram e extraia as informações do local.
+Responda SOMENTE em JSON válido, sem markdown:
+{"nome":"","end":"endereço completo com bairro e São Paulo","hora":"","dur":"ex: 1h30","nota":"dicas úteis","aviso":"aviso importante ou vazio","icon":"emoji único","cats":["ids de: almoco_rapido,jantar_rapido,exp_gastro,evento_dia,evento_noite,evento_gratis,evento_pago,evento_musica,speakeasy,show,eletronico"],"tab":"semana ou fds"}`;
+  try {
+    const raw = await callAI(prompt, currentImageB64);
+    extractedData = JSON.parse(raw.replace(/```json|```/g,'').trim());
+    extractedTab = extractedData.tab||'semana';
+    showExtracted(extractedData);
+  } catch(e) { alert('Erro ao analisar: '+e.message); }
+  finally {
+    document.getElementById('extract-btn').disabled=false;
+    document.getElementById('extract-loading').style.display='none';
+  }
+}
+function showExtracted(d) {
+  const catL=(d.cats||[]).map(c=>CAT_MAP[c]?CAT_MAP[c].icon+' '+CAT_MAP[c].label:'').filter(Boolean).join(', ');
+  document.getElementById('ep-content').innerHTML=`
+    <div class="ep-row"><span class="ep-label">Nome</span><span class="ep-val">${d.icon||'📍'} ${d.nome||'–'}</span></div>
+    <div class="ep-row"><span class="ep-label">Endereço</span><span class="ep-val">${d.end||'–'}</span></div>
+    <div class="ep-row"><span class="ep-label">Horário</span><span class="ep-val">${d.hora||'–'}</span></div>
+    <div class="ep-row"><span class="ep-label">Duração</span><span class="ep-val">${d.dur||'–'}</span></div>
+    <div class="ep-row"><span class="ep-label">Categorias</span><span class="ep-val">${catL||'–'}</span></div>
+    <div class="ep-row"><span class="ep-label">Nota</span><span class="ep-val">${d.nota||'–'}</span></div>
+    ${d.aviso?`<div class="ep-row"><span class="ep-label">⚠️</span><span class="ep-val" style="color:#c0392b">${d.aviso}</span></div>`:''}
+    <div class="ep-row"><span class="ep-label">Roteiro</span><span class="ep-val">${extractedTab==='fds'?'🎉 Fim de semana':'📅 Semana'}</span></div>`;
+  document.getElementById('extracted-preview').style.display='block';
+}
+function discardExtracted() {
+  extractedData=null;currentImageB64=null;
+  document.getElementById('extracted-preview').style.display='none';
+  document.getElementById('img-preview').style.display='none';
+  document.getElementById('extract-btn').style.display='none';
+  document.getElementById('img-preview').src='';
+}
+function useExtracted() {
+  if(!extractedData)return;
+  const d=extractedData, tab=extractedTab||'semana';
+  currentTab=tab; activeFilter='all';
+  document.querySelectorAll('#day-tabs .tab').forEach((t,i)=>t.classList.toggle('active',(i===0&&tab==='semana')||(i===1&&tab==='fds')));
+  showView('roteiro');
+  setTimeout(()=>{
+    const form=document.getElementById('add-form-'+tab);
+    if(!form.classList.contains('visible'))toggleForm(tab);
+    document.getElementById('fn-'+tab).value=d.nome||'';
+    document.getElementById('fe-'+tab).value=d.end||'';
+    document.getElementById('fh-'+tab).value=d.hora||'';
+    document.getElementById('fi-'+tab).value=d.icon||'📍';
+    document.getElementById('fd-'+tab).value=d.dur||'';
+    document.getElementById('fo-'+tab).value=[d.nota,d.aviso].filter(Boolean).join(' | ')||'';
+    formSelectedCats[tab]=d.cats||[];
+    buildTagPickers(tab);
+    form.scrollIntoView({behavior:'smooth',block:'start'});
+    discardExtracted();
+  },200);
+}
+
+// ── FILTER BAR ────────────────────────────────────────────────────────────────
+function renderFilterBar() {
+  const bar=document.getElementById('filter-bar');
+  let h=`<button class="filter-pill${activeFilter==='all'?' active':''}" onclick="setFilter('all')">Todos</button>`;
+  CAT_GROUPS.forEach(g=>{
+    h+=`<button class="filter-pill${activeFilter===g.id?' active':''}" onclick="setFilter('${g.id}')"><span class="dot" style="background:${g.color}"></span>${g.icon} ${g.label}</button>`;
+    g.cats.forEach(c=>{
+      h+=`<button class="filter-pill${activeFilter===c.id?' active':''}" onclick="setFilter('${c.id}')">${c.icon} ${c.label}</button>`;
+    });
+  });
+  bar.innerHTML=h;
+}
+function setFilter(id){activeFilter=id;renderFilterBar();renderPanel(currentTab);}
+
+// ── RENDER ────────────────────────────────────────────────────────────────────
+function render(){renderFilterBar();renderPanel('semana');renderPanel('fds');renderBank();updateAffSelect();}
+
+function renderPanel(tab) {
+  const el=document.getElementById('panel-'+tab);
+  const all=activeItems(tab);
+  const km=tab==='semana'?'~21 km':'~19 km';
+  const hrs=tab==='semana'?'~9h':'~11h';
+  let h='';
+  h+=`<div class="summary">
+    <div class="stat"><div class="stat-label">Ativos</div><div class="stat-val">${all.length}</div></div>
+    <div class="stat"><div class="stat-label">Distância</div><div class="stat-val">${km}</div></div>
+    <div class="stat"><div class="stat-label">Duração</div><div class="stat-val">${hrs}</div></div>
+  </div>`;
+  if(all.length) h+=`<a class="full-route-btn" href="${fullRouteUrl(tab)}" target="_blank">🗺️ Abrir rota completa no Google Maps</a>`;
+  h+=`<button class="optimize-btn" id="opt-btn-${tab}" onclick="optimizeRoute('${tab}')">✨ Otimizar rota e categorias com IA</button>`;
+  h+=`<div class="suggest-bar" id="suggest-bar-${tab}"></div>`;
+  if(state.sponsored) h+=`<div class="sponsored-card"><div class="sponsored-head"><span class="sp-badge">Parceiro</span><div class="sp-info"><div class="sp-title">${state.sponsored.nome}</div><div class="sp-desc">${state.sponsored.desc||''}</div></div><button class="sp-cta" onclick="openLink('${state.sponsored.link}')">${state.sponsored.cta}</button></div></div>`;
+  h+=`<div style="margin-bottom:1rem">
+    <button class="add-btn-main" onclick="toggleForm('${tab}')">＋ Adicionar local</button>
+    <div class="add-form" id="add-form-${tab}">
+      <div class="form-row">
+        <div><label>Nome</label><input id="fn-${tab}" placeholder="Ex: MASP"/></div>
+        <div><label>Horário</label><input id="fh-${tab}" placeholder="14h00"/></div>
+      </div>
+      <label>Endereço completo</label><input id="fe-${tab}" placeholder="Rua, número – Bairro, São Paulo"/>
+      <div class="form-row">
+        <div><label>Ícone</label><input id="fi-${tab}" placeholder="🎭" style="width:70px"/></div>
+        <div><label>Duração</label><input id="fd-${tab}" placeholder="1h30"/></div>
+      </div>
+      <label>Categorias</label>
+      <div class="tag-picker" id="tp-${tab}"></div>
+      <label>Observação</label>
+      <textarea id="fo-${tab}" placeholder="Horários, preços, dicas…"></textarea>
+      <div class="form-actions">
+        <button class="btn-cancel" onclick="toggleForm('${tab}')">Cancelar</button>
+        <button class="btn-save" onclick="addLocal('${tab}')">Salvar local</button>
+      </div>
+    </div>
+  </div>`;
+  h += activeFilter==='all' ? renderByGroups(tab) : renderFlatFiltered(tab);
+  el.innerHTML=h;
+  buildTagPickers(tab);
+  // restore pending suggestion if any
+  if(pendingSuggestion&&pendingSuggestion.tab===tab) showSuggestion(tab,pendingSuggestion.result);
+}
+
+function renderByGroups(tab) {
+  let h='';
+  CAT_GROUPS.forEach(g=>{
+    const gids=g.cats.map(x=>x.id);
+    const items=activeItems(tab).filter(d=>d.cats&&d.cats.some(c=>gids.includes(c)));
+    if(!items.length)return;
+    const col=collapsedGroups[tab+g.id];
+    h+=`<div class="group-header${col?' collapsed':''}" onclick="toggleGroup('${tab}','${g.id}')"><span class="group-dot" style="background:${g.color}"></span><span class="group-label">${g.icon} ${g.label}</span><span class="group-count">${items.length}</span><span class="group-chevron">▼</span></div>`;
+    if(!col){
+      h+=`<ul class="card-list" ondragover="onDragOver(event,'${tab}')" ondrop="onDrop(event,'${tab}')">`;
+      items.forEach((d,i)=>{h+=cardHTML(d,i,tab,items);if(i<items.length-1)h+=`<div class="sep"><div class="sep-line"></div><span>${items[i+1].dist||''}</span><div class="sep-line"></div></div>`;});
+      h+=`</ul>`;
+    }
+  });
+  const uncat=activeItems(tab).filter(d=>!d.cats||!d.cats.length);
+  if(uncat.length){
+    const col=collapsedGroups[tab+'uncat'];
+    h+=`<div class="group-header${col?' collapsed':''}" onclick="toggleGroup('${tab}','uncat')"><span class="group-dot" style="background:#bbb"></span><span class="group-label">📍 Sem categoria</span><span class="group-count">${uncat.length}</span><span class="group-chevron">▼</span></div>`;
+    if(!col){h+=`<ul class="card-list" ondragover="onDragOver(event,'${tab}')" ondrop="onDrop(event,'${tab}')">`;uncat.forEach((d,i)=>{h+=cardHTML(d,i,tab,uncat);});h+=`</ul>`;}
+  }
+  return h;
+}
+
+function renderFlatFiltered(tab) {
+  const items=filteredActive(tab);
+  if(!items.length)return`<div style="padding:2rem 0;text-align:center;font-size:13px;color:#bbb">Nenhum local com esta categoria.</div>`;
+  let h=`<ul class="card-list" ondragover="onDragOver(event,'${tab}')" ondrop="onDrop(event,'${tab}')">`;
+  items.forEach((d,i)=>{h+=cardHTML(d,i,tab,items);if(i<items.length-1)h+=`<div class="sep"><div class="sep-line"></div><span>${items[i+1].dist||''}</span><div class="sep-line"></div></div>`;});
+  return h+`</ul>`;
+}
+
+function cardHTML(d,i,tab,items) {
+  const mc=d.cats&&d.cats.length?CAT_MAP[d.cats[0]]:null;
+  const bg=mc?mc.bg:'#f5f4f0', col=mc?mc.color:'#555';
+  const aff=state.affiliates[d.id];
+  const tags=(d.cats||[]).map(c=>CAT_MAP[c]?`<span class="ctag" style="background:${CAT_MAP[c].bg};color:${CAT_MAP[c].color}">${CAT_MAP[c].icon} ${CAT_MAP[c].label}</span>`:'').join('');
+  return `<li class="dest-card" draggable="true" data-id="${d.id}" ondragstart="onDragStart(event,'${tab}',this)" ondragend="onDragEnd()" ondragenter="onDragEnter(event,this)">
+    <div class="card-head">
+      <span class="drag-handle">⠿</span>
+      <div class="step-num" style="background:${bg};color:${col}">${i+1}</div>
+      <div class="card-title-wrap" onclick="toggleCard('cb-${d.id}')">
+        <div class="card-name">${d.icon||'📍'} ${d.nome}</div>
+        <div class="card-addr">${d.end}</div>
+        ${tags?`<div class="card-tags">${tags}</div>`:''}
+      </div>
+      <div class="card-right" onclick="toggleCard('cb-${d.id}')">
+        <div class="card-time">${d.hora}</div>${notesBadge(d)}<div class="chevron">▼</div>
+      </div>
+    </div>
+    <div class="card-body" id="cb-${d.id}">
+      ${d.nota?`<div class="info-row"><span class="info-icon">📝</span><span class="info-text">${d.nota}</span></div>`:''}
+      ${d.dist?`<div class="info-row"><span class="info-icon">📍</span><span class="info-text muted">${d.dist}${d.transporte?' · '+d.transporte:''}</span></div>`:''}
+      ${d.dur?`<div class="info-row"><span class="info-icon">⏱️</span><span class="info-text muted">Permanência: ${d.dur}</span></div>`:''}
+      ${d.rating?`<div class="info-row"><span class="info-icon">⭐</span><span class="info-text muted">${d.rating} no Google Maps</span></div>`:''}
+      ${d.aviso?`<div class="info-row"><span class="info-icon">⚠️</span><span class="info-text" style="color:#c0392b">${d.aviso}</span></div>`:''}
+      ${d.badge?`<span class="badge badge-${d.badgeType}">${d.badge}</span><br>`:''}
+      ${aff?`<div class="aff-card"><span class="aff-text">🤝 Parceiro</span><button class="aff-btn" onclick="openLink('${aff.link}')">${aff.cta||'Reservar'}</button></div>`:''}
+      ${inflMiniHTML(d.id)}
+      <a class="nav-btn-leg" href="${legUrl(items,i)}" target="_blank">🗺️ ${i===0?'Da origem até aqui':'Do ponto anterior até aqui'}</a>
+      ${(()=>{ const notes=d.notes||[]; if(!notes.length) return ''; const last=notes[notes.length-1]; return `<div class="notes-section"><div class="notes-header"><span class="notes-label">📝 Anotações (${notes.length})</span><button class="add-note-btn" onclick="openNotes('${tab}','${d.id}')">Ver todas / adicionar →</button></div><div class="note-entry" style="margin:0"><div class="note-meta">${last.source?`<span class="note-source">💬 ${escHtml(last.source)}</span>`:''}<span class="note-date">${formatDateTime(last.ts)}</span></div><div class="note-text">${escHtml(last.text)}</div></div></div>`; })()}
+      ${(()=>{ const notes=d.notes||[]; if(notes.length) return ''; return `<div class="notes-section"><div class="notes-header"><span class="notes-label">📝 Anotações</span><button class="add-note-btn" onclick="openNotes('${tab}','${d.id}')">+ Adicionar →</button></div></div>`; })()}
+      <div class="status-actions">
+        <button class="status-btn" style="color:#185FA5" onclick="openSchedule('${tab}','${d.id}')">📅 Agendar</button>
+        <button class="status-btn" style="color:#854f0b" onclick="setStatus('${tab}','${d.id}','someday')">🌙 Someday</button>
+        <button class="status-btn" style="color:#185FA5" onclick="openNotes('${tab}','${d.id}')">📝 Anotações</button>
+        <button class="status-btn" style="color:#666" onclick="setStatus('${tab}','${d.id}','arquivado')">📦 Arquivar</button>
+      </div>
+    </div>
+  </li>`;
+}
+
+// ── TAG PICKER ────────────────────────────────────────────────────────────────
+function buildTagPickers(tab) {
+  const c=document.getElementById('tp-'+tab);if(!c)return;
+  formSelectedCats[tab]=formSelectedCats[tab]||[];
+  c.innerHTML=ALL_CATS.map(cat=>`<button type="button" class="tpick${formSelectedCats[tab].includes(cat.id)?' sel':''}" style="${formSelectedCats[tab].includes(cat.id)?`background:${cat.bg};color:${cat.color};border-color:${cat.color}`:''}" onclick="toggleCat('${tab}','${cat.id}',this,'${cat.bg}','${cat.color}')">${cat.icon} ${cat.label}</button>`).join('');
+}
+function toggleCat(tab,cid,el,bg,col){
+  formSelectedCats[tab]=formSelectedCats[tab]||[];
+  const idx=formSelectedCats[tab].indexOf(cid);
+  if(idx>-1){formSelectedCats[tab].splice(idx,1);el.classList.remove('sel');el.style.background='';el.style.color='';el.style.borderColor='';}
+  else{formSelectedCats[tab].push(cid);el.classList.add('sel');el.style.background=bg;el.style.color=col;el.style.borderColor=col;}
+}
+
+// ── DRAG & DROP ───────────────────────────────────────────────────────────────
+function onDragStart(e,tab,el){dragId=el.dataset.id;dragTab=tab;el.classList.add('dragging');e.dataTransfer.effectAllowed='move';}
+function onDragEnd(){document.querySelectorAll('.dest-card').forEach(c=>c.classList.remove('dragging','drag-over'));}
+function onDragEnter(e,el){document.querySelectorAll('.dest-card').forEach(c=>c.classList.remove('drag-over'));if(el.dataset.id!==dragId)el.classList.add('drag-over');}
+function onDragOver(e){e.preventDefault();}
+function onDrop(e,tab){
+  e.preventDefault();
+  const over=document.querySelector('.dest-card.drag-over');
+  if(!over||!dragId||dragTab!==tab)return;
+  const fi=state[tab].findIndex(d=>d.id===dragId), ti=state[tab].findIndex(d=>d.id===over.dataset.id);
+  if(fi<0||ti<0)return;
+  const[moved]=state[tab].splice(fi,1);state[tab].splice(ti,0,moved);
+  document.querySelectorAll('.dest-card').forEach(c=>c.classList.remove('drag-over','dragging'));
+  persist(); renderPanel(tab);
+}
+
+// ── GROUP COLLAPSE ────────────────────────────────────────────────────────────
+function toggleGroup(tab,gid){collapsedGroups[tab+gid]=!collapsedGroups[tab+gid];renderPanel(tab);}
+
+// ── STATUS ────────────────────────────────────────────────────────────────────
+function setStatus(tab,id,status){
+  const item=state[tab].find(d=>d.id===id);if(!item)return;
+  item.status=status;
+  if(status!=='agendado'){item.schedDate=null;item.schedNote=null;}
+  persist();render();if(status!=='ativo')showView('bank');
+}
+function openSchedule(tab,id){
+  modalTarget={tab,id};
+  document.getElementById('modal-date').value='';
+  document.getElementById('modal-note').value='';
+  document.getElementById('modal-schedule').classList.add('visible');
+}
+function closeModal(){document.getElementById('modal-schedule').classList.remove('visible');modalTarget=null;}
+function confirmSchedule(){
+  if(!modalTarget)return;
+  const{tab,id}=modalTarget;
+  const item=state[tab].find(d=>d.id===id);if(!item)return;
+  item.status='agendado';item.schedDate=document.getElementById('modal-date').value;item.schedNote=document.getElementById('modal-note').value.trim();
+  closeModal();persist();render();showView('bank');
+}
+function formatDate(s){if(!s)return'';const[y,m,d]=s.split('-');return`${d}/${m}/${y}`;}
+
+// ── BANK ──────────────────────────────────────────────────────────────────────
+function renderBank(){
+  const el=document.getElementById('panel-bank');
+  const all=[...state.semana,...state.fds];
+  const sec=(title,icon,items,empty)=>{
+    let h=`<div class="bank-section"><div class="bank-title">${icon} ${title}<span>${items.length}</span></div>`;
+    if(!items.length){h+=`<div style="font-size:12px;color:#bbb;padding:8px 0">${empty}</div>`;}
+    items.forEach(d=>{
+      const tab=state.semana.find(x=>x.id===d.id)?'semana':'fds';
+      const tags=(d.cats||[]).map(c=>CAT_MAP[c]?`<span class="ctag" style="background:${CAT_MAP[c].bg};color:${CAT_MAP[c].color};font-size:10px">${CAT_MAP[c].icon} ${CAT_MAP[c].label}</span>`:'').join('');
+      h+=`<div class="bank-card"><span class="bank-icon">${d.icon||'📍'}</span><div class="bank-info"><div class="bank-name">${d.nome}</div><div class="bank-addr">${d.end}</div>${(d.notes&&d.notes.length)?`<div style="font-size:11px;color:#185FA5;margin-top:3px;cursor:pointer" onclick="openNotes('${tab}','${d.id}')">📝 ${d.notes.length} anotaç${d.notes.length===1?'ão':'ões'} →</div>`:''}${tags?`<div class="card-tags" style="margin-top:4px">${tags}</div>`:''} ${d.schedDate?`<div class="bank-date">📅 ${formatDate(d.schedDate)}${d.schedNote?' · '+d.schedNote:''}</div>`:''} ${d.status==='someday'?`<div class="bank-date" style="color:#854f0b">🌙 Data indefinida</div>`:''}</div><div class="bank-actions"><button class="bank-act-btn activate" onclick="setStatus('${tab}','${d.id}','ativo')">Ativar</button>${d.status!=='agendado'?`<button class="bank-act-btn" onclick="openSchedule('${tab}','${d.id}')">Agendar</button>`:''}</div></div>`;
+    });
+    return h+'</div>';
+  };
+  el.innerHTML=`<div style="margin-bottom:1.25rem"><div style="font-size:15px;font-weight:600;margin-bottom:4px">📦 Banco de Locais</div><div style="font-size:12px;color:#888">Locais fora do roteiro ativo.</div></div>`
+    +sec('Agendados','📅',all.filter(d=>d.status==='agendado'),'Nenhum agendado.')
+    +sec('Data indefinida','🌙',all.filter(d=>d.status==='someday'),'Nenhum someday.')
+    +sec('Arquivados','📦',all.filter(d=>d.status==='arquivado'),'Nenhum arquivado.');
+}
+
+
+// ── NOTES SYSTEM ──────────────────────────────────────────────────────────────
+let notesTarget = null; // {tab, id}
+
+function getItem(tab, id) {
+  return state[tab].find(d => d.id === id);
+}
+
+function openNotes(tab, id) {
+  notesTarget = { tab, id };
+  const item = getItem(tab, id);
+  if (!item) return;
+  document.getElementById('modal-notes-title').textContent = `📝 ${item.icon||'📍'} ${item.nome}`;
+  document.getElementById('mnf-source').value = '';
+  document.getElementById('mnf-text').value = '';
+  renderNotesList(item);
+  document.getElementById('modal-notes').classList.add('visible');
+}
+
+function renderNotesList(item) {
+  const notes = item.notes || [];
+  const el = document.getElementById('modal-notes-list');
+  if (!notes.length) {
+    el.innerHTML = `<div class="note-empty">Nenhuma anotação ainda. Adicione abaixo.</div>`;
+    return;
+  }
+  el.innerHTML = notes.slice().reverse().map((n, ri) => {
+    const i = notes.length - 1 - ri; // real index
+    return `<div class="note-entry">
+      <div class="note-meta">
+        ${n.source ? `<span class="note-source">💬 ${escHtml(n.source)}</span>` : ''}
+        <span class="note-date">${formatDateTime(n.ts)}</span>
+      </div>
+      <div class="note-text">${escHtml(n.text)}</div>
+      <button class="note-delete" onclick="deleteNote(${i})" title="Apagar">✕</button>
+    </div>`;
+  }).join('');
+}
+
+function saveNote() {
+  if (!notesTarget) return;
+  const text = document.getElementById('mnf-text').value.trim();
+  if (!text) { alert('Escreva algo antes de salvar.'); return; }
+  const source = document.getElementById('mnf-source').value.trim();
+  const { tab, id } = notesTarget;
+  const item = getItem(tab, id);
+  if (!item) return;
+  item.notes = item.notes || [];
+  item.notes.push({ text, source, ts: Date.now() });
+  persist();
+  document.getElementById('mnf-source').value = '';
+  document.getElementById('mnf-text').value = '';
+  renderNotesList(item);
+  render(); // update badge counts
+}
+
+function deleteNote(index) {
+  if (!notesTarget) return;
+  if (!confirm('Apagar esta anotação?')) return;
+  const { tab, id } = notesTarget;
+  const item = getItem(tab, id);
+  if (!item || !item.notes) return;
+  item.notes.splice(index, 1);
+  persist();
+  renderNotesList(item);
+  render();
+}
+
+function closeNotesModal() {
+  document.getElementById('modal-notes').classList.remove('visible');
+  notesTarget = null;
+}
+
+function formatDateTime(ts) {
+  if (!ts) return '';
+  const d = new Date(ts);
+  return d.toLocaleDateString('pt-BR') + ' ' + d.toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'});
+}
+
+function escHtml(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function notesBadge(item) {
+  const n = (item.notes||[]).length;
+  return n ? `<span class="note-badge">📝 ${n}</span>` : '';
+}
+
+
+// ── SEARCH ────────────────────────────────────────────────────────────────────
+function doSearch(q){
+  q=(q||'').trim();
+  document.getElementById('search-clear').style.display=q?'block':'none';
+  const meta=document.getElementById('search-meta');
+  const res=document.getElementById('search-results');
+  if(!q){meta.textContent='Digite para buscar em todos os locais salvos.';res.innerHTML='';return;}
+  const ql=q.toLowerCase();
+  const all=[...state.semana,...state.fds].filter((d,i,a)=>a.findIndex(x=>x.id===d.id)===i);
+  const items=all.filter(d=>{
+    const cats=(d.cats||[]).map(c=>CAT_MAP[c]?CAT_MAP[c].label:'').join(' ');
+    return[d.nome,d.end,d.nota,d.aviso,cats,d.hora,d.badge].join(' ').toLowerCase().includes(ql);
+  });
+  const SL={ativo:'Ativo',agendado:'Agendado',someday:'Someday',arquivado:'Arquivado'};
+  meta.textContent=items.length?items.length+' local'+(items.length>1?'is encontrados':'encontrado'):'';
+  if(!items.length){res.innerHTML=`<div class="search-empty">🔍<br><br>Nenhum local encontrado para<br><strong>"${q}"</strong></div>`;return;}
+  const hl=(t,q)=>t?String(t).replace(new RegExp('('+q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','gi'),'<mark>$1</mark>'):'';
+  res.innerHTML=items.map(d=>{
+    const tab=state.semana.find(x=>x.id===d.id)?'semana':'fds';
+    const tags=(d.cats||[]).map(c=>CAT_MAP[c]?`<span class="ctag" style="background:${CAT_MAP[c].bg};color:${CAT_MAP[c].color};font-size:10px">${CAT_MAP[c].icon} ${CAT_MAP[c].label}</span>`:'').join('');
+    return`<div class="search-result" onclick="jumpToLocal('${tab}','${d.id}')">
+      <div class="sr-name">${d.icon||'📍'} ${hl(d.nome,q)}</div>
+      <div class="sr-addr">${hl(d.end,q)}</div>
+      ${d.nota?`<div style="font-size:12px;color:#555;margin:3px 0;line-height:1.4">${hl(d.nota,q)}</div>`:''}
+      ${tags?`<div class="card-tags" style="margin:4px 0">${tags}</div>`:''}
+      <div class="sr-meta"><span class="sr-status ${d.status}">${SL[d.status]||d.status}</span><span class="sr-tab">· ${tab==='fds'?'Fim de semana':'Semana'}</span>${d.hora&&d.hora!=='–'?`<span class="sr-tab">· ${d.hora}</span>`:''} ${(d.notes&&d.notes.length)?`<span class="note-badge">📝 ${d.notes.length}</span>`:''}</div>
+    </div>`;
+  }).join('');
+}
+function clearSearch(){document.getElementById('search-input').value='';doSearch('');}
+function jumpToLocal(tab,id){
+  const item=state[tab].find(d=>d.id===id);
+  if(item&&item.status!=='ativo'){showView('bank');return;}
+  currentTab=tab;activeFilter='all';
+  document.querySelectorAll('#day-tabs .tab').forEach((t,i)=>t.classList.toggle('active',(i===0&&tab==='semana')||(i===1&&tab==='fds')));
+  showView('roteiro');
+  setTimeout(()=>{
+    const body=document.getElementById('cb-'+id);
+    if(body){body.closest('.dest-card').classList.add('expanded');body.closest('.dest-card').scrollIntoView({behavior:'smooth',block:'center'});}
+  },200);
+}
+
+// ── TOGGLE CARD ───────────────────────────────────────────────────────────────
+function toggleCard(bid){const b=document.getElementById(bid);if(b)b.closest('.dest-card').classList.toggle('expanded');}
+
+// ── UI ────────────────────────────────────────────────────────────────────────
+function toggleEdit(){document.getElementById('origin-edit').classList.toggle('visible');if(document.getElementById('origin-edit').classList.contains('visible'))document.getElementById('origin-input').focus();}
+function saveOrigin(){const v=document.getElementById('origin-input').value.trim();if(v){state.origin=v;document.getElementById('origin-display').textContent=v;persist();render();}document.getElementById('origin-edit').classList.remove('visible');}
+function toggleForm(tab){document.getElementById('add-form-'+tab).classList.toggle('visible');buildTagPickers(tab);}
+function openLink(url){if(url)window.open(url,'_blank');}
+function addLocal(tab){
+  const nome=document.getElementById('fn-'+tab).value.trim();
+  if(!nome){alert('Informe o nome.');return;}
+  state[tab].push({id:'u'+Date.now(),nome,end:document.getElementById('fe-'+tab).value.trim()||nome+', São Paulo',hora:document.getElementById('fh-'+tab).value.trim()||'–',icon:document.getElementById('fi-'+tab).value.trim()||'📍',dur:document.getElementById('fd-'+tab).value.trim()||'–',nota:document.getElementById('fo-'+tab).value.trim(),cats:(formSelectedCats[tab]||[]).slice(),rating:null,aviso:null,badge:null,badgeType:null,dist:null,transporte:null,status:'ativo',schedDate:null,schedNote:null,notes:[]});
+  formSelectedCats[tab]=[];toggleForm(tab);persist();render();
+}
+function switchTab(tab,btn){
+  currentTab=tab;
+  document.querySelectorAll('#day-tabs .tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('panel-semana').classList.toggle('visible',tab==='semana');
+  document.getElementById('panel-fds').classList.toggle('visible',tab==='fds');
+}
+function showView(view){
+  ['panel-semana','panel-fds','panel-bank','panel-search','panel-cfg','panel-mono','panel-infl'].forEach(id=>document.getElementById(id).classList.remove('visible'));
+  document.getElementById('day-tabs').style.display='none';
+  document.getElementById('filter-bar').style.display='none';
+  document.querySelectorAll('.bnav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('nav-'+view).classList.add('active');
+  if(view==='roteiro'){
+    document.getElementById('day-tabs').style.display='flex';
+    document.getElementById('filter-bar').style.display='block';
+    document.getElementById('panel-'+currentTab).classList.add('visible');
+  } else if(view==='infl'){
+    document.getElementById('panel-infl').classList.add('visible');
+    renderInflPanel();
+  } else {
+    document.getElementById('panel-'+view).classList.add('visible');
+  }
+}
+function updateAffSelect(){
+  const sel=document.getElementById('aff-select');if(!sel)return;
+  const seen=new Set();
+  const uniq=[...state.semana,...state.fds].filter(d=>{if(seen.has(d.nome))return false;seen.add(d.nome);return true;});
+  sel.innerHTML='<option value="">Selecione o local…</option>'+uniq.map(d=>`<option value="${d.id}">${d.icon||'📍'} ${d.nome}</option>`).join('');
+}
+function saveAffiliate(){
+  const id=document.getElementById('aff-select').value,lnk=document.getElementById('aff-link').value.trim(),cta=document.getElementById('aff-cta').value.trim()||'Reservar';
+  if(!id||!lnk){alert('Selecione o local e cole o link.');return;}
+  const t=[...state.semana,...state.fds].find(d=>d.id===id);if(!t)return;
+  [...state.semana,...state.fds].filter(d=>d.nome===t.nome).forEach(d=>{state.affiliates[d.id]={link:lnk,cta};});
+  alert('Link salvo!');render();
+}
+function saveSponsored(){
+  const nome=document.getElementById('sp-nome').value.trim();if(!nome){alert('Informe o nome.');return;}
+  state.sponsored={nome,desc:document.getElementById('sp-desc').value.trim(),link:document.getElementById('sp-link').value.trim(),cta:document.getElementById('sp-cta').value.trim()||'Ver oferta'};
+  persist();alert('Parceiro adicionado!');render();
+}
+function removeSponsored(){state.sponsored=null;persist();alert('Removido.');render();}
+function copyPayMsg(){
+  const lnk=document.getElementById('pay-link').value.trim();if(!lnk){alert('Cole o link primeiro.');return;}
+  const prc=document.getElementById('pay-price').value.trim();
+  navigator.clipboard.writeText(`🗺️ *Roteiro SP personalizado*${prc?' – '+prc:''}\n\nVeja todos os destinos, horários e dicas:\n${lnk}`).then(()=>alert('Mensagem copiada!'));
+}
+function exportHTML(){
+  const blob=new Blob([document.documentElement.outerHTML],{type:'text/html'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='roteiro-sp-'+Date.now()+'.html';a.click();URL.revokeObjectURL(a.href);
+}
+
+// ── INFLUENCIADORES ───────────────────────────────────────────────────────────
+function toggleInflForm(){document.getElementById('add-infl-form').classList.toggle('visible');}
+
+function saveInfluencer(){
+  const handle=document.getElementById('inf-handle').value.trim();
+  if(!handle){alert('Informe o @ do influenciador.');return;}
+  if(!state.influencers) state.influencers=[];
+  state.influencers.push({
+    id:'inf'+Date.now(),
+    handle:handle.startsWith('@')?handle:'@'+handle,
+    followers:document.getElementById('inf-followers').value.trim(),
+    nicho:document.getElementById('inf-nicho').value.trim(),
+    ig:document.getElementById('inf-ig').value.trim(),
+    aff:document.getElementById('inf-aff').value.trim(),
+    foto:document.getElementById('inf-foto').value.trim(),
+    locals:[]
+  });
+  ['inf-handle','inf-followers','inf-nicho','inf-ig','inf-aff','inf-foto'].forEach(id=>document.getElementById(id).value='');
+  toggleInflForm();
+  persist();
+  renderInflPanel();
+}
+
+function removeInfluencer(id){
+  if(!confirm('Remover este influenciador?'))return;
+  state.influencers=(state.influencers||[]).filter(i=>i.id!==id);
+  persist(); renderInflPanel();
+}
+
+function renderInflPanel(){
+  const infls=state.influencers||[];
+  const list=document.getElementById('infl-list');if(!list)return;
+  if(!infls.length){list.innerHTML=`<div class="infl-empty">Nenhum influenciador cadastrado ainda.<br><br>Adicione um parceiro acima ↑</div>`;return;}
+  const allLocals=[...state.semana,...state.fds].filter((d,i,a)=>a.findIndex(x=>x.id===d.id)===i);
+  list.innerHTML=infls.map(inf=>{
+    const avatarHtml=inf.foto
+      ?`<div class="infl-avatar"><img src="${escHtml(inf.foto)}" onerror="this.parentElement.textContent='👤'"/></div>`
+      :`<div class="infl-avatar">👤</div>`;
+    const linkedLocals=(inf.locals||[]).map(lid=>{
+      const loc=allLocals.find(d=>d.id===lid);
+      return loc?`<span class="infl-local-tag" onclick="jumpToLocal(${JSON.stringify(state.semana.find(d=>d.id===lid)?'semana':'fds')},'${lid}')">${loc.icon||'📍'} ${loc.nome}</span>`:'';
+    }).filter(Boolean).join('');
+    return `<div class="infl-card" id="infl-${inf.id}">
+      <div class="infl-card-head">
+        ${avatarHtml}
+        <div class="infl-meta">
+          <div class="infl-handle">${escHtml(inf.handle)}</div>
+          ${inf.followers?`<div class="infl-followers">👥 ${escHtml(inf.followers)} seguidores</div>`:''}
+          ${inf.nicho?`<span class="infl-nicho">${escHtml(inf.nicho)}</span>`:''}
+        </div>
+        <div class="infl-actions">
+          ${inf.ig?`<button class="infl-icon-btn" onclick="openLink('${inf.ig}')" title="Instagram">📸</button>`:''}
+          <button class="infl-icon-btn" onclick="openEditInflModal('${inf.id}')" title="Editar">✏️</button>
+          <button class="infl-icon-btn" onclick="removeInfluencer('${inf.id}')" title="Remover">🗑️</button>
+        </div>
+      </div>
+      <div class="infl-linked-locals">
+        ${linkedLocals}
+        <button class="infl-link-btn" onclick="openInflLinkModal('${inf.id}')">＋ Vincular local</button>
+      </div>
+      <button class="infl-proposta-btn" onclick="openProposta('${inf.id}')">📩 Gerar proposta de parceria</button>
+    </div>`;
+  }).join('');
+}
+
+let editInflTarget=null;
+function openEditInflModal(inflId){
+  editInflTarget=inflId;
+  const inf=(state.influencers||[]).find(i=>i.id===inflId);if(!inf)return;
+  document.getElementById('edit-inf-handle').value=inf.handle||'';
+  document.getElementById('edit-inf-followers').value=inf.followers||'';
+  document.getElementById('edit-inf-nicho').value=inf.nicho||'';
+  document.getElementById('edit-inf-ig').value=inf.ig||'';
+  document.getElementById('edit-inf-aff').value=inf.aff||'';
+  document.getElementById('edit-inf-foto').value=inf.foto||'';
+  document.getElementById('modal-edit-infl').classList.add('visible');
+}
+function saveEditInfl(){
+  if(!editInflTarget)return;
+  const inf=(state.influencers||[]).find(i=>i.id===editInflTarget);if(!inf)return;
+  const h=document.getElementById('edit-inf-handle').value.trim();
+  if(!h){alert('Informe o @handle.');return;}
+  inf.handle=h.startsWith('@')?h:'@'+h;
+  inf.followers=document.getElementById('edit-inf-followers').value.trim();
+  inf.nicho=document.getElementById('edit-inf-nicho').value.trim();
+  inf.ig=document.getElementById('edit-inf-ig').value.trim();
+  inf.aff=document.getElementById('edit-inf-aff').value.trim();
+  inf.foto=document.getElementById('edit-inf-foto').value.trim();
+  persist(); closeEditInflModal(); renderInflPanel();
+}
+function closeEditInflModal(){
+  document.getElementById('modal-edit-infl').classList.remove('visible');
+  editInflTarget=null;
+}
+
+let inflLinkTarget=null;
+function openInflLinkModal(inflId){
+  inflLinkTarget=inflId;
+  const inf=(state.influencers||[]).find(i=>i.id===inflId);if(!inf)return;
+  const allLocals=[...state.semana,...state.fds].filter((d,i,a)=>a.findIndex(x=>x.id===d.id)===i&&d.status==='ativo');
+  const body=document.getElementById('modal-infl-link-body');
+  body.innerHTML=`<p style="font-size:12px;color:#666;margin-bottom:10px">Selecione os locais que <strong>${escHtml(inf.handle)}</strong> irá indicar:</p>`+
+    allLocals.map(d=>{
+      const checked=(inf.locals||[]).includes(d.id);
+      return`<label style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:.5px solid #f0f0ec;cursor:pointer;font-size:13px">
+        <input type="checkbox" value="${d.id}" ${checked?'checked':''} style="width:16px;height:16px;flex-shrink:0"/>
+        <span>${d.icon||'📍'} ${escHtml(d.nome)}</span>
+        <span style="font-size:11px;color:#aaa;margin-left:auto">${escHtml(d.end.split('–')[1]||'').trim()}</span>
+      </label>`;
+    }).join('')+
+    `<div style="margin-top:10px"><button class="btn-save" style="width:100%;padding:9px;border-radius:8px;font-family:inherit;cursor:pointer;font-size:13px" onclick="saveInflLinks()">✅ Salvar vínculos</button></div>`;
+  document.getElementById('modal-infl-link').classList.add('visible');
+}
+
+function saveInflLinks(){
+  if(!inflLinkTarget)return;
+  const inf=(state.influencers||[]).find(i=>i.id===inflLinkTarget);if(!inf)return;
+  const checks=document.querySelectorAll('#modal-infl-link-body input[type=checkbox]');
+  inf.locals=[...checks].filter(c=>c.checked).map(c=>c.value);
+  persist(); closeInflLinkModal(); renderInflPanel();
+}
+
+function closeInflLinkModal(){
+  document.getElementById('modal-infl-link').classList.remove('visible');
+  inflLinkTarget=null;
+}
+
+let propostaText='';
+function openProposta(inflId){
+  const inf=(state.influencers||[]).find(i=>i.id===inflId);if(!inf)return;
+  const allLocals=[...state.semana,...state.fds].filter((d,i,a)=>a.findIndex(x=>x.id===d.id)===i);
+  const linked=(inf.locals||[]).map(lid=>allLocals.find(d=>d.id===lid)).filter(Boolean);
+  const locList=linked.length?linked.map(d=>`• ${d.icon||'📍'} ${d.nome} — ${d.end}`).join('\n'):'(nenhum local vinculado ainda)';
+  propostaText=`Olá, sou o responsável pelo Roteiro SP 🗺️
+
+Tenho acompanhado o trabalho de ${inf.handle}${inf.followers?' ('+inf.followers+' seguidores)':''} e acredito que temos uma oportunidade interessante de parceria.
+
+📍 Locais selecionados para apresentar ao(s) proprietário(s):
+${locList}
+
+🤝 Como funciona a parceria:
+• Você indica o local para sua audiência com um link exclusivo de afiliado
+• O seu seguidor ganha um desconto especial ao visitar
+• Você recebe uma comissão por cada visita/reserva gerada
+
+${inf.aff?`🔗 Seu link de afiliado já está configurado:\n${inf.aff}\n\n`:''}📊 Próximo passo:
+Levamos esta proposta ao proprietário do local para aprovação. Assim que confirmado, você começa a divulgar e a comissão entra em produção.
+
+Quer seguir em frente? É só responder esta mensagem 🙌
+
+— Equipe Roteiro SP`;
+  document.getElementById('modal-proposta-body').textContent=propostaText;
+  document.getElementById('modal-proposta').classList.add('visible');
+}
+
+function closeProposta(){document.getElementById('modal-proposta').classList.remove('visible');}
+function copyProposta(){navigator.clipboard.writeText(propostaText).then(()=>alert('✅ Proposta copiada!'));}
+
+function inflMiniHTML(localId){
+  const infls=(state.influencers||[]).filter(i=>(i.locals||[]).includes(localId));
+  if(!infls.length)return'';
+  return infls.map(inf=>{
+    const avatarHtml=inf.foto
+      ?`<div class="infl-mini-avatar"><img src="${escHtml(inf.foto)}" onerror="this.parentElement.textContent='👤'"/></div>`
+      :`<div class="infl-mini-avatar">👤</div>`;
+    return`<div class="infl-mini">
+      ${avatarHtml}
+      <div class="infl-mini-info">
+        <div class="infl-mini-handle">${escHtml(inf.handle)}</div>
+        ${inf.followers?`<div class="infl-mini-followers">👥 ${escHtml(inf.followers)} seguidores</div>`:''}
+      </div>
+      ${inf.ig?`<button class="infl-mini-ig" onclick="openLink('${inf.ig}')">📸 Instagram</button>`:''}
+    </div>`;
+  }).join('');
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+loadPersisted();
+render();
+loadApiKeys();
+</script>
+</body>
+</html>
