@@ -2609,7 +2609,10 @@ function showInvitePage(data){
     '</div>'+
     '<div style="margin-bottom:1.25rem">'+
       '<div style="font-size:10px;color:#888;text-transform:uppercase;letter-spacing:.06em;font-weight:700;margin-bottom:6px">Seu nome</div>'+
-      '<input id="inv-nome" value="'+escHtml(data.nome&&!isGroup?data.nome:'')+'" placeholder="Como você se chama?" style="width:100%;font-size:15px;padding:11px 14px;border-radius:12px;border:.5px solid #ccc;font-family:inherit;background:#fff"/>'+
+      '<input id="inv-nome" value="'+escHtml(data.nome&&!isGroup?data.nome:'')+'" placeholder="Como você se chama?" style="width:100%;font-size:15px;padding:11px 14px;border-radius:12px;border:.5px solid #ccc;font-family:inherit;background:#fff;margin-bottom:10px"/>'+
+      '<div style="font-size:10px;color:#888;text-transform:uppercase;letter-spacing:.06em;font-weight:700;margin-bottom:6px">De onde você vai sair?</div>'+
+      '<input id="inv-origin" placeholder="Ex: Pinheiros, SP ou Rua X, 123 – Bairro, Cidade" style="width:100%;font-size:14px;padding:11px 14px;border-radius:12px;border:.5px solid #ccc;font-family:inherit;background:#fff"/>'+
+      '<div style="font-size:11px;color:#aaa;margin-top:5px;margin-bottom:0">Usado para calcular a proximidade com os locais do rolê</div>'+
     '</div>'+
     '<div style="margin-bottom:1.25rem">'+
       '<div style="font-size:10px;color:#888;text-transform:uppercase;letter-spacing:.06em;font-weight:700;margin-bottom:8px">Quais locais você topa? <span style="font-weight:400;font-size:10px">(toque para selecionar)</span></div>'+
@@ -2655,7 +2658,8 @@ function showInvitePage(data){
   window.generateInviteResponse=function(){
     const nome=document.getElementById('inv-nome').value.trim();
     if(!nome){document.getElementById('inv-nome').focus();document.getElementById('inv-nome').style.borderColor='#c0392b';return;}
-    const code=toBase64url(JSON.stringify({v:1,nome,locals:window._invLocals,days:window._invDays,affinities:window._invAffs}));
+    const origin=document.getElementById('inv-origin').value.trim();
+    const code=toBase64url(JSON.stringify({v:1,nome,origin,locals:window._invLocals,days:window._invDays,affinities:window._invAffs}));
     const area=document.getElementById('inv-response-area');
     document.getElementById('inv-response-code').value=code;
     area.style.display='block';
