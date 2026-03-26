@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -11,7 +10,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .app{max-width:520px;margin:0 auto;background:#fff;min-height:100vh;box-shadow:0 0 40px rgba(0,0,0,.08)}
 /* TOP */
 .top-bar{padding:1rem 1.25rem .75rem;border-bottom:.5px solid #e5e4e0;position:sticky;top:0;background:#fff;z-index:20}
-.app-title{font-size:15px;font-weight:600;display:flex;align-items:center;gap:8px;margin-bottom:.75rem}
+.app-title{font-size:15px;font-weight:600;display:flex;align-items:center;gap:8px;margin-bottom:.75rem;justify-content:space-between}
+.header-search-btn{background:none;border:.5px solid #e0e0dc;border-radius:8px;padding:5px 9px;cursor:pointer;font-size:14px;color:#555;font-family:inherit;display:flex;align-items:center;gap:4px}
+.header-search-btn:hover{background:#f5f4f0}
+/* SEARCH OVERLAY */
+.search-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:50;align-items:flex-start;justify-content:center;padding-top:0}
+.search-overlay.visible{display:flex}
+.search-overlay-box{background:#fff;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;border-radius:0 0 16px 16px;padding:1rem 1.25rem 1.5rem;box-shadow:0 8px 32px rgba(0,0,0,.15)}
+.search-overlay-wrap{position:relative;margin-bottom:.75rem;display:flex;gap:8px;align-items:center}
+.search-overlay-wrap input{flex:1;font-size:14px;padding:10px 14px 10px 38px;border-radius:10px;border:.5px solid #ddd;background:#f9f9f7;font-family:inherit;outline:none}
+.search-overlay-wrap input:focus{border-color:#185FA5;background:#fff}
+.search-overlay-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:15px;pointer-events:none;color:#aaa}
+.search-overlay-close{background:none;border:.5px solid #ddd;border-radius:8px;padding:8px 11px;cursor:pointer;font-size:13px;color:#666;font-family:inherit;flex-shrink:0}
+.search-overlay-close:hover{background:#f5f4f0}
 .origin-bar{display:flex;align-items:center;gap:8px;padding:7px 11px;background:#f5f4f0;border-radius:10px;margin-bottom:.625rem}
 .origin-dot{width:7px;height:7px;border-radius:50%;background:#888;flex-shrink:0}
 .origin-label{font-size:11px;color:#888;white-space:nowrap}
@@ -283,7 +294,10 @@ mark{background:#fff3cd;color:#1a1a18;border-radius:3px;padding:0 2px}
 <body>
 <div class="app">
   <div class="top-bar">
-    <div class="app-title">📍 Roteiro SP</div>
+    <div class="app-title">
+      <span>📍 Roteiro SP</span>
+      <button class="header-search-btn" onclick="openSearchOverlay()">🔍 Buscar</button>
+    </div>
     <div class="origin-bar">
       <div class="origin-dot"></div>
       <span class="origin-label">De</span>
@@ -444,6 +458,19 @@ mark{background:#fff3cd;color:#1a1a18;border-radius:3px;padding:0 2px}
         </div>
       </div>
       <div id="infl-list"></div>
+    </div>
+  </div>
+
+  <!-- SEARCH OVERLAY -->
+  <div class="search-overlay" id="search-overlay" onclick="closeSearchOverlayOutside(event)">
+    <div class="search-overlay-box">
+      <div class="search-overlay-wrap">
+        <span class="search-overlay-icon">🔍</span>
+        <input type="text" id="search-overlay-input" placeholder="Nome, bairro, categoria, dica…" oninput="doSearchOverlay(this.value)" autocomplete="off"/>
+        <button class="search-overlay-close" onclick="closeSearchOverlay()">✕ Fechar</button>
+      </div>
+      <div class="search-meta" id="search-overlay-meta">Digite para buscar em todos os locais.</div>
+      <div id="search-overlay-results"></div>
     </div>
   </div>
 
@@ -851,6 +878,9 @@ function loadImageFile(file) {
 document.addEventListener('paste',e=>{
   const img=[...(e.clipboardData?.items||[])].find(i=>i.type.startsWith('image/'));
   if(img){loadImageFile(img.getAsFile());showView('cfg');}
+});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape') closeSearchOverlay();
 });
 async function extractFromImage() {
   if(!currentImageB64){alert('Selecione uma imagem.');return;}
@@ -1318,6 +1348,49 @@ function copyPayMsg(){
 function exportHTML(){
   const blob=new Blob([document.documentElement.outerHTML],{type:'text/html'});
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='roteiro-sp-'+Date.now()+'.html';a.click();URL.revokeObjectURL(a.href);
+}
+
+// ── SEARCH OVERLAY ────────────────────────────────────────────────────────────
+function openSearchOverlay(){
+  document.getElementById('search-overlay').classList.add('visible');
+  setTimeout(()=>document.getElementById('search-overlay-input').focus(),50);
+}
+function closeSearchOverlay(){
+  document.getElementById('search-overlay').classList.remove('visible');
+  document.getElementById('search-overlay-input').value='';
+  document.getElementById('search-overlay-results').innerHTML='';
+  document.getElementById('search-overlay-meta').textContent='Digite para buscar em todos os locais.';
+}
+function closeSearchOverlayOutside(e){if(e.target===document.getElementById('search-overlay'))closeSearchOverlay();}
+function doSearchOverlay(q){
+  const meta=document.getElementById('search-overlay-meta');
+  const res=document.getElementById('search-overlay-results');
+  if(!q||q.length<2){meta.textContent='Digite para buscar em todos os locais.';res.innerHTML='';return;}
+  const ql=q.toLowerCase();
+  const all=[...state.semana,...state.fds].filter((d,i,a)=>a.findIndex(x=>x.id===d.id)===i);
+  const items=all.filter(d=>{
+    const cats=(d.cats||[]).map(c=>CAT_MAP[c]?CAT_MAP[c].label:'').join(' ');
+    return[d.nome,d.end,d.nota,d.aviso,cats,d.hora,d.badge].join(' ').toLowerCase().includes(ql);
+  });
+  const SL={ativo:'Ativo',agendado:'Agendado',someday:'Someday',arquivado:'Arquivado'};
+  meta.textContent=items.length?items.length+' local'+(items.length>1?'is encontrados':'encontrado'):'';
+  if(!items.length){res.innerHTML=`<div class="search-empty">🔍<br><br>Nenhum local encontrado para<br><strong>"${q}"</strong></div>`;return;}
+  const hl=(t,q)=>t?String(t).replace(new RegExp('('+q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','gi'),'<mark>$1</mark>'):'';
+  res.innerHTML=items.map(d=>{
+    const tab=state.semana.find(x=>x.id===d.id)?'semana':'fds';
+    const tags=(d.cats||[]).map(c=>CAT_MAP[c]?`<span class="ctag" style="background:${CAT_MAP[c].bg};color:${CAT_MAP[c].color};font-size:10px">${CAT_MAP[c].icon} ${CAT_MAP[c].label}</span>`:'').join('');
+    return`<div class="search-result" onclick="jumpToLocalOverlay('${tab}','${d.id}')">
+      <div class="sr-name">${d.icon||'📍'} ${hl(d.nome,q)}</div>
+      <div class="sr-addr">${hl(d.end,q)}</div>
+      ${d.nota?`<div style="font-size:12px;color:#555;margin:3px 0;line-height:1.4">${hl(d.nota,q)}</div>`:''}
+      ${tags?`<div class="card-tags" style="margin:4px 0">${tags}</div>`:''}
+      <div class="sr-meta"><span class="sr-status ${d.status}">${SL[d.status]||d.status}</span><span class="sr-tab">· ${tab==='fds'?'Fim de semana':'Semana'}</span>${d.hora&&d.hora!=='–'?`<span class="sr-tab">· ${d.hora}</span>`:''} ${(d.notes&&d.notes.length)?`<span class="note-badge">📝 ${d.notes.length}</span>`:''}</div>
+    </div>`;
+  }).join('');
+}
+function jumpToLocalOverlay(tab,id){
+  closeSearchOverlay();
+  jumpToLocal(tab,id);
 }
 
 // ── INFLUENCIADORES ───────────────────────────────────────────────────────────
