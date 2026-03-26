@@ -925,6 +925,52 @@ mark{background:#fff3cd;color:#1a1a18;border-radius:3px;padding:0 2px}
   </div>
 </div>
 
+<!-- MANAGE GROUP MODAL -->
+<div class="modal-overlay" id="modal-manage-group">
+  <div class="modal" style="max-height:92vh;overflow-y:auto">
+    <div class="modal-title" id="mg-title">⚙️ Gerenciar grupo</div>
+
+    <!-- Editar info -->
+    <div style="margin-bottom:1rem">
+      <div style="font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Informações</div>
+      <div style="display:flex;gap:8px;margin-bottom:6px">
+        <input id="mg-icon" placeholder="🎭" style="width:52px;font-size:18px;text-align:center;padding:7px;border-radius:8px;border:.5px solid #ddd;font-family:inherit"/>
+        <input id="mg-nome" placeholder="Nome do grupo" style="flex:1;font-size:13px;padding:7px 10px;border-radius:8px;border:.5px solid #ddd;font-family:inherit"/>
+      </div>
+      <input id="mg-desc" placeholder="Descrição (opcional)" style="width:100%;font-size:13px;padding:7px 10px;border-radius:8px;border:.5px solid #ddd;font-family:inherit"/>
+    </div>
+
+    <!-- Membros -->
+    <div style="margin-bottom:1rem">
+      <div style="font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Membros do grupo</div>
+      <div id="mg-members-list" style="margin-bottom:8px"></div>
+      <!-- Adicionar do Match -->
+      <div style="font-size:11px;color:#888;margin-bottom:5px">Adicionar do Match:</div>
+      <div id="mg-people-add" style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:6px"></div>
+      <!-- Adicionar manual -->
+      <div style="display:flex;gap:6px">
+        <input id="mg-member-input" placeholder="Nome manual…" style="flex:1;font-size:12px;padding:6px 9px;border-radius:8px;border:.5px solid #ddd;font-family:inherit" onkeydown="if(event.key==='Enter')mgAddMemberManual()"/>
+        <button onclick="mgAddMemberManual()" style="padding:6px 12px;border-radius:8px;background:#f5f4f0;border:.5px solid #ddd;font-size:12px;font-family:inherit;cursor:pointer">＋</button>
+      </div>
+    </div>
+
+    <!-- Locais confirmados -->
+    <div style="margin-bottom:1rem">
+      <div style="font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Locais confirmados pelo grupo</div>
+      <div id="mg-locals-cross" style="font-size:12px;color:#666;line-height:1.6"></div>
+    </div>
+
+    <div class="modal-actions" style="flex-direction:column;gap:7px">
+      <div style="display:flex;gap:7px;width:100%">
+        <button class="btn-cancel" onclick="closeManageGroup()" style="flex:1">Cancelar</button>
+        <button class="btn-save" onclick="saveManageGroup()" style="flex:2">💾 Salvar alterações</button>
+      </div>
+      <button onclick="mgShareGroup()" style="width:100%;padding:10px;border-radius:10px;background:#e8f0fe;border:.5px solid #aac4f7;color:#185FA5;font-size:13px;font-family:inherit;cursor:pointer;font-weight:500">📤 Gerar convite do grupo</button>
+      <button onclick="mgDeleteGroup()" style="width:100%;padding:9px;border-radius:10px;background:#fce4ec;border:.5px solid #f48fb1;color:#c62828;font-size:12px;font-family:inherit;cursor:pointer">🗑️ Excluir grupo</button>
+    </div>
+  </div>
+</div>
+
 <!-- HAMBURGER MENU -->
 <div class="hamburger-overlay" id="hamburger-overlay" onclick="closeHamburgerOutside(event)">
   <div class="hamburger-box">
@@ -3737,7 +3783,151 @@ function saveGroup(){
   persist(); closeCreateGroup(); renderGroupsPanel();
 }
 function manageGroup(id){
-  alert('Em breve: gerenciar membros, roteiro do grupo e notificações.');
+  const g=(state.groups||[]).find(x=>x.id===id); if(!g) return;
+  window._mgGroupId=id;
+
+  // Fill basic info
+  document.getElementById('mg-title').textContent=(g.icon||'👥')+' '+g.nome;
+  document.getElementById('mg-icon').value=g.icon||'👥';
+  document.getElementById('mg-nome').value=g.nome;
+  document.getElementById('mg-desc').value=g.desc||'';
+
+  // Members list
+  mgRenderMembers(g);
+
+  // People from Match to add
+  mgRenderPeopleAdd(g);
+
+  // Cross: locais confirmados
+  mgRenderLocals(g);
+
+  document.getElementById('modal-manage-group').classList.add('visible');
+}
+
+function mgRenderMembers(g){
+  const list=document.getElementById('mg-members-list');
+  const members=g.members||[];
+  if(!members.length){
+    list.innerHTML='<div style="font-size:12px;color:#bbb;padding:4px 0">Nenhum membro ainda.</div>';
+    return;
+  }
+  list.innerHTML=members.map((m,i)=>`
+    <div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:.5px solid #f5f4f0">
+      <span style="width:28px;height:28px;border-radius:50%;background:#f5f4f0;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0">
+        ${(()=>{const p=(state.people||[]).find(p=>p.nome===m);return p&&p.icon?p.icon:m.charAt(0).toUpperCase();})()}
+      </span>
+      <span style="flex:1;font-size:13px;color:#1a1a18">${escHtml(m)}</span>
+      <button onclick="mgRemoveMember(${i})" style="background:none;border:none;color:#ccc;cursor:pointer;font-size:16px;padding:0 3px;transition:color .15s" onmouseover="this.style.color='#c0392b'" onmouseout="this.style.color='#ccc'">✕</button>
+    </div>`).join('');
+}
+
+function mgRenderPeopleAdd(g){
+  const container=document.getElementById('mg-people-add');
+  const members=g.members||[];
+  const available=(state.people||[]).filter(p=>!members.includes(p.nome));
+  if(!available.length){
+    container.innerHTML='<span style="font-size:11px;color:#bbb">Todos do Match já são membros</span>';
+    return;
+  }
+  container.innerHTML=available.map(p=>`
+    <button onclick="mgAddFromMatch('${escHtml(p.nome)}')" style="display:flex;align-items:center;gap:5px;padding:4px 10px;border-radius:16px;border:.5px solid #e5e4e0;background:#f5f4f0;font-size:11px;font-family:inherit;cursor:pointer;transition:all .15s" onmouseover="this.style.background='#e8f0fe';this.style.borderColor='#aac4f7'" onmouseout="this.style.background='#f5f4f0';this.style.borderColor='#e5e4e0'">
+      <span>${p.icon||p.nome.charAt(0)}</span><span>${escHtml(p.nome)}</span><span style="color:#888">＋</span>
+    </button>`).join('');
+}
+
+function mgRenderLocals(g){
+  const el=document.getElementById('mg-locals-cross');
+  const members=g.members||[];
+  const allLocais=[...state.semana,...state.fds].filter(d=>d.status==='ativo');
+  const people=(state.people||[]).filter(p=>members.includes(p.nome));
+
+  if(!people.length||!allLocais.length){
+    el.innerHTML='<div style="color:#bbb;font-size:12px">Adicione membros e locais ativos para ver o cruzamento.</div>';
+    return;
+  }
+
+  // For each local, who in the group confirmed?
+  const rows=allLocais.map(d=>{
+    const confirmed=people.filter(p=>(p.locals||[]).includes(d.id));
+    if(!confirmed.length) return null;
+    return {local:d, confirmed};
+  }).filter(Boolean).sort((a,b)=>b.confirmed.length-a.confirmed.length);
+
+  if(!rows.length){
+    el.innerHTML='<div style="color:#bbb;font-size:12px">Nenhum membro confirmou interesse nos locais ativos ainda.</div>';
+    return;
+  }
+
+  el.innerHTML=rows.map(({local:d, confirmed})=>`
+    <div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:.5px solid #f5f4f0">
+      <span style="font-size:18px;flex-shrink:0">${d.icon||'📍'}</span>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:12px;font-weight:500;color:#1a1a18">${escHtml(d.nome)}</div>
+        <div style="font-size:11px;color:#185FA5;margin-top:1px">${confirmed.map(p=>p.icon||p.nome.charAt(0)).join(' ')} ${confirmed.map(p=>escHtml(p.nome)).join(', ')}</div>
+      </div>
+      <span style="font-size:11px;font-weight:700;color:#2e7d32;background:#e8f5e9;padding:2px 8px;border-radius:10px;flex-shrink:0">${confirmed.length}/${people.length}</span>
+    </div>`).join('');
+}
+
+function mgAddFromMatch(nome){
+  const g=(state.groups||[]).find(x=>x.id===window._mgGroupId); if(!g) return;
+  if(!g.members) g.members=[];
+  if(!g.members.includes(nome)) g.members.push(nome);
+  mgRenderMembers(g);
+  mgRenderPeopleAdd(g);
+  mgRenderLocals(g);
+}
+
+function mgAddMemberManual(){
+  const inp=document.getElementById('mg-member-input');
+  const nome=inp.value.trim(); if(!nome) return;
+  const g=(state.groups||[]).find(x=>x.id===window._mgGroupId); if(!g) return;
+  if(!g.members) g.members=[];
+  if(!g.members.includes(nome)) g.members.push(nome);
+  inp.value='';
+  mgRenderMembers(g);
+  mgRenderPeopleAdd(g);
+}
+
+function mgRemoveMember(idx){
+  const g=(state.groups||[]).find(x=>x.id===window._mgGroupId); if(!g) return;
+  g.members.splice(idx,1);
+  mgRenderMembers(g);
+  mgRenderPeopleAdd(g);
+  mgRenderLocals(g);
+}
+
+function saveManageGroup(){
+  const g=(state.groups||[]).find(x=>x.id===window._mgGroupId); if(!g) return;
+  const nome=document.getElementById('mg-nome').value.trim();
+  if(!nome){document.getElementById('mg-nome').focus();return;}
+  g.icon=document.getElementById('mg-icon').value.trim()||'👥';
+  g.nome=nome;
+  g.desc=document.getElementById('mg-desc').value.trim();
+  persist();
+  closeManageGroup();
+  renderGroupsPanel();
+}
+
+function mgShareGroup(){
+  saveManageGroup();
+  const g=(state.groups||[]).find(x=>x.id===window._mgGroupId); if(!g) return;
+  closeManageGroup();
+  shareGroup(g.id);
+}
+
+function mgDeleteGroup(){
+  const g=(state.groups||[]).find(x=>x.id===window._mgGroupId); if(!g) return;
+  if(!confirm(`Excluir o grupo "${g.nome}"? Esta ação não pode ser desfeita.`)) return;
+  state.groups=state.groups.filter(x=>x.id!==window._mgGroupId);
+  persist();
+  closeManageGroup();
+  renderGroupsPanel();
+}
+
+function closeManageGroup(){
+  document.getElementById('modal-manage-group').classList.remove('visible');
+  window._mgGroupId=null;
 }
 
 // ── INFLUENCIADORES ───────────────────────────────────────────────────────────
