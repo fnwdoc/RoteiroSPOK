@@ -2762,14 +2762,19 @@ function inflMiniHTML(localId){
 }
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
-loadPersisted();
-render();
-loadApiKeys();
-loadPublicUrl();
-renderBottomNav();
-renderAffinityBar();
-initOriginDisplay();
-if(!checkInviteMode()) showOnboarding();
+loadPersisted(); // sempre primeiro — state precisa existir
+if(checkInviteMode()){
+  // modo convite: app fica escondido, só mostra tela de convite
+} else {
+  // modo normal
+  render();
+  loadApiKeys();
+  loadPublicUrl();
+  renderBottomNav();
+  renderAffinityBar();
+  initOriginDisplay();
+  showOnboarding();
+}
 </script>
 </body>
 </html>
