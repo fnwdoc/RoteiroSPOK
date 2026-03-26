@@ -2218,7 +2218,8 @@ function renderPeoplePanel() {
   let h = '<div style="display:flex;gap:8px;margin-bottom:12px">'+
     '<button class="add-btn-main" onclick="openAddPerson()" style="flex:1;margin:0">＋ Adicionar pessoa</button>'+
     '<button onclick="openImportResponse()" style="padding:10px 14px;border:1.5px dashed #aac4f7;border-radius:12px;background:#e8f0fe;color:#185FA5;font-size:12px;font-family:inherit;cursor:pointer;white-space:nowrap;font-weight:500">📥 Importar resposta</button>'+
-    '</div>';
+    '</div>'+
+    '<button onclick="testInvitePage()" style="width:100%;padding:8px;border-radius:10px;border:.5px solid #ddd;background:#f9f9f7;font-size:12px;font-family:inherit;cursor:pointer;color:#666;margin-bottom:12px">🧪 Testar tela de convite</button>';
 
   if(!people.length) {
     h += '<div style="text-align:center;padding:2.5rem 0;color:#bbb;font-size:13px">🤝<br><br>Adicione pessoas para ver<br>quem tem rolê compatível com você.</div>';
@@ -2352,12 +2353,16 @@ function getPublicUrl(){
 
 function sharePerson(id){
   const p=(state.people||[]).find(x=>x.id===id); if(!p) return;
-  const baseUrl = getPublicUrl();
-  if(!baseUrl){
-    alert('⚠️ Configure a URL pública do app em ⚙️ Config → "URL pública do app" antes de enviar convites.\n\nSem isso o link não funcionará para o Alex.');
+  const saved = localStorage.getItem('sp_public_url')||'';
+  const isLocal = window.location.protocol === 'file:';
+  
+  if(!saved && isLocal){
+    alert('⚠️ Você está rodando o app localmente (file://).\n\nPara o convite funcionar você precisa:\n1. Hospedar o HTML no GitHub Pages ou Netlify\n2. Configurar a URL em ⚙️ Config → "URL pública do app"\n\nSem isso, o Alex não consegue abrir o link.');
     showView('cfg');
     return;
   }
+  
+  const baseUrl = saved || window.location.href.split('?')[0].split('#')[0];
   const payload = {
     v:1,
     inviter: state.origin||'seu amigo',
@@ -2367,10 +2372,13 @@ function sharePerson(id){
       .map(d=>({id:d.id, nome:d.nome, icon:d.icon||'📍', end:d.end, hora:d.hora}))
   };
   const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
-  const url = baseUrl.split('?')[0] + '?invite=' + encoded;
+  const url = baseUrl.split('?')[0].split('#')[0] + '?invite=' + encoded;
   const msg = 'Ei '+p.nome+'! Te convidei para um rolê 🗺️\n\nVeja os locais e marque quais você quer ir:\n'+url+'\n\nMe manda o código de resposta que aparece no final!';
   navigator.clipboard.writeText(msg).then(()=>{
-    alert('✅ Convite copiado!\n\nCole no WhatsApp para o '+p.nome+' abrir e responder.');
+    alert('✅ Convite copiado!\n\nCole no WhatsApp para o '+p.nome+' abrir e responder.\n\nURL: '+url.slice(0,80)+'...');
+  }).catch(()=>{
+    // fallback se clipboard não funcionar
+    prompt('Copie o link abaixo:', url);
   });
 }
 
@@ -2400,16 +2408,43 @@ function processImportResponse(){
   } catch(e){ errEl.textContent='Código inválido. Peça para a pessoa copiar o código gerado no app.'; }
 }
 
+function testInvitePage(){
+  const locais = [...state.semana,...state.fds]
+    .filter((d,i,a)=>a.findIndex(x=>x.id===d.id)===i && d.status==='ativo')
+    .map(d=>({id:d.id, nome:d.nome, icon:d.icon||'📍', end:d.end, hora:d.hora}));
+  showInvitePage({v:1, inviter: state.origin||'Você', nome:'Convidado', locais});
+}
+
 function checkInviteMode(){
   try {
-    const params = new URLSearchParams(window.location.search);
-    const inv = params.get('invite');
+    // Tenta pegar ?invite= da URL de múltiplas formas
+    let inv = null;
+    
+    // Método 1: URLSearchParams padrão
+    try { inv = new URLSearchParams(window.location.search).get('invite'); } catch(e){}
+    
+    // Método 2: regex manual (funciona em file:// e edge cases)
+    if(!inv) {
+      const m = window.location.href.match(/[?&]invite=([^&]+)/);
+      if(m) inv = decodeURIComponent(m[1]);
+    }
+    
+    // Método 3: hash fallback (#invite=...)
+    if(!inv) {
+      const m = window.location.hash.match(/invite=([^&]+)/);
+      if(m) inv = decodeURIComponent(m[1]);
+    }
+    
     if(!inv) return false;
+    
     const data = JSON.parse(decodeURIComponent(escape(atob(inv))));
     if(!data || !data.locais) return false;
     showInvitePage(data);
     return true;
-  } catch(e){ return false; }
+  } catch(e){
+    console.warn('checkInviteMode error:', e);
+    return false;
+  }
 }
 
 function showInvitePage(data){
