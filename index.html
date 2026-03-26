@@ -572,6 +572,20 @@ mark{background:#fff3cd;color:#1a1a18;border-radius:3px;padding:0 2px}
       </div>
     </div>
     <div class="cfg-section">
+      <div class="cfg-title">👥 Perfis de afinidade</div>
+      <div class="cfg-card">
+        <h4>Estilos de rolê</h4>
+        <p>Personalize os perfis que aparecem nos filtros, nos cards e no convite.</p>
+        <div id="affinity-manager-list"></div>
+        <div style="display:flex;gap:8px;margin-top:10px" id="affinity-add-row">
+          <input id="aff-new-icon" placeholder="🎯" style="width:52px;font-size:16px;text-align:center;padding:7px;border-radius:8px;border:.5px solid #ccc;font-family:inherit"/>
+          <input id="aff-new-label" placeholder="Nome do perfil" style="flex:1;font-size:13px;padding:7px 10px;border-radius:8px;border:.5px solid #ccc;font-family:inherit"/>
+          <button onclick="addAffinityProfile()" style="padding:7px 14px;border-radius:8px;background:#1a1a18;color:#fff;border:none;font-size:13px;font-family:inherit;cursor:pointer;white-space:nowrap">＋ Adicionar</button>
+        </div>
+        <button onclick="resetAffinityProfiles()" class="action-btn danger" style="margin-top:10px">↩️ Restaurar padrões</button>
+      </div>
+    </div>
+    <div class="cfg-section">
       <div class="cfg-title">💾 Salvar / Carregar Roteiro</div>
       <div class="cfg-card">
         <h4>Salvamento automático</h4>
@@ -877,7 +891,7 @@ CAT_GROUPS.forEach(g=>g.cats.forEach(c=>{CAT_MAP[c.id]=c;}));
 const ALL_CATS = CAT_GROUPS.flatMap(g=>g.cats);
 
 // ── AFFINITY PROFILES ─────────────────────────────────────────────────────────
-const AFFINITY_PROFILES = [
+const DEFAULT_AFFINITY_PROFILES = [
   {id:'casal_rom',   icon:'💑', label:'Casal romântico'},
   {id:'casal_casual',icon:'👫', label:'Casal casual'},
   {id:'par_cia',     icon:'🤝', label:'Par de Cia'},
@@ -887,6 +901,17 @@ const AFFINITY_PROFILES = [
   {id:'balada',      icon:'🕺', label:'Galera da balada'},
   {id:'turista',     icon:'🧳', label:'Turistas'},
 ];
+
+function loadAffinityProfiles(){
+  try {
+    const s = localStorage.getItem('sp_affinity_profiles');
+    return s ? JSON.parse(s) : JSON.parse(JSON.stringify(DEFAULT_AFFINITY_PROFILES));
+  } catch(e){ return JSON.parse(JSON.stringify(DEFAULT_AFFINITY_PROFILES)); }
+}
+function saveAffinityProfiles(){
+  localStorage.setItem('sp_affinity_profiles', JSON.stringify(AFFINITY_PROFILES));
+}
+let AFFINITY_PROFILES = loadAffinityProfiles();
 
 let activeAffinity = null;
 
@@ -900,17 +925,17 @@ const DEFAULT_STATE = {
   sponsored:null, affiliates:{}, influencers:[], favs:[], groups:[], people:[],
   menuItems:['roteiro','favs','cfg'],
   semana:[
-    {id:'s1',nome:'Conceição Discos & Comes',cats:['almoco_rapido','exp_gastro'],affinities:['casal_casual','grupo','solo','turista'],icon:'🍚',hora:'12h00',dur:'1h30',dist:'3,5 km',transporte:'Ônibus (~10 min) ou a pé (~45 min)',end:'R. Imac. Conceição, 151 – Vila Buarque, São Paulo',nota:'Almoço com a chef Talitha. Arroz, música e alma. Ter–Sáb.',rating:'4.4',aviso:'Fecha às 17h!',badge:null,badgeType:null,status:'ativo',schedDate:null,schedNote:null},
-    {id:'s2',nome:'Farol Santander',cats:['evento_dia'],affinities:['casal_rom','casal_casual','familia','turista','solo'],icon:'🏙️',hora:'14h00',dur:'1h30',dist:'1,5 km',transporte:'A pé (~20 min)',end:'R. João Brícola, 24 – Centro Histórico, São Paulo',nota:'Vista 360° do topo do Edifício Altino Arantes. Seg–Sáb 9h–19h.',rating:'4.7',aviso:null,badge:null,badgeType:null,status:'ativo',schedDate:null,schedNote:null},
-    {id:'s3',nome:'Notre Vin',cats:['jantar_rapido','exp_gastro','evento_noite','evento_musica','speakeasy'],affinities:['casal_rom','casal_casual','par_cia','grupo'],icon:'🍷',hora:'19h00',dur:'2h',dist:'11 km',transporte:'Metrô + Uber (~30 min)',end:'R. João Moura, 1086 – Pinheiros, São Paulo',nota:'Wine bar com jazz ao vivo. Ter/qua: peça uma taça, ganha outra.',rating:'4.6',aviso:'Aberto a partir das 18h. Fechado seg/dom.',badge:'Double Trouble – ter/qua',badgeType:'tip',status:'ativo',schedDate:null,schedNote:null},
-    {id:'s4',nome:'Vila Secreta – Raful de Raful',cats:['evento_dia','evento_pago'],affinities:['casal_rom','par_cia','turista','solo'],icon:'🏚️',hora:'(autônoma)',dur:'1h',dist:'1 km',transporte:'A pé (~12 min)',end:'R. Rubi, 50 – Aclimação, São Paulo',nota:'Vila histórica escondida. Coleção de 1700–1960. R$35.',rating:'4.9',aviso:'Visitas: sex 15h e sáb 10h apenas.',badge:'Sex 15h · Sáb 10h',badgeType:'warn',status:'ativo',schedDate:null,schedNote:null},
+    {id:'s1',nome:'Conceição Discos & Comes',cats:['almoco_rapido','exp_gastro'],affinities:['casal_casual','grupo','solo','turista'],icon:'🍚',hora:'12h00',dur:'1h30',dist:'3,5 km',transporte:'Ônibus (~10 min) ou a pé (~45 min)',end:'R. Imac. Conceição, 151 – Vila Buarque, São Paulo',nota:'Almoço com a chef Talitha. Arroz, música e alma. Ter–Sáb.',rating:'4.4',aviso:'Fecha às 17h!',badge:null,badgeType:null,status:'ativo',schedDate:null,schedNote:null,notes:[]},
+    {id:'s2',nome:'Farol Santander',cats:['evento_dia'],affinities:['casal_rom','casal_casual','familia','turista','solo'],icon:'🏙️',hora:'14h00',dur:'1h30',dist:'1,5 km',transporte:'A pé (~20 min)',end:'R. João Brícola, 24 – Centro Histórico, São Paulo',nota:'Vista 360° do topo do Edifício Altino Arantes. Seg–Sáb 9h–19h.',rating:'4.7',aviso:null,badge:null,badgeType:null,status:'ativo',schedDate:null,schedNote:null,notes:[]},
+    {id:'s3',nome:'Notre Vin',cats:['jantar_rapido','exp_gastro','evento_noite','evento_musica','speakeasy'],affinities:['casal_rom','casal_casual','par_cia','grupo'],icon:'🍷',hora:'19h00',dur:'2h',dist:'11 km',transporte:'Metrô + Uber (~30 min)',end:'R. João Moura, 1086 – Pinheiros, São Paulo',nota:'Wine bar com jazz ao vivo. Ter/qua: peça uma taça, ganha outra.',rating:'4.6',aviso:'Aberto a partir das 18h. Fechado seg/dom.',badge:'Double Trouble – ter/qua',badgeType:'tip',status:'ativo',schedDate:null,schedNote:null,notes:[]},
+    {id:'s4',nome:'Vila Secreta – Raful de Raful',cats:['evento_dia','evento_pago'],affinities:['casal_rom','par_cia','turista','solo'],icon:'🏚️',hora:'(autônoma)',dur:'1h',dist:'1 km',transporte:'A pé (~12 min)',end:'R. Rubi, 50 – Aclimação, São Paulo',nota:'Vila histórica escondida. Coleção de 1700–1960. R$35.',rating:'4.9',aviso:'Visitas: sex 15h e sáb 10h apenas.',badge:'Sex 15h · Sáb 10h',badgeType:'warn',status:'ativo',schedDate:null,schedNote:null,notes:[]},
   ],
   fds:[
-    {id:'f1',nome:'Vila Secreta – Raful de Raful',cats:['evento_dia','evento_pago'],affinities:['casal_rom','par_cia','turista','solo'],icon:'🏚️',hora:'10h00 (sáb)',dur:'1h',dist:'1 km',transporte:'A pé (~12 min)',end:'R. Rubi, 50 – Aclimação, São Paulo',nota:'Visita guiada. R$35. Crianças até 10 anos grátis.',rating:'4.9',aviso:'Único horário no fds.',badge:'Sábados 10h',badgeType:'warn',status:'ativo',schedDate:null,schedNote:null},
-    {id:'f2',nome:'Conceição Discos & Comes',cats:['almoco_rapido','exp_gastro'],affinities:['casal_casual','grupo','solo','turista'],icon:'🍚',hora:'12h00',dur:'1h30',dist:'3,5 km',transporte:'Ônibus (~10 min) ou a pé (~45 min)',end:'R. Imac. Conceição, 151 – Vila Buarque, São Paulo',nota:'Almoço imperdível com a chef Talitha. Ter–Sáb.',rating:'4.4',aviso:'Fecha às 17h. Fila no sáb.',badge:null,badgeType:null,status:'ativo',schedDate:null,schedNote:null},
-    {id:'f3',nome:'Casa Bradesco – Sou Outro do Outro',cats:['evento_dia','evento_pago','evento_gratis'],affinities:['casal_rom','casal_casual','familia','turista','solo'],icon:'🖼️',hora:'14h30',dur:'1h30',dist:'2 km',transporte:'A pé (~25 min)',end:'Alameda Rio Claro, 190 – Bela Vista, São Paulo',nota:'Exposição de Es Devlin. Labirinto de espelhos. Até 27/jul.',rating:'4.5',aviso:'Ter–Dom 12h–20h. Ingressos a partir de R$25.',badge:'Gratuito às terças',badgeType:'free',status:'ativo',schedDate:null,schedNote:null},
-    {id:'f4',nome:'Catedral da Sé – Luminiscence',cats:['evento_noite','evento_pago','evento_musica'],affinities:['casal_rom','par_cia','grupo','turista'],icon:'✨',hora:'20h30',dur:'1h',dist:'3 km',transporte:'Metrô Ana Rosa → Sé (~12 min)',end:'Praça da Sé – Centro, São Paulo',nota:'Show de luzes imersivo. Sessões a partir das 20h40.',rating:'4.7',aviso:'Confirme sessões em catedraldasesp.com.',badge:'15% off às segundas',badgeType:'free',status:'ativo',schedDate:null,schedNote:null},
-    {id:'f5',nome:'Le Club SP – Ashibah',cats:['evento_noite','evento_pago','eletronico','show'],affinities:['grupo','balada','solo'],icon:'🎧',hora:'23h00',dur:'3h',dist:'10 km',transporte:'Uber (~20 min)',end:'Av. Brig. Faria Lima, 4509 – Rooftop, São Paulo',nota:'Balada rooftop. Ashibah: sets hipnóticos e intensos.',rating:'4.4',aviso:'Abre 22h30. Apenas sex/sáb.',badge:null,badgeType:null,status:'ativo',schedDate:null,schedNote:null},
+    {id:'f1',nome:'Vila Secreta – Raful de Raful',cats:['evento_dia','evento_pago'],affinities:['casal_rom','par_cia','turista','solo'],icon:'🏚️',hora:'10h00 (sáb)',dur:'1h',dist:'1 km',transporte:'A pé (~12 min)',end:'R. Rubi, 50 – Aclimação, São Paulo',nota:'Visita guiada. R$35. Crianças até 10 anos grátis.',rating:'4.9',aviso:'Único horário no fds.',badge:'Sábados 10h',badgeType:'warn',status:'ativo',schedDate:null,schedNote:null,notes:[]},
+    {id:'f2',nome:'Conceição Discos & Comes',cats:['almoco_rapido','exp_gastro'],affinities:['casal_casual','grupo','solo','turista'],icon:'🍚',hora:'12h00',dur:'1h30',dist:'3,5 km',transporte:'Ônibus (~10 min) ou a pé (~45 min)',end:'R. Imac. Conceição, 151 – Vila Buarque, São Paulo',nota:'Almoço imperdível com a chef Talitha. Ter–Sáb.',rating:'4.4',aviso:'Fecha às 17h. Fila no sáb.',badge:null,badgeType:null,status:'ativo',schedDate:null,schedNote:null,notes:[]},
+    {id:'f3',nome:'Casa Bradesco – Sou Outro do Outro',cats:['evento_dia','evento_pago','evento_gratis'],affinities:['casal_rom','casal_casual','familia','turista','solo'],icon:'🖼️',hora:'14h30',dur:'1h30',dist:'2 km',transporte:'A pé (~25 min)',end:'Alameda Rio Claro, 190 – Bela Vista, São Paulo',nota:'Exposição de Es Devlin. Labirinto de espelhos. Até 27/jul.',rating:'4.5',aviso:'Ter–Dom 12h–20h. Ingressos a partir de R$25.',badge:'Gratuito às terças',badgeType:'free',status:'ativo',schedDate:null,schedNote:null,notes:[]},
+    {id:'f4',nome:'Catedral da Sé – Luminiscence',cats:['evento_noite','evento_pago','evento_musica'],affinities:['casal_rom','par_cia','grupo','turista'],icon:'✨',hora:'20h30',dur:'1h',dist:'3 km',transporte:'Metrô Ana Rosa → Sé (~12 min)',end:'Praça da Sé – Centro, São Paulo',nota:'Show de luzes imersivo. Sessões a partir das 20h40.',rating:'4.7',aviso:'Confirme sessões em catedraldasesp.com.',badge:'15% off às segundas',badgeType:'free',status:'ativo',schedDate:null,schedNote:null,notes:[]},
+    {id:'f5',nome:'Le Club SP – Ashibah',cats:['evento_noite','evento_pago','eletronico','show'],affinities:['grupo','balada','solo'],icon:'🎧',hora:'23h00',dur:'3h',dist:'10 km',transporte:'Uber (~20 min)',end:'Av. Brig. Faria Lima, 4509 – Rooftop, São Paulo',nota:'Balada rooftop. Ashibah: sets hipnóticos e intensos.',rating:'4.4',aviso:'Abre 22h30. Apenas sex/sáb.',badge:null,badgeType:null,status:'ativo',schedDate:null,schedNote:null,notes:[]},
   ],
 };
 
@@ -1895,6 +1920,7 @@ function showView(view){
     renderPeoplePanel();
   } else {
     document.getElementById('panel-'+view).classList.add('visible');
+    if(view==='cfg') renderAffinityManager();
   }
 }
 function updateAffSelect(){
@@ -2063,6 +2089,62 @@ function toggleMenuItem(id, row) {
 }
 function closeHamburger(){ document.getElementById('hamburger-overlay').classList.remove('visible'); }
 function closeHamburgerOutside(e){ if(e.target===document.getElementById('hamburger-overlay')) closeHamburger(); }
+
+// ── AFFINITY PROFILE MANAGER ──────────────────────────────────────────────────
+function renderAffinityManager(){
+  const list = document.getElementById('affinity-manager-list');
+  if(!list) return;
+  list.innerHTML = AFFINITY_PROFILES.map((p,i)=>
+    '<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:.5px solid #f5f4f0">'+
+      '<input value="'+escHtml(p.icon)+'" onchange="updateAffinityProfile(\''+p.id+'\',\'icon\',this.value)" style="width:48px;font-size:16px;text-align:center;padding:5px;border-radius:7px;border:.5px solid #ddd;font-family:inherit"/>'+
+      '<input value="'+escHtml(p.label)+'" onchange="updateAffinityProfile(\''+p.id+'\',\'label\',this.value)" style="flex:1;font-size:13px;padding:5px 8px;border-radius:7px;border:.5px solid #ddd;font-family:inherit"/>'+
+      '<button onclick="deleteAffinityProfile(\''+p.id+'\')" style="padding:5px 10px;border-radius:7px;border:.5px solid #fce4ec;background:#fce4ec;color:#c62828;font-size:12px;cursor:pointer;font-family:inherit;flex-shrink:0">🗑️</button>'+
+    '</div>'
+  ).join('') + (AFFINITY_PROFILES.length===0?'<div style="font-size:12px;color:#aaa;padding:8px 0;text-align:center">Nenhum perfil. Adicione abaixo.</div>':'');
+}
+
+function updateAffinityProfile(id, field, value){
+  const p = AFFINITY_PROFILES.find(x=>x.id===id); if(!p) return;
+  p[field] = value.trim();
+  saveAffinityProfiles();
+  renderAffinityBar();
+  render();
+}
+
+function addAffinityProfile(){
+  const icon = document.getElementById('aff-new-icon').value.trim() || '⭐';
+  const label = document.getElementById('aff-new-label').value.trim();
+  if(!label){ document.getElementById('aff-new-label').focus(); return; }
+  const id = 'custom_'+Date.now();
+  AFFINITY_PROFILES.push({id, icon, label});
+  saveAffinityProfiles();
+  document.getElementById('aff-new-icon').value='';
+  document.getElementById('aff-new-label').value='';
+  renderAffinityManager();
+  renderAffinityBar();
+  render();
+}
+
+function deleteAffinityProfile(id){
+  const p = AFFINITY_PROFILES.find(x=>x.id===id); if(!p) return;
+  if(!confirm('Remover perfil "'+p.label+'"?\n\nEle será removido dos filtros mas os locais que já têm este perfil mantêm o vínculo.')) return;
+  const idx = AFFINITY_PROFILES.findIndex(x=>x.id===id);
+  if(idx>=0) AFFINITY_PROFILES.splice(idx,1);
+  saveAffinityProfiles();
+  renderAffinityManager();
+  renderAffinityBar();
+  render();
+}
+
+function resetAffinityProfiles(){
+  if(!confirm('Restaurar os perfis padrão?\n\nPerfis personalizados serão removidos.')) return;
+  AFFINITY_PROFILES.length = 0;
+  DEFAULT_AFFINITY_PROFILES.forEach(p=>AFFINITY_PROFILES.push(JSON.parse(JSON.stringify(p))));
+  saveAffinityProfiles();
+  renderAffinityManager();
+  renderAffinityBar();
+  render();
+}
 
 // ── AFFINITY BAR ──────────────────────────────────────────────────────────────
 function renderAffinityBar() {
@@ -2351,35 +2433,63 @@ function getPublicUrl(){
   return saved;
 }
 
+function buildInvitePayload(nome, isGroup){
+  const allLocais = [...state.semana,...state.fds]
+    .filter((d,i,a)=>a.findIndex(x=>x.id===d.id)===i && d.status==='ativo');
+  const quemVai = {};
+  allLocais.forEach(d=>{
+    const confirmados = (state.people||[]).filter(p=>(p.locals||[]).includes(d.id)).map(p=>p.nome);
+    if(confirmados.length) quemVai[d.id] = confirmados;
+  });
+  return {
+    v:2,
+    isGroup: !!isGroup,
+    inviter: state.origin ? state.origin.split('–')[0].trim() : 'Seu amigo',
+    nome,
+    quemVai,
+    locais: allLocais.map(d=>({
+      id:d.id, nome:d.nome, icon:d.icon||'📍',
+      end:d.end, hora:d.hora, nota:d.nota||'',
+      aviso:d.aviso||'', badge:d.badge||'',
+      cats:(d.cats||[]).map(c=>{const cm=CAT_MAP[c];return cm?cm.icon+' '+cm.label:null}).filter(Boolean),
+      affinities:(d.affinities||[]).map(a=>{const af=AFFINITY_PROFILES.find(x=>x.id===a);return af?af.icon+' '+af.label:null}).filter(Boolean),
+      mapsUrl:'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(d.end)
+    }))
+  };
+}
+
 function sharePerson(id){
   const p=(state.people||[]).find(x=>x.id===id); if(!p) return;
   const saved = localStorage.getItem('sp_public_url')||'';
   const isLocal = window.location.protocol === 'file:';
-  
   if(!saved && isLocal){
-    alert('⚠️ Você está rodando o app localmente (file://).\n\nPara o convite funcionar você precisa:\n1. Hospedar o HTML no GitHub Pages ou Netlify\n2. Configurar a URL em ⚙️ Config → "URL pública do app"\n\nSem isso, o Alex não consegue abrir o link.');
-    showView('cfg');
-    return;
+    alert('⚠️ Você está rodando o app localmente (file://).\n\nPara o convite funcionar você precisa:\n1. Hospedar o HTML no GitHub Pages ou Netlify\n2. Configurar a URL em ⚙️ Config → "URL pública do app"');
+    showView('cfg'); return;
   }
-  
   const baseUrl = saved || window.location.href.split('?')[0].split('#')[0];
-  const payload = {
-    v:1,
-    inviter: state.origin||'seu amigo',
-    nome: p.nome,
-    locais: [...state.semana,...state.fds]
-      .filter((d,i,a)=>a.findIndex(x=>x.id===d.id)===i && d.status==='ativo')
-      .map(d=>({id:d.id, nome:d.nome, icon:d.icon||'📍', end:d.end, hora:d.hora}))
-  };
-  const encoded = toBase64url(JSON.stringify(payload));
-  const url = baseUrl.split('?')[0].split('#')[0] + '?invite=' + encoded;
+  const payload = buildInvitePayload(p.nome, false);
+  const url = baseUrl.split('?')[0].split('#')[0] + '?invite=' + toBase64url(JSON.stringify(payload));
   const msg = 'Ei '+p.nome+'! Te convidei para um rolê 🗺️\n\nVeja os locais e marque quais você quer ir:\n'+url+'\n\nMe manda o código de resposta que aparece no final!';
-  navigator.clipboard.writeText(msg).then(()=>{
-    alert('✅ Convite copiado!\n\nCole no WhatsApp para o '+p.nome+' abrir e responder.\n\nURL: '+url.slice(0,80)+'...');
-  }).catch(()=>{
-    // fallback se clipboard não funcionar
-    prompt('Copie o link abaixo:', url);
-  });
+  navigator.clipboard.writeText(msg)
+    .then(()=>alert('✅ Convite copiado!\n\nCole no WhatsApp para o '+p.nome+' abrir e responder.'))
+    .catch(()=>prompt('Copie o link:', url));
+}
+
+function shareGroup(id){
+  const g=(state.groups||[]).find(x=>x.id===id); if(!g) return;
+  const saved = localStorage.getItem('sp_public_url')||'';
+  const isLocal = window.location.protocol === 'file:';
+  if(!saved && isLocal){
+    alert('⚠️ Configure a URL pública em ⚙️ Config primeiro.');
+    showView('cfg'); return;
+  }
+  const baseUrl = saved || window.location.href.split('?')[0].split('#')[0];
+  const payload = buildInvitePayload(g.nome, true);
+  const url = baseUrl.split('?')[0].split('#')[0] + '?invite=' + toBase64url(JSON.stringify(payload));
+  const msg = '🗺️ *Convite de rolê — '+g.nome+'*\n\nVeja os locais e marque quais você topa ir:\n'+url+'\n\nCada pessoa gera seu código de resposta no final. Manda pra mim!';
+  navigator.clipboard.writeText(msg)
+    .then(()=>alert('✅ Convite do grupo copiado!\n\nEnvie para todos os membros do grupo.'))
+    .catch(()=>prompt('Copie o link:', url));
 }
 
 function openImportResponse(){
@@ -2421,10 +2531,7 @@ function fromBase64url(str){
 }
 
 function testInvitePage(){
-  const locais = [...state.semana,...state.fds]
-    .filter((d,i,a)=>a.findIndex(x=>x.id===d.id)===i && d.status==='ativo')
-    .map(d=>({id:d.id, nome:d.nome, icon:d.icon||'📍', end:d.end, hora:d.hora}));
-  showInvitePage({v:1, inviter: state.origin||'Você', nome:'Convidado', locais});
+  showInvitePage(buildInvitePayload('Convidado', false));
 }
 
 function checkInviteMode(){
@@ -2460,63 +2567,69 @@ function checkInviteMode(){
 }
 
 function showInvitePage(data){
-  // Esconde o app inteiro, mostra container dedicado
-  document.querySelector('.app').style.display = 'none';
-  const page = document.getElementById('invite-page');
-  page.style.display = 'block';
+  document.querySelector('.app').style.display='none';
+  const page=document.getElementById('invite-page');
+  page.style.display='block';
   window._invLocals=[]; window._invDays=[]; window._invAffs=[];
+  const isGroup=!!data.isGroup;
+  const quemVai=data.quemVai||{};
 
-  page.innerHTML =
-    '<div style="max-width:520px;margin:0 auto;padding:1.5rem 1.25rem 4rem">'+
-    // Header
-    '<div style="text-align:center;padding:2rem 0 1.5rem">'+
-      '<div style="font-size:44px;margin-bottom:.75rem">🗺️</div>'+
-      '<div style="font-size:20px;font-weight:700;margin-bottom:.5rem;color:#1a1a18">Você foi convidado!</div>'+
+  const localCards=(data.locais||[]).map(l=>{
+    const confirmados=quemVai[l.id]||[];
+    const catsHtml=(l.cats||[]).map(c=>'<span style="display:inline-block;font-size:10px;padding:2px 7px;border-radius:8px;background:#f5f4f0;color:#555;margin:2px">'+escHtml(c)+'</span>').join('');
+    const affsHtml=(l.affinities||[]).map(a=>'<span style="display:inline-block;font-size:10px;padding:2px 7px;border-radius:8px;background:#e8eaf6;color:#283593;margin:2px">'+escHtml(a)+'</span>').join('');
+    const confirmadosHtml=confirmados.length?'<div style="margin-top:8px;padding-top:8px;border-top:.5px solid #f0f0ec"><span style="font-size:10px;color:#888;font-weight:600;text-transform:uppercase;letter-spacing:.04em">Quem já confirmou </span>'+confirmados.map(n=>'<span style="font-size:11px;background:#e8f5e9;color:#2e7d32;padding:2px 8px;border-radius:10px;margin:2px;display:inline-block">✓ '+escHtml(n)+'</span>').join('')+'</div>':'';
+    return '<div id="inv-l-'+l.id+'" onclick="invToggleLocal(\''+l.id+'\',this)" style="background:#fff;border:.5px solid #e5e4e0;border-radius:14px;padding:14px;margin-bottom:10px;cursor:pointer;transition:all .15s">'+
+      '<div style="display:flex;align-items:flex-start;gap:10px">'+
+        '<span style="font-size:26px;flex-shrink:0;margin-top:2px">'+l.icon+'</span>'+
+        '<div style="flex:1;min-width:0">'+
+          '<div style="font-size:14px;font-weight:600;color:#1a1a18;margin-bottom:2px">'+escHtml(l.nome)+'</div>'+
+          '<div style="font-size:11px;color:#888;margin-bottom:6px">📍 '+escHtml(l.end)+'</div>'+
+          (l.hora&&l.hora!=='–'?'<div style="font-size:11px;color:#555;margin-bottom:5px">🕐 '+escHtml(l.hora)+'</div>':'')+
+          (catsHtml?'<div style="margin-bottom:4px">'+catsHtml+'</div>':'')+
+          (affsHtml?'<div style="margin-bottom:4px">'+affsHtml+'</div>':'')+
+          (l.nota?'<div style="font-size:11px;color:#555;margin-top:4px;padding:6px 8px;background:#f9f9f7;border-radius:7px;line-height:1.5">💬 '+escHtml(l.nota)+'</div>':'')+
+          (l.aviso?'<div style="font-size:11px;color:#c0392b;margin-top:4px">⚠️ '+escHtml(l.aviso)+'</div>':'')+
+          '<a href="'+l.mapsUrl+'" target="_blank" onclick="event.stopPropagation()" style="display:inline-flex;align-items:center;gap:4px;font-size:11px;color:#185FA5;margin-top:6px;text-decoration:none">🗺️ Ver no Maps</a>'+
+          confirmadosHtml+
+        '</div>'+
+        '<span id="inv-chk-'+l.id+'" style="font-size:24px;flex-shrink:0;margin-top:2px;transition:all .15s">⬜</span>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+
+  page.innerHTML=
+    '<div style="max-width:520px;margin:0 auto;padding:1.25rem 1.25rem 4rem">'+
+    '<div style="text-align:center;padding:1.75rem 0 1.25rem">'+
+      '<div style="font-size:40px;margin-bottom:.625rem">🗺️</div>'+
+      '<div style="font-size:19px;font-weight:700;margin-bottom:.375rem;color:#1a1a18">'+(isGroup?'Convite de rolê em grupo!':'Você foi convidado!')+'</div>'+
       '<div style="font-size:13px;color:#666;line-height:1.6;background:#fff;border-radius:12px;padding:.75rem 1rem;border:.5px solid #e5e4e0">'+
-        '<strong>'+escHtml(data.inviter||'Seu amigo')+'</strong> quer saber<br>quais rolês combinam com você.'+
+        '<strong>'+escHtml(data.inviter||'Seu amigo')+'</strong> '+(isGroup?'está organizando um rolê e quer saber quais locais combinam com você.':'quer saber quais rolês combinam com você.')+
       '</div>'+
     '</div>'+
-    // Nome
     '<div style="margin-bottom:1.25rem">'+
       '<div style="font-size:10px;color:#888;text-transform:uppercase;letter-spacing:.06em;font-weight:700;margin-bottom:6px">Seu nome</div>'+
-      '<input id="inv-nome" value="'+escHtml(data.nome||'')+'" placeholder="Como você se chama?" style="width:100%;font-size:15px;padding:11px 14px;border-radius:12px;border:.5px solid #ccc;font-family:inherit;background:#fff"/>'+
+      '<input id="inv-nome" value="'+escHtml(data.nome&&!isGroup?data.nome:'')+'" placeholder="Como você se chama?" style="width:100%;font-size:15px;padding:11px 14px;border-radius:12px;border:.5px solid #ccc;font-family:inherit;background:#fff"/>'+
     '</div>'+
-    // Locais
     '<div style="margin-bottom:1.25rem">'+
-      '<div style="font-size:10px;color:#888;text-transform:uppercase;letter-spacing:.06em;font-weight:700;margin-bottom:8px">Quais locais você topa ir?</div>'+
-      (data.locais||[]).map(l=>
-        '<div id="inv-l-'+l.id+'" onclick="invToggleLocal(\''+l.id+'\',this)" style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;border:.5px solid #e5e4e0;background:#fff;margin-bottom:6px;cursor:pointer;transition:all .15s">'+
-          '<span style="font-size:22px;flex-shrink:0">'+l.icon+'</span>'+
-          '<div style="flex:1;min-width:0">'+
-            '<div style="font-size:13px;font-weight:500;color:#1a1a18">'+escHtml(l.nome)+'</div>'+
-            '<div style="font-size:11px;color:#888;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+escHtml(l.end)+(l.hora&&l.hora!=='–'?' · '+l.hora:'')+'</div>'+
-          '</div>'+
-          '<span id="inv-chk-'+l.id+'" style="font-size:22px;flex-shrink:0;transition:all .15s">⬜</span>'+
-        '</div>'
-      ).join('')+
+      '<div style="font-size:10px;color:#888;text-transform:uppercase;letter-spacing:.06em;font-weight:700;margin-bottom:8px">Quais locais você topa? <span style="font-weight:400;font-size:10px">(toque para selecionar)</span></div>'+
+      localCards+
     '</div>'+
-    // Dias
     '<div style="margin-bottom:1.25rem">'+
       '<div style="font-size:10px;color:#888;text-transform:uppercase;letter-spacing:.06em;font-weight:700;margin-bottom:8px">Seus dias disponíveis</div>'+
       '<div style="display:flex;flex-wrap:wrap;gap:7px">'+
-        ['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'].map(d=>
-          '<button onclick="invToggleDay(\''+d+'\',this)" style="padding:8px 14px;border-radius:20px;border:.5px solid #ddd;background:#fff;color:#666;font-size:12px;cursor:pointer;font-family:inherit;transition:all .15s">'+d+'</button>'
-        ).join('')+
+        ['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'].map(d=>'<button onclick="invToggleDay(\''+d+'\',this)" style="padding:8px 14px;border-radius:20px;border:.5px solid #ddd;background:#fff;color:#666;font-size:12px;cursor:pointer;font-family:inherit;transition:all .15s">'+d+'</button>').join('')+
       '</div>'+
     '</div>'+
-    // Afinidades
     '<div style="margin-bottom:1.75rem">'+
       '<div style="font-size:10px;color:#888;text-transform:uppercase;letter-spacing:.06em;font-weight:700;margin-bottom:8px">Seu estilo de rolê</div>'+
       '<div style="display:flex;flex-wrap:wrap;gap:7px">'+
-        AFFINITY_PROFILES.map(p=>
-          '<button onclick="invToggleAff(\''+p.id+'\',this)" style="padding:8px 12px;border-radius:20px;border:.5px solid #ddd;background:#fff;color:#666;font-size:12px;cursor:pointer;font-family:inherit;transition:all .15s">'+p.icon+' '+p.label+'</button>'
-        ).join('')+
+        AFFINITY_PROFILES.map(p=>'<button onclick="invToggleAff(\''+p.id+'\',this)" style="padding:8px 12px;border-radius:20px;border:.5px solid #ddd;background:#fff;color:#666;font-size:12px;cursor:pointer;font-family:inherit;transition:all .15s">'+p.icon+' '+p.label+'</button>').join('')+
       '</div>'+
     '</div>'+
-    // CTA
     '<button onclick="generateInviteResponse()" style="width:100%;padding:15px;border-radius:14px;background:#1a1a18;color:#fff;border:none;font-size:15px;font-weight:600;font-family:inherit;cursor:pointer;margin-bottom:12px">✅ Confirmar e gerar resposta</button>'+
     '<div id="inv-response-area" style="display:none;background:#fff;border:.5px solid #e0e0dc;border-radius:14px;padding:1.25rem;margin-top:4px">'+
-      '<div style="font-size:14px;font-weight:600;margin-bottom:.5rem">Pronto! 🎉</div>'+
+      '<div style="font-size:14px;font-weight:600;margin-bottom:.375rem">Pronto! 🎉</div>'+
       '<div style="font-size:12px;color:#666;margin-bottom:10px;line-height:1.5">Copie o código abaixo e envie para quem te convidou:</div>'+
       '<textarea id="inv-response-code" readonly style="width:100%;font-size:11px;padding:10px;border-radius:10px;border:.5px solid #ccc;font-family:monospace;height:80px;resize:none;background:#f9f9f7"></textarea>'+
       '<button onclick="navigator.clipboard.writeText(document.getElementById(\'inv-response-code\').value).then(()=>{this.textContent=\'✅ Copiado!\';setTimeout(()=>this.textContent=\'📋 Copiar código\',2000)})" style="width:100%;margin-top:10px;padding:12px;border-radius:10px;border:none;background:#1a1a18;color:#fff;font-size:13px;font-family:inherit;cursor:pointer;font-weight:600">📋 Copiar código</button>'+
@@ -2526,8 +2639,8 @@ function showInvitePage(data){
   window.invToggleLocal=function(id,el){
     const i=window._invLocals.indexOf(id);
     const chk=document.getElementById('inv-chk-'+id);
-    if(i>=0){window._invLocals.splice(i,1);el.style.background='#fff';el.style.borderColor='#e5e4e0';if(chk){chk.textContent='⬜';}}
-    else{window._invLocals.push(id);el.style.background='#e8f0fe';el.style.borderColor='#185FA5';if(chk){chk.textContent='✅';}}
+    if(i>=0){window._invLocals.splice(i,1);el.style.background='#fff';el.style.borderColor='#e5e4e0';if(chk)chk.textContent='⬜';}
+    else{window._invLocals.push(id);el.style.background='#e8f0fe';el.style.borderColor='#185FA5';if(chk)chk.textContent='✅';}
   };
   window.invToggleDay=function(d,btn){
     const i=window._invDays.indexOf(d);
@@ -2540,8 +2653,8 @@ function showInvitePage(data){
     else{window._invAffs.push(id);btn.style.background='#1a1a18';btn.style.color='#fff';btn.style.borderColor='#1a1a18';}
   };
   window.generateInviteResponse=function(){
-    const nome=document.getElementById('inv-nome').value.trim()||data.nome||'Convidado';
-    if(!nome){document.getElementById('inv-nome').focus();return;}
+    const nome=document.getElementById('inv-nome').value.trim();
+    if(!nome){document.getElementById('inv-nome').focus();document.getElementById('inv-nome').style.borderColor='#c0392b';return;}
     const code=toBase64url(JSON.stringify({v:1,nome,locals:window._invLocals,days:window._invDays,affinities:window._invAffs}));
     const area=document.getElementById('inv-response-area');
     document.getElementById('inv-response-code').value=code;
@@ -2597,8 +2710,9 @@ function renderGroupsPanel(){
         ${g.desc?`<div style="font-size:12px;color:#666;margin-bottom:.5rem">${escHtml(g.desc)}</div>`:''}
         <div class="group-members">${(g.members||[]).map(m=>`<span class="group-member-tag">${escHtml(m)}</span>`).join('')}</div>
         <div class="group-actions">
-          <button class="group-btn" onclick="shareGroup('${g.id}')">🔗 Compartilhar</button>
-          ${isLeader?`<button class="group-btn primary" onclick="manageGroup('${g.id}')">⚙️ Gerenciar</button>`:''}
+          <button class="group-btn primary" onclick="shareGroup('${g.id}')">📤 Convidar grupo</button>
+          ${isLeader?`<button class="group-btn" onclick="manageGroup('${g.id}')">⚙️ Gerenciar</button>`:''}
+        </div>
         </div>
       </div>`;
     }).join('');
@@ -2623,10 +2737,6 @@ function saveGroup(){
   });
   ['cg-nome','cg-icon','cg-desc'].forEach(id=>document.getElementById(id).value='');
   persist(); closeCreateGroup(); renderGroupsPanel();
-}
-function shareGroup(id){
-  const g=(state.groups||[]).find(x=>x.id===id);if(!g)return;
-  navigator.clipboard.writeText(`Junte-se ao grupo "${g.nome}" no Roteiro SP!`).then(()=>alert('✅ Link copiado!'));
 }
 function manageGroup(id){
   alert('Em breve: gerenciar membros, roteiro do grupo e notificações.');
