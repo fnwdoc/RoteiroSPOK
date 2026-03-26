@@ -511,6 +511,19 @@ mark{background:#fff3cd;color:#1a1a18;border-radius:3px;padding:0 2px}
           <p style="font-size:11px;color:#888;margin-bottom:8px">Obtenha em <strong>console.anthropic.com</strong> → API Keys</p>
         </div>
         <div id="groq-fields" style="display:none">
+          <div style="background:#f0faf8;border:.5px solid #b2dfdb;border-radius:10px;padding:.875rem 1rem;margin-bottom:12px">
+            <div style="font-size:12px;font-weight:600;color:#00695c;margin-bottom:6px">🆓 Como obter sua API Key gratuita</div>
+            <div style="font-size:11px;color:#444;line-height:1.7">
+              1. Clique no botão abaixo para abrir o Groq<br>
+              2. Crie uma conta gratuita (ou entre com Google)<br>
+              3. No menu lateral clique em <strong>API Keys</strong><br>
+              4. Clique em <strong>Create API Key</strong><br>
+              5. Copie a chave e cole no campo abaixo
+            </div>
+            <a href="https://console.groq.com/keys" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px;padding:9px;border-radius:8px;background:#00897b;color:#fff;font-size:13px;font-weight:600;text-decoration:none">
+              🔑 Abrir console.groq.com →
+            </a>
+          </div>
           <label class="form-label">API Key Groq</label>
           <input type="password" id="cfg-groq-key" placeholder="gsk_…" autocomplete="off"/>
           <label class="form-label">Modelo</label>
@@ -520,7 +533,6 @@ mark{background:#fff3cd;color:#1a1a18;border-radius:3px;padding:0 2px}
             <option value="llama-3.3-70b-versatile">Llama 3.3 70B (texto, rápido)</option>
             <option value="llama-3.1-8b-instant">Llama 3.1 8B Instant (texto, ultra rápido)</option>
           </select>
-          <p style="font-size:11px;color:#888;margin-bottom:8px">Obtenha em <strong>console.groq.com</strong> → API Keys</p>
         </div>
         <div class="cfg-status" id="cfg-status"></div>
         <button class="action-btn primary" onclick="saveApiKeys()" style="margin-bottom:8px">💾 Salvar configurações</button>
@@ -892,8 +904,8 @@ const ALL_CATS = CAT_GROUPS.flatMap(g=>g.cats);
 
 // ── AFFINITY PROFILES ─────────────────────────────────────────────────────────
 const DEFAULT_AFFINITY_PROFILES = [
-  {id:'casal_rom',   icon:'💑', label:'Casal romântico'},
-  {id:'casal_casual',icon:'👫', label:'Casal casual'},
+  {id:'casal_rom',   icon:'💑', label:'Romântico'},
+  {id:'casal_casual',icon:'👫', label:'Casual'},
   {id:'par_cia',     icon:'🤝', label:'Par de Cia'},
   {id:'grupo',       icon:'👯', label:'Grupo de amigos'},
   {id:'solo',        icon:'🧍', label:'Solteiro solo'},
@@ -925,17 +937,17 @@ const DEFAULT_STATE = {
   sponsored:null, affiliates:{}, influencers:[], favs:[], groups:[], people:[],
   menuItems:['roteiro','favs','cfg'],
   semana:[
-    {id:'s1',nome:'Conceição Discos & Comes',cats:['almoco_rapido','exp_gastro'],affinities:['casal_casual','grupo','solo','turista'],icon:'🍚',hora:'12h00',dur:'1h30',dist:'3,5 km',transporte:'Ônibus (~10 min) ou a pé (~45 min)',end:'R. Imac. Conceição, 151 – Vila Buarque, São Paulo',nota:'Almoço com a chef Talitha. Arroz, música e alma. Ter–Sáb.',rating:'4.4',aviso:'Fecha às 17h!',badge:null,badgeType:null,status:'ativo',schedDate:null,schedNote:null,notes:[]},
-    {id:'s2',nome:'Farol Santander',cats:['evento_dia'],affinities:['casal_rom','casal_casual','familia','turista','solo'],icon:'🏙️',hora:'14h00',dur:'1h30',dist:'1,5 km',transporte:'A pé (~20 min)',end:'R. João Brícola, 24 – Centro Histórico, São Paulo',nota:'Vista 360° do topo do Edifício Altino Arantes. Seg–Sáb 9h–19h.',rating:'4.7',aviso:null,badge:null,badgeType:null,status:'ativo',schedDate:null,schedNote:null,notes:[]},
-    {id:'s3',nome:'Notre Vin',cats:['jantar_rapido','exp_gastro','evento_noite','evento_musica','speakeasy'],affinities:['casal_rom','casal_casual','par_cia','grupo'],icon:'🍷',hora:'19h00',dur:'2h',dist:'11 km',transporte:'Metrô + Uber (~30 min)',end:'R. João Moura, 1086 – Pinheiros, São Paulo',nota:'Wine bar com jazz ao vivo. Ter/qua: peça uma taça, ganha outra.',rating:'4.6',aviso:'Aberto a partir das 18h. Fechado seg/dom.',badge:'Double Trouble – ter/qua',badgeType:'tip',status:'ativo',schedDate:null,schedNote:null,notes:[]},
-    {id:'s4',nome:'Vila Secreta – Raful de Raful',cats:['evento_dia','evento_pago'],affinities:['casal_rom','par_cia','turista','solo'],icon:'🏚️',hora:'(autônoma)',dur:'1h',dist:'1 km',transporte:'A pé (~12 min)',end:'R. Rubi, 50 – Aclimação, São Paulo',nota:'Vila histórica escondida. Coleção de 1700–1960. R$35.',rating:'4.9',aviso:'Visitas: sex 15h e sáb 10h apenas.',badge:'Sex 15h · Sáb 10h',badgeType:'warn',status:'ativo',schedDate:null,schedNote:null,notes:[]},
+    {id:'s1',nome:'Conceição Discos & Comes',cats:['almoco_rapido','exp_gastro'],affinities:['casal_casual','grupo','solo','turista'],icon:'🍚',hora:'12h00',dur:'1h30',dist:'3,5 km',transporte:'Ônibus (~10 min) ou a pé (~45 min)',end:'R. Imac. Conceição, 151 – Vila Buarque, São Paulo',nota:'Almoço com a chef Talitha. Arroz, música e alma. Ter–Sáb.',rating:'4.4',aviso:'Fecha às 17h!',badge:null,badgeType:null,status:'arquivado',schedDate:null,schedNote:null,notes:[]},
+    {id:'s2',nome:'Farol Santander',cats:['evento_dia'],affinities:['casal_rom','casal_casual','familia','turista','solo'],icon:'🏙️',hora:'14h00',dur:'1h30',dist:'1,5 km',transporte:'A pé (~20 min)',end:'R. João Brícola, 24 – Centro Histórico, São Paulo',nota:'Vista 360° do topo do Edifício Altino Arantes. Seg–Sáb 9h–19h.',rating:'4.7',aviso:null,badge:null,badgeType:null,status:'arquivado',schedDate:null,schedNote:null,notes:[]},
+    {id:'s3',nome:'Notre Vin',cats:['jantar_rapido','exp_gastro','evento_noite','evento_musica','speakeasy'],affinities:['casal_rom','casal_casual','par_cia','grupo'],icon:'🍷',hora:'19h00',dur:'2h',dist:'11 km',transporte:'Metrô + Uber (~30 min)',end:'R. João Moura, 1086 – Pinheiros, São Paulo',nota:'Wine bar com jazz ao vivo. Ter/qua: peça uma taça, ganha outra.',rating:'4.6',aviso:'Aberto a partir das 18h. Fechado seg/dom.',badge:'Double Trouble – ter/qua',badgeType:'tip',status:'arquivado',schedDate:null,schedNote:null,notes:[]},
+    {id:'s4',nome:'Vila Secreta – Raful de Raful',cats:['evento_dia','evento_pago'],affinities:['casal_rom','par_cia','turista','solo'],icon:'🏚️',hora:'(autônoma)',dur:'1h',dist:'1 km',transporte:'A pé (~12 min)',end:'R. Rubi, 50 – Aclimação, São Paulo',nota:'Vila histórica escondida. Coleção de 1700–1960. R$35.',rating:'4.9',aviso:'Visitas: sex 15h e sáb 10h apenas.',badge:'Sex 15h · Sáb 10h',badgeType:'warn',status:'arquivado',schedDate:null,schedNote:null,notes:[]},
   ],
   fds:[
-    {id:'f1',nome:'Vila Secreta – Raful de Raful',cats:['evento_dia','evento_pago'],affinities:['casal_rom','par_cia','turista','solo'],icon:'🏚️',hora:'10h00 (sáb)',dur:'1h',dist:'1 km',transporte:'A pé (~12 min)',end:'R. Rubi, 50 – Aclimação, São Paulo',nota:'Visita guiada. R$35. Crianças até 10 anos grátis.',rating:'4.9',aviso:'Único horário no fds.',badge:'Sábados 10h',badgeType:'warn',status:'ativo',schedDate:null,schedNote:null,notes:[]},
-    {id:'f2',nome:'Conceição Discos & Comes',cats:['almoco_rapido','exp_gastro'],affinities:['casal_casual','grupo','solo','turista'],icon:'🍚',hora:'12h00',dur:'1h30',dist:'3,5 km',transporte:'Ônibus (~10 min) ou a pé (~45 min)',end:'R. Imac. Conceição, 151 – Vila Buarque, São Paulo',nota:'Almoço imperdível com a chef Talitha. Ter–Sáb.',rating:'4.4',aviso:'Fecha às 17h. Fila no sáb.',badge:null,badgeType:null,status:'ativo',schedDate:null,schedNote:null,notes:[]},
-    {id:'f3',nome:'Casa Bradesco – Sou Outro do Outro',cats:['evento_dia','evento_pago','evento_gratis'],affinities:['casal_rom','casal_casual','familia','turista','solo'],icon:'🖼️',hora:'14h30',dur:'1h30',dist:'2 km',transporte:'A pé (~25 min)',end:'Alameda Rio Claro, 190 – Bela Vista, São Paulo',nota:'Exposição de Es Devlin. Labirinto de espelhos. Até 27/jul.',rating:'4.5',aviso:'Ter–Dom 12h–20h. Ingressos a partir de R$25.',badge:'Gratuito às terças',badgeType:'free',status:'ativo',schedDate:null,schedNote:null,notes:[]},
-    {id:'f4',nome:'Catedral da Sé – Luminiscence',cats:['evento_noite','evento_pago','evento_musica'],affinities:['casal_rom','par_cia','grupo','turista'],icon:'✨',hora:'20h30',dur:'1h',dist:'3 km',transporte:'Metrô Ana Rosa → Sé (~12 min)',end:'Praça da Sé – Centro, São Paulo',nota:'Show de luzes imersivo. Sessões a partir das 20h40.',rating:'4.7',aviso:'Confirme sessões em catedraldasesp.com.',badge:'15% off às segundas',badgeType:'free',status:'ativo',schedDate:null,schedNote:null,notes:[]},
-    {id:'f5',nome:'Le Club SP – Ashibah',cats:['evento_noite','evento_pago','eletronico','show'],affinities:['grupo','balada','solo'],icon:'🎧',hora:'23h00',dur:'3h',dist:'10 km',transporte:'Uber (~20 min)',end:'Av. Brig. Faria Lima, 4509 – Rooftop, São Paulo',nota:'Balada rooftop. Ashibah: sets hipnóticos e intensos.',rating:'4.4',aviso:'Abre 22h30. Apenas sex/sáb.',badge:null,badgeType:null,status:'ativo',schedDate:null,schedNote:null,notes:[]},
+    {id:'f1',nome:'Vila Secreta – Raful de Raful',cats:['evento_dia','evento_pago'],affinities:['casal_rom','par_cia','turista','solo'],icon:'🏚️',hora:'10h00 (sáb)',dur:'1h',dist:'1 km',transporte:'A pé (~12 min)',end:'R. Rubi, 50 – Aclimação, São Paulo',nota:'Visita guiada. R$35. Crianças até 10 anos grátis.',rating:'4.9',aviso:'Único horário no fds.',badge:'Sábados 10h',badgeType:'warn',status:'arquivado',schedDate:null,schedNote:null,notes:[]},
+    {id:'f2',nome:'Conceição Discos & Comes',cats:['almoco_rapido','exp_gastro'],affinities:['casal_casual','grupo','solo','turista'],icon:'🍚',hora:'12h00',dur:'1h30',dist:'3,5 km',transporte:'Ônibus (~10 min) ou a pé (~45 min)',end:'R. Imac. Conceição, 151 – Vila Buarque, São Paulo',nota:'Almoço imperdível com a chef Talitha. Ter–Sáb.',rating:'4.4',aviso:'Fecha às 17h. Fila no sáb.',badge:null,badgeType:null,status:'arquivado',schedDate:null,schedNote:null,notes:[]},
+    {id:'f3',nome:'Casa Bradesco – Sou Outro do Outro',cats:['evento_dia','evento_pago','evento_gratis'],affinities:['casal_rom','casal_casual','familia','turista','solo'],icon:'🖼️',hora:'14h30',dur:'1h30',dist:'2 km',transporte:'A pé (~25 min)',end:'Alameda Rio Claro, 190 – Bela Vista, São Paulo',nota:'Exposição de Es Devlin. Labirinto de espelhos. Até 27/jul.',rating:'4.5',aviso:'Ter–Dom 12h–20h. Ingressos a partir de R$25.',badge:'Gratuito às terças',badgeType:'free',status:'arquivado',schedDate:null,schedNote:null,notes:[]},
+    {id:'f4',nome:'Catedral da Sé – Luminiscence',cats:['evento_noite','evento_pago','evento_musica'],affinities:['casal_rom','par_cia','grupo','turista'],icon:'✨',hora:'20h30',dur:'1h',dist:'3 km',transporte:'Metrô Ana Rosa → Sé (~12 min)',end:'Praça da Sé – Centro, São Paulo',nota:'Show de luzes imersivo. Sessões a partir das 20h40.',rating:'4.7',aviso:'Confirme sessões em catedraldasesp.com.',badge:'15% off às segundas',badgeType:'free',status:'arquivado',schedDate:null,schedNote:null,notes:[]},
+    {id:'f5',nome:'Le Club SP – Ashibah',cats:['evento_noite','evento_pago','eletronico','show'],affinities:['grupo','balada','solo'],icon:'🎧',hora:'23h00',dur:'3h',dist:'10 km',transporte:'Uber (~20 min)',end:'Av. Brig. Faria Lima, 4509 – Rooftop, São Paulo',nota:'Balada rooftop. Ashibah: sets hipnóticos e intensos.',rating:'4.4',aviso:'Abre 22h30. Apenas sex/sáb.',badge:null,badgeType:null,status:'arquivado',schedDate:null,schedNote:null,notes:[]},
   ],
 };
 
@@ -947,7 +959,8 @@ function persist() {
 }
 
 function migrateState(s) {
-  // garante que todos os campos novos existam em estados salvos antigos
+  // IDs dos locais de exemplo — devem ficar arquivados
+  const EXAMPLE_IDS = new Set(['s1','s2','s3','s4','f1','f2','f3','f4','f5']);
   if(!s.influencers) s.influencers=[];
   if(!s.favs)        s.favs=[];
   if(!s.groups)      s.groups=[];
@@ -955,13 +968,14 @@ function migrateState(s) {
   if(!s.menuItems)   s.menuItems=['roteiro','favs','cfg'];
   if(!s.affiliates)  s.affiliates={};
   if(s.origin===undefined) s.origin='';
-  // garante campos por local
   ['semana','fds'].forEach(tab=>{
     (s[tab]||[]).forEach(d=>{
       if(!d.affinities) d.affinities=[];
       if(!d.notes)      d.notes=[];
       if(!d.cats)       d.cats=[];
       if(d.status===undefined) d.status='ativo';
+      // arquiva locais de exemplo se ainda estiverem ativos
+      if(EXAMPLE_IDS.has(d.id) && d.status==='ativo') d.status='arquivado';
     });
   });
   return s;
@@ -1369,15 +1383,26 @@ function renderPanel(tab) {
   const dists = all.map(d=>(d.dist||'').replace(/[^\d,.]/g,'').replace(',','.')).map(Number).filter(n=>!isNaN(n)&&n>0);
   const distStr = dists.length ? `~${dists.reduce((a,b)=>a+b,0).toFixed(1).replace('.',',')} km` : '–';
   let h='';
-  h+=`<div class="summary">
-    <div class="stat"><div class="stat-label">Ativos</div><div class="stat-val">${all.length}</div></div>
-    <div class="stat"><div class="stat-label">Distância</div><div class="stat-val">${distStr}</div></div>
-    <div class="stat"><div class="stat-label">Duração</div><div class="stat-val">${durStr}</div></div>
-  </div>`;
-  if(all.length) h+=`<a class="full-route-btn" href="${fullRouteUrl(tab)}" target="_blank">🗺️ Abrir rota completa no Google Maps</a>`;
-  h+=`<button class="optimize-btn" id="opt-btn-${tab}" onclick="optimizeRoute('${tab}')">✨ Otimizar rota com IA</button>`;
-  h+=`<div class="suggest-bar" id="suggest-bar-${tab}"></div>`;
-  if(state.sponsored) h+=`<div class="sponsored-card"><div class="sponsored-head"><span class="sp-badge">Parceiro</span><div class="sp-info"><div class="sp-title">${state.sponsored.nome}</div><div class="sp-desc">${state.sponsored.desc||''}</div></div><button class="sp-cta" onclick="openLink('${state.sponsored.link}')">${state.sponsored.cta}</button></div></div>`;
+  if(!all.length){
+    // tela limpa — estado de boas-vindas
+    h+=`<div style="text-align:center;padding:2.5rem 1rem 1rem">
+      <div style="font-size:40px;margin-bottom:.75rem">🗺️</div>
+      <div style="font-size:16px;font-weight:600;margin-bottom:.5rem;color:#1a1a18">Seu roteiro está vazio</div>
+      <div style="font-size:13px;color:#888;line-height:1.6;margin-bottom:1.25rem">
+        Adicione locais abaixo ou ative um<br>do <strong>Banco</strong> para começar.
+      </div>
+    </div>`;
+  } else {
+    h+=`<div class="summary">
+      <div class="stat"><div class="stat-label">Ativos</div><div class="stat-val">${all.length}</div></div>
+      <div class="stat"><div class="stat-label">Distância</div><div class="stat-val">${distStr}</div></div>
+      <div class="stat"><div class="stat-label">Duração</div><div class="stat-val">${durStr}</div></div>
+    </div>`;
+    h+=`<a class="full-route-btn" href="${fullRouteUrl(tab)}" target="_blank">🗺️ Abrir rota completa no Google Maps</a>`;
+    h+=`<button class="optimize-btn" id="opt-btn-${tab}" onclick="optimizeRoute('${tab}')">✨ Otimizar rota com IA</button>`;
+    h+=`<div class="suggest-bar" id="suggest-bar-${tab}"></div>`;
+    if(state.sponsored) h+=`<div class="sponsored-card"><div class="sponsored-head"><span class="sp-badge">Parceiro</span><div class="sp-info"><div class="sp-title">${state.sponsored.nome}</div><div class="sp-desc">${state.sponsored.desc||''}</div></div><button class="sp-cta" onclick="openLink('${state.sponsored.link}')">${state.sponsored.cta}</button></div></div>`;
+  }
   h+=`<div style="margin-bottom:1rem">
     <button class="add-btn-main" onclick="toggleForm('${tab}')">＋ Adicionar local</button>
     <div class="add-form" id="add-form-${tab}">
@@ -1670,6 +1695,8 @@ function formatDate(s){if(!s)return'';const[y,m,d]=s.split('-');return`${d}/${m}
 function renderBank(){
   const el=document.getElementById('panel-bank');
   const all=[...state.semana,...state.fds];
+  const archived=all.filter(d=>d.status==='arquivado');
+  const hasActiveLocals=[...state.semana,...state.fds].some(d=>d.status==='ativo');
   const sec=(title,icon,items,empty)=>{
     let h=`<div class="bank-section"><div class="bank-title">${icon} ${title}<span>${items.length}</span></div>`;
     if(!items.length){h+=`<div style="font-size:12px;color:#bbb;padding:8px 0">${empty}</div>`;}
@@ -1680,10 +1707,16 @@ function renderBank(){
     });
     return h+'</div>';
   };
-  el.innerHTML=`<div style="margin-bottom:1.25rem"><div style="font-size:15px;font-weight:600;margin-bottom:4px">📦 Banco de Locais</div><div style="font-size:12px;color:#888">Locais fora do roteiro ativo.</div></div>`
+  const header = !hasActiveLocals && archived.length
+    ? `<div style="background:#e8f0fe;border:.5px solid #aac4f7;border-radius:12px;padding:.875rem 1rem;margin-bottom:1.25rem">
+        <div style="font-size:13px;font-weight:600;color:#185FA5;margin-bottom:3px">👋 Bem-vindo! Seu roteiro está vazio.</div>
+        <div style="font-size:12px;color:#444;line-height:1.5">Ative os locais abaixo para adicioná-los ao roteiro, ou adicione os seus próprios na aba 🗺️ Roteiro.</div>
+       </div>`
+    : `<div style="margin-bottom:1.25rem"><div style="font-size:15px;font-weight:600;margin-bottom:4px">📦 Banco de Locais</div><div style="font-size:12px;color:#888">Locais fora do roteiro ativo.</div></div>`;
+  el.innerHTML=header
     +sec('Agendados','📅',all.filter(d=>d.status==='agendado'),'Nenhum agendado.')
     +sec('Data indefinida','🌙',all.filter(d=>d.status==='someday'),'Nenhum someday.')
-    +sec('Arquivados','📦',all.filter(d=>d.status==='arquivado'),'Nenhum arquivado.');
+    +sec('Arquivados','📦',archived,'Nenhum arquivado.');
 }
 
 
@@ -2048,7 +2081,7 @@ const ALL_NAV_ITEMS = [
 ];
 
 const LEVEL_MENUS = {
-  iniciante:    ['roteiro','favs','cfg'],
+  iniciante:    ['roteiro','bank','favs','cfg'],
   intermediario:['roteiro','favs','bank','people','cfg'],
   avancado:     ['roteiro','favs','bank','people','groups','infl','mono','cfg'],
 };
