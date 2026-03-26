@@ -967,19 +967,28 @@ function migrateState(s) {
   return s;
 }
 
+function clearSavedData() {
+  if(!confirm('Apagar todos os dados salvos e voltar ao padrão?')) return;
+  localStorage.removeItem('roteirosp_state');
+  localStorage.removeItem('sp_origin_history');
+  const fresh = migrateState(JSON.parse(JSON.stringify(DEFAULT_STATE)));
+  Object.keys(state).forEach(k=>delete state[k]);
+  Object.assign(state, fresh);
+  render();
+  renderBottomNav();
+  initOriginDisplay();
+  alert('Dados apagados.');
+}
+
 function loadPersisted() {
   try {
     const s = localStorage.getItem('roteirosp_state');
-    if(s) state = migrateState(JSON.parse(s));
+    if(s) {
+      const loaded = migrateState(JSON.parse(s));
+      Object.keys(state).forEach(k=>delete state[k]);
+      Object.assign(state, loaded);
+    }
   } catch(e){ console.warn('loadPersisted failed', e); }
-}
-
-function saveToFile() {
-  const blob = new Blob([JSON.stringify(state,null,2)],{type:'application/json'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'roteiro-sp-'+new Date().toISOString().slice(0,10)+'.json';
-  a.click(); URL.revokeObjectURL(a.href);
 }
 
 function importFromFile(e) {
@@ -989,7 +998,9 @@ function importFromFile(e) {
     try {
       const imported = JSON.parse(ev.target.result);
       if(!imported.semana || !imported.fds) { alert('Arquivo inválido — faltam campos semana/fds.'); return; }
-      state = migrateState(imported);
+      const migrated = migrateState(imported);
+      Object.keys(state).forEach(k=>delete state[k]);
+      Object.assign(state, migrated);
       persist();
       render();
       renderBottomNav();
@@ -998,19 +1009,15 @@ function importFromFile(e) {
     } catch(err) { alert('Erro ao importar: '+err.message); }
   };
   r.readAsText(f);
-  // reset input para permitir reimportar o mesmo arquivo
   e.target.value = '';
 }
 
-function clearSavedData() {
-  if(!confirm('Apagar todos os dados salvos e voltar ao padrão?')) return;
-  localStorage.removeItem('roteirosp_state');
-  localStorage.removeItem('sp_origin_history');
-  state = migrateState(JSON.parse(JSON.stringify(DEFAULT_STATE)));
-  render();
-  renderBottomNav();
-  initOriginDisplay();
-  alert('Dados apagados.');
+function saveToFile() {
+  const blob = new Blob([JSON.stringify(state,null,2)],{type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'roteiro-sp-'+new Date().toISOString().slice(0,10)+'.json';
+  a.click(); URL.revokeObjectURL(a.href);
 }
 
 // ── MAPS ──────────────────────────────────────────────────────────────────────
