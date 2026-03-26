@@ -304,24 +304,58 @@ mark{background:#fff3cd;color:#1a1a18;border-radius:3px;padding:0 2px}
 /* NOTE BADGE on card head */
 .note-badge{font-size:10px;background:#e8f0fe;color:#185FA5;padding:1px 6px;border-radius:8px;font-weight:500;flex-shrink:0}
 
-/* ONBOARDING MODAL */
-.onboard-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:300;align-items:flex-end;justify-content:center}
-.onboard-overlay.visible{display:flex}
-.onboard-box{background:#fff;width:100%;max-width:520px;border-radius:20px 20px 0 0;padding:1.75rem 1.5rem 2.5rem;text-align:center}
-.onboard-logo{font-size:32px;margin-bottom:.5rem}
-.onboard-title{font-size:18px;font-weight:700;margin-bottom:.25rem;color:#1a1a18}
-.onboard-sub{font-size:13px;color:#888;margin-bottom:1.5rem;line-height:1.5}
-.onboard-levels{display:flex;flex-direction:column;gap:10px;margin-bottom:1.25rem}
-.onboard-level{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:14px;border:1.5px solid #e5e4e0;cursor:pointer;text-align:left;background:#fff;font-family:inherit;transition:all .15s}
-.onboard-level:hover{border-color:#1a1a18;background:#fafaf8}
-.onboard-level.selected{border-color:#1a1a18;background:#1a1a18;color:#fff}
-.onboard-level.selected .ol-desc{color:#ccc}
-.ol-icon{font-size:24px;flex-shrink:0}
-.ol-info{flex:1}
-.ol-label{font-size:14px;font-weight:600}
-.ol-desc{font-size:11px;color:#888;margin-top:2px;line-height:1.4}
-.onboard-cta{width:100%;padding:13px;border-radius:12px;background:#1a1a18;color:#fff;border:none;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer}
-.onboard-cta:disabled{background:#ccc;cursor:not-allowed}
+/* ONBOARDING — handled by guide drawer */
+.onboard-overlay{display:none!important}
+.qs-progress-wrap{background:rgba(255,255,255,.15);height:3px;margin-top:1rem;border-radius:2px;overflow:hidden}
+.qs-progress-bar{height:100%;background:#fff;border-radius:2px;transition:width .4s ease}
+.qs-body{max-width:520px;margin:0 auto;padding:1.25rem 1.25rem 3rem}
+.qs-counter{font-size:11px;color:rgba(255,255,255,.45);text-align:center;margin-bottom:.875rem;font-weight:500;letter-spacing:.04em}
+.qs-card{background:#fff;border:.5px solid #e5e4e0;border-radius:14px;padding:1.125rem;margin-bottom:.75rem;animation:qsSlide .3s ease}
+@keyframes qsSlide{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.qs-question{font-size:15px;font-weight:700;color:#1a1a18;margin-bottom:.25rem;line-height:1.3}
+.qs-hint{font-size:11px;color:#666;margin-bottom:.875rem;line-height:1.5}
+.qs-options{display:flex;flex-direction:column;gap:6px}
+.qs-opt{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;border:.5px solid #e5e4e0;background:#fafaf8;cursor:pointer;font-family:inherit;text-align:left;transition:all .15s;width:100%}
+.qs-opt:hover{border-color:#1a1a18;background:#fff}
+.qs-opt.selected{border-color:#185FA5;background:#e8f0fe}
+.qs-opt.selected .qs-opt-label{color:#1a1a18}
+.qs-opt.selected .qs-opt-desc{color:#555}
+.qs-opt-icon{font-size:19px;flex-shrink:0}
+.qs-opt-label{font-size:13px;font-weight:500;color:#1a1a18}
+.qs-opt-desc{font-size:11px;color:#888;margin-top:1px;line-height:1.35}
+.qs-tip{border-radius:10px;padding:.625rem .875rem;margin-top:.75rem;font-size:11px;line-height:1.6;display:none;animation:qsSlide .25s ease}
+.qs-tip.visible{display:block}
+.qs-tip.blue{background:#e8f0fe;border:.5px solid #aac4f7;color:#1a3a6b}
+.qs-tip.green{background:#e8f5e9;border:.5px solid #a5d6a7;color:#1b5e20}
+.qs-tip.yellow{background:#fff8e1;border:.5px solid #ffe082;color:#7a4a00}
+.qs-tip.purple{background:#f3e5f5;border:.5px solid #ce93d8;color:#4a1a6b}
+.qs-tip-title{font-weight:700;margin-bottom:3px;font-size:11px}
+.qs-input{width:100%;font-size:13px;padding:9px 11px;border-radius:9px;border:.5px solid #ccc;font-family:inherit;background:#fff;margin-top:.625rem;color:#1a1a18}
+.qs-input:focus{outline:none;border-color:#185FA5}
+.qs-next{width:100%;padding:12px;border-radius:11px;background:#185FA5;color:#fff;border:none;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;margin-top:.75rem;display:none;transition:opacity .15s}
+.qs-next.visible{display:block}
+.qs-next:hover{opacity:.88}
+.qs-back{background:none;border:none;font-size:11px;color:rgba(255,255,255,.45);cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:4px;padding:0;margin-bottom:.75rem;transition:color .15s}
+.qs-back:hover{color:rgba(255,255,255,.85)}
+/* FINAL SCREEN — inside white card */
+.qs-final{text-align:center;padding:1rem 0 .75rem}
+.qs-final-icon{font-size:40px;margin-bottom:.625rem;display:block;animation:qsPop .5s cubic-bezier(.34,1.56,.64,1)}
+@keyframes qsPop{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:scale(1)}}
+.qs-final-title{font-size:15px;font-weight:700;margin-bottom:.25rem;color:#1a1a18}
+.qs-final-sub{font-size:12px;color:#666;line-height:1.6;margin-bottom:1rem}
+.qs-chips{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;margin-bottom:.875rem}
+.qs-chip{font-size:11px;padding:3px 10px;border-radius:20px;border:.5px solid #e5e4e0;background:#f5f4f0;color:#555}
+.qs-chip.hi{background:#1a1a18;color:#fff;border-color:#1a1a18}
+.qs-action-step{display:flex;gap:9px;align-items:flex-start;padding:7px 0;border-bottom:.5px solid #f0f0ec}
+.qs-action-step:last-child{border-bottom:none}
+.qs-action-num{width:20px;height:20px;border-radius:50%;background:#185FA5;color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.qs-action-text{font-size:11px;color:#444;line-height:1.5;flex:1}
+.qs-action-text strong{color:#1a1a18}
+/* Enter / skip buttons — outside cards, on dark background */
+.qs-enter-btn{width:100%;padding:13px;border-radius:12px;background:#22c55e;color:#fff;border:none;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;margin-top:1rem;transition:opacity .15s}
+.qs-enter-btn:hover{opacity:.88}
+.qs-skip{width:100%;padding:8px;border-radius:9px;background:transparent;border:.5px solid rgba(255,255,255,.15);color:rgba(255,255,255,.45);font-size:11px;font-family:inherit;cursor:pointer;margin-top:7px;transition:all .15s}
+.qs-skip:hover{border-color:rgba(255,255,255,.3);color:rgba(255,255,255,.7)}
 /* TOOLTIP */
 .tooltip-bar{background:#fff8e1;border:.5px solid #ffe082;border-radius:10px;padding:.625rem 1rem;margin:0 0 .75rem;font-size:12px;color:#795548;display:none;align-items:center;gap:8px}
 .tooltip-bar.visible{display:flex}
@@ -420,8 +454,96 @@ mark{background:#fff3cd;color:#1a1a18;border-radius:3px;padding:0 2px}
 .hamburger-item-check{width:22px;height:22px;border-radius:6px;border:1.5px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;transition:all .15s}
 .hamburger-item-check.on{background:#1a1a18;border-color:#1a1a18;color:#fff}
 .hamburger-item.fixed .hamburger-item-check{background:#f5f4f0;border-color:#e0e0dc;color:#bbb}
-/* AFFINITY badge inside cards */
-.affinity-badge{display:inline-block;font-size:9px;padding:1px 6px;border-radius:8px;background:#f3e5f5;color:#7b1fa2;font-weight:500;margin-left:3px}
+/* GUIDE DRAWER */
+.guide-drawer{position:fixed;inset:0;z-index:250;pointer-events:none}
+.guide-drawer.open{pointer-events:all}
+.guide-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.3);opacity:0;transition:opacity .3s;cursor:pointer}
+.guide-drawer.open .guide-backdrop{opacity:1}
+.guide-panel{position:absolute;left:0;top:0;bottom:0;width:min(390px,88vw);background:#1a1a18;transform:translateX(-100%);transition:transform .3s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;overflow:hidden;box-shadow:4px 0 32px rgba(0,0,0,.25)}
+.guide-drawer.open .guide-panel{transform:translateX(0)}
+.guide-panel-header{color:#fff;padding:1.125rem 1rem .875rem;flex-shrink:0;display:flex;align-items:center;justify-content:space-between;border-bottom:.5px solid rgba(255,255,255,.1)}
+.guide-panel-title{font-size:13px;font-weight:700;color:#fff;display:flex;align-items:center;gap:7px}
+.guide-panel-close{background:none;border:none;color:rgba(255,255,255,.45);font-size:18px;cursor:pointer;line-height:1;padding:2px 4px;transition:color .15s}
+.guide-panel-close:hover{color:#fff}
+.guide-panel-progress{background:rgba(255,255,255,.12);height:2px;margin:.75rem 1rem 0}
+.guide-panel-progress-bar{height:100%;background:#22c55e;border-radius:2px;transition:width .4s ease}
+.guide-panel-body{flex:1;overflow-y:auto;padding:1rem;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.15) transparent}
+
+/* Desktop: drawer fixo, app centraliza ao lado */
+@media(min-width:768px){
+  .guide-drawer{position:fixed;left:0;top:0;bottom:0;width:390px;pointer-events:none;z-index:100}
+  .guide-drawer.open{pointer-events:all}
+  .guide-drawer.open .guide-backdrop{display:none}
+  .guide-panel{width:390px;transform:translateX(-100%);box-shadow:none;border-right:.5px solid rgba(255,255,255,.08)}
+  .guide-drawer.open .guide-panel{transform:translateX(0)}
+  body.guide-open .app{margin-left:390px;transition:margin-left .3s cubic-bezier(.4,0,.2,1)}
+  body.guide-open{overflow:auto}
+}
+@media(max-width:767px){
+  .guide-panel{width:min(390px,92vw)}
+  body.guide-open{overflow:hidden}
+}
+
+/* guide btn */
+.guide-btn{background:none;border:.5px solid #e0e0dc;border-radius:8px;padding:5px 9px;cursor:pointer;font-size:14px;color:#555;line-height:1;position:relative;transition:all .15s}
+.guide-btn.active{background:#1a1a18;color:#fff;border-color:#1a1a18}
+.guide-btn .guide-badge{display:none;position:absolute;top:-4px;right:-4px;width:8px;height:8px;background:#22c55e;border-radius:50%;border:1.5px solid #fff}
+.guide-btn .guide-badge.show{display:block}
+
+/* HIGHLIGHT SYSTEM */
+@keyframes qsHighlight{0%{box-shadow:0 0 0 0 rgba(24,95,165,.7)}70%{box-shadow:0 0 0 10px rgba(24,95,165,0)}100%{box-shadow:0 0 0 0 rgba(24,95,165,0)}}
+@keyframes qsHighlightNav{0%,100%{background:#e8f0fe;color:#185FA5}50%{background:#185FA5;color:#fff}}
+.qs-hl{animation:qsHighlight 1s ease 3}
+.qs-hl-nav{animation:qsHighlightNav .7s ease 3}
+.qs-spotlight{position:relative;z-index:15}
+.qs-spotlight::after{content:'';position:absolute;inset:-4px;border-radius:14px;border:2px solid #185FA5;pointer-events:none;animation:qsHighlight 1s ease 3}
+/* CHAT DRAWER */
+.chat-drawer{position:fixed;right:0;top:0;bottom:0;width:320px;z-index:100;pointer-events:none;transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1)}
+.chat-drawer.open{pointer-events:all;transform:translateX(0)}
+.chat-panel{position:absolute;inset:0;background:#fff;display:flex;flex-direction:column;border-left:.5px solid #e5e4e0;box-shadow:-4px 0 32px rgba(0,0,0,.08)}
+.chat-header{background:#fff;border-bottom:.5px solid #e5e4e0;padding:.875rem 1rem;flex-shrink:0;display:flex;align-items:center;gap:8px}
+.chat-header-icon{font-size:22px}
+.chat-header-info{flex:1;min-width:0}
+.chat-header-title{font-size:13px;font-weight:700;color:#1a1a18}
+.chat-header-sub{font-size:10px;color:#888;margin-top:1px}
+.chat-header-close{background:none;border:none;color:#aaa;font-size:18px;cursor:pointer;padding:2px 4px;transition:color .15s;line-height:1}
+.chat-header-close:hover{color:#1a1a18}
+.chat-messages{flex:1;overflow-y:auto;padding:.875rem 1rem;display:flex;flex-direction:column;gap:.625rem;scrollbar-width:thin}
+.chat-msg{max-width:88%;padding:.625rem .875rem;border-radius:14px;font-size:12px;line-height:1.55;animation:chatMsgIn .2s ease}
+@keyframes chatMsgIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.chat-msg.bot{background:#f5f4f0;color:#1a1a18;border-radius:14px 14px 14px 4px;align-self:flex-start}
+.chat-msg.user{background:#1a1a18;color:#fff;border-radius:14px 14px 4px 14px;align-self:flex-end}
+.chat-msg.bot a{color:#185FA5;text-decoration:underline;cursor:pointer}
+.chat-chips{display:flex;flex-wrap:wrap;gap:5px;padding:0 1rem .625rem;align-self:flex-start}
+.chat-chip-btn{font-size:11px;padding:5px 11px;border-radius:20px;border:.5px solid #e5e4e0;background:#fff;color:#555;cursor:pointer;font-family:inherit;transition:all .15s;white-space:nowrap}
+.chat-chip-btn:hover{border-color:#1a1a18;color:#1a1a18;background:#f5f4f0}
+.chat-typing{display:flex;align-items:center;gap:3px;padding:.5rem .875rem;background:#f5f4f0;border-radius:14px 14px 14px 4px;align-self:flex-start}
+.chat-typing span{width:5px;height:5px;background:#aaa;border-radius:50%;animation:chatDot .9s ease infinite}
+.chat-typing span:nth-child(2){animation-delay:.15s}
+.chat-typing span:nth-child(3){animation-delay:.3s}
+@keyframes chatDot{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-4px)}}
+.chat-input-wrap{border-top:.5px solid #e5e4e0;padding:.75rem 1rem;display:flex;gap:7px;flex-shrink:0;background:#fff}
+.chat-input{flex:1;font-size:13px;padding:8px 12px;border-radius:20px;border:.5px solid #ddd;font-family:inherit;resize:none;outline:none;transition:border-color .15s;line-height:1.4;max-height:80px;overflow-y:auto}
+.chat-input:focus{border-color:#1a1a18}
+.chat-send-btn{width:34px;height:34px;border-radius:50%;background:#1a1a18;color:#fff;border:none;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:opacity .15s;align-self:flex-end}
+.chat-send-btn:hover{opacity:.8}
+.chat-send-btn:disabled{background:#ddd;cursor:not-allowed}
+.chat-no-key{background:#fff8e1;border:.5px solid #ffe082;border-radius:10px;padding:.75rem 1rem;font-size:12px;color:#7a4a00;margin:.5rem 1rem}
+.chat-no-key strong{display:block;margin-bottom:4px;font-size:12px}
+.chat-no-key button{margin-top:8px;padding:6px 14px;border-radius:8px;background:#1a1a18;color:#fff;border:none;font-size:11px;font-family:inherit;cursor:pointer}
+/* Desktop: push app from right too */
+@media(min-width:768px){
+  body.chat-open .app{margin-right:320px;transition:margin-right .3s cubic-bezier(.4,0,.2,1)}
+  body.chat-open.guide-open .app{margin-left:390px;margin-right:320px}
+}
+/* Mobile: floating button */
+.chat-fab{display:none;position:fixed;bottom:80px;right:16px;z-index:150;width:50px;height:50px;border-radius:50%;background:#1a1a18;color:#fff;border:none;font-size:22px;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.25);align-items:center;justify-content:center;transition:transform .15s}
+.chat-fab:hover{transform:scale(1.08)}
+@media(max-width:767px){
+  .chat-fab{display:flex}
+  .chat-drawer{position:fixed;inset:0;width:100%;z-index:300;background:rgba(0,0,0,.3)}
+  .chat-panel{position:absolute;right:0;top:0;bottom:0;width:min(360px,95vw)}
+}
 /* FAVS PANEL */
 .favs-panel{padding:1rem 1.25rem 5rem;display:none}
 .favs-panel.visible{display:block}
@@ -445,7 +567,13 @@ mark{background:#fff3cd;color:#1a1a18;border-radius:3px;padding:0 2px}
     <div class="app-title">
       <button class="hamburger-btn" onclick="openHamburger()">☰</button>
       <span id="app-title">📍 Roteiro SP</span>
-      <button class="header-search-btn" onclick="openSearchOverlay()">🔍 Buscar</button>
+      <div style="display:flex;gap:6px;align-items:center">
+        <button class="guide-btn" id="guide-btn" onclick="toggleGuideDrawer()" title="Guia de início">
+          ❓<span class="guide-badge" id="guide-badge"></span>
+        </button>
+        <button class="guide-btn" id="chat-btn" onclick="toggleChatDrawer()" title="Assistente IA" style="font-size:16px">💬</button>
+        <button class="header-search-btn" onclick="openSearchOverlay()">🔍 Buscar</button>
+      </div>
     </div>
     <div class="origin-bar">
       <div class="origin-dot"></div>
@@ -736,37 +864,49 @@ mark{background:#fff3cd;color:#1a1a18;border-radius:3px;padding:0 2px}
 </div>
 
 <!-- ONBOARDING -->
-<div class="onboard-overlay" id="onboard-overlay">
-  <div class="onboard-box">
-    <div class="onboard-logo">📍</div>
-    <div class="onboard-title">Bem-vindo ao Roteiro SP</div>
-    <div class="onboard-sub">Como você se descreveria?<br>Isso ajuda a personalizar a experiência para você.</div>
-    <div class="onboard-levels">
-      <button class="onboard-level" onclick="selectLevel('iniciante',this)">
-        <span class="ol-icon">🟢</span>
-        <div class="ol-info">
-          <div class="ol-label">Iniciante</div>
-          <div class="ol-desc">Quero explorar os locais e descobrir meus favoritos. Interface simples e guiada.</div>
-        </div>
-      </button>
-      <button class="onboard-level" onclick="selectLevel('intermediario',this)">
-        <span class="ol-icon">🟡</span>
-        <div class="ol-info">
-          <div class="ol-label">Intermediário</div>
-          <div class="ol-desc">Já conheço o app e quero gerenciar grupos e influenciadores.</div>
-        </div>
-      </button>
-      <button class="onboard-level" onclick="selectLevel('avancado',this)">
-        <span class="ol-icon">🔴</span>
-        <div class="ol-info">
-          <div class="ol-label">Avançado</div>
-          <div class="ol-desc">Quero acesso total — IA, monetização, drag & drop e todos os recursos.</div>
-        </div>
-      </button>
+<!-- GUIDE DRAWER -->
+<div class="guide-drawer" id="guide-drawer">
+  <div class="guide-backdrop" onclick="closeGuideDrawer()"></div>
+  <div class="guide-panel">
+    <div class="guide-panel-header">
+      <div class="guide-panel-title">❓ Guia interativo</div>
+      <button class="guide-panel-close" onclick="closeGuideDrawer()">✕</button>
     </div>
-    <button class="onboard-cta" id="onboard-cta" disabled onclick="confirmLevel()">Entrar →</button>
+    <div class="guide-panel-progress">
+      <div class="guide-panel-progress-bar" id="qs-progress" style="width:0%"></div>
+    </div>
+    <div class="guide-panel-body" id="qs-body"></div>
   </div>
 </div>
+
+<!-- CHAT DRAWER -->
+<div class="chat-drawer" id="chat-drawer">
+  <div class="chat-panel">
+    <div class="chat-header">
+      <span class="chat-header-icon">🤖</span>
+      <div class="chat-header-info">
+        <div class="chat-header-title">Assistente Rolefy</div>
+        <div class="chat-header-sub" id="chat-header-sub">Pergunte qualquer coisa</div>
+      </div>
+      <button class="chat-header-close" onclick="closeChatDrawer()">✕</button>
+    </div>
+    <div class="chat-messages" id="chat-messages"></div>
+    <div id="chat-no-key" class="chat-no-key" style="display:none">
+      <strong>⚠️ API Key não configurada</strong>
+      Configure o Groq (gratuito) para ativar o assistente com IA.
+      <button onclick="closeChatDrawer();showView('cfg')">🔑 Configurar agora →</button>
+    </div>
+    <div class="chat-input-wrap">
+      <textarea class="chat-input" id="chat-input" placeholder="Digite sua pergunta…" rows="1" onkeydown="chatOnKey(event)" oninput="chatAutoResize(this)"></textarea>
+      <button class="chat-send-btn" id="chat-send-btn" onclick="chatSend()">↑</button>
+    </div>
+  </div>
+</div>
+
+<!-- FAB mobile -->
+<button class="chat-fab" id="chat-fab" onclick="toggleChatDrawer()" title="Assistente">💬</button>
+
+<div id="onboard-overlay" class="onboard-overlay"></div>
 
 <!-- MODAL CRIAR GRUPO -->
 <div class="modal-overlay" id="modal-create-group">
@@ -785,6 +925,52 @@ mark{background:#fff3cd;color:#1a1a18;border-radius:3px;padding:0 2px}
   </div>
 </div>
 
+<!-- MANAGE GROUP MODAL -->
+<div class="modal-overlay" id="modal-manage-group">
+  <div class="modal" style="max-height:92vh;overflow-y:auto">
+    <div class="modal-title" id="mg-title">⚙️ Gerenciar grupo</div>
+
+    <!-- Editar info -->
+    <div style="margin-bottom:1rem">
+      <div style="font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Informações</div>
+      <div style="display:flex;gap:8px;margin-bottom:6px">
+        <input id="mg-icon" placeholder="🎭" style="width:52px;font-size:18px;text-align:center;padding:7px;border-radius:8px;border:.5px solid #ddd;font-family:inherit"/>
+        <input id="mg-nome" placeholder="Nome do grupo" style="flex:1;font-size:13px;padding:7px 10px;border-radius:8px;border:.5px solid #ddd;font-family:inherit"/>
+      </div>
+      <input id="mg-desc" placeholder="Descrição (opcional)" style="width:100%;font-size:13px;padding:7px 10px;border-radius:8px;border:.5px solid #ddd;font-family:inherit"/>
+    </div>
+
+    <!-- Membros -->
+    <div style="margin-bottom:1rem">
+      <div style="font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Membros do grupo</div>
+      <div id="mg-members-list" style="margin-bottom:8px"></div>
+      <!-- Adicionar do Match -->
+      <div style="font-size:11px;color:#888;margin-bottom:5px">Adicionar do Match:</div>
+      <div id="mg-people-add" style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:6px"></div>
+      <!-- Adicionar manual -->
+      <div style="display:flex;gap:6px">
+        <input id="mg-member-input" placeholder="Nome manual…" style="flex:1;font-size:12px;padding:6px 9px;border-radius:8px;border:.5px solid #ddd;font-family:inherit" onkeydown="if(event.key==='Enter')mgAddMemberManual()"/>
+        <button onclick="mgAddMemberManual()" style="padding:6px 12px;border-radius:8px;background:#f5f4f0;border:.5px solid #ddd;font-size:12px;font-family:inherit;cursor:pointer">＋</button>
+      </div>
+    </div>
+
+    <!-- Locais confirmados -->
+    <div style="margin-bottom:1rem">
+      <div style="font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Locais confirmados pelo grupo</div>
+      <div id="mg-locals-cross" style="font-size:12px;color:#666;line-height:1.6"></div>
+    </div>
+
+    <div class="modal-actions" style="flex-direction:column;gap:7px">
+      <div style="display:flex;gap:7px;width:100%">
+        <button class="btn-cancel" onclick="closeManageGroup()" style="flex:1">Cancelar</button>
+        <button class="btn-save" onclick="saveManageGroup()" style="flex:2">💾 Salvar alterações</button>
+      </div>
+      <button onclick="mgShareGroup()" style="width:100%;padding:10px;border-radius:10px;background:#e8f0fe;border:.5px solid #aac4f7;color:#185FA5;font-size:13px;font-family:inherit;cursor:pointer;font-weight:500">📤 Gerar convite do grupo</button>
+      <button onclick="mgDeleteGroup()" style="width:100%;padding:9px;border-radius:10px;background:#fce4ec;border:.5px solid #f48fb1;color:#c62828;font-size:12px;font-family:inherit;cursor:pointer">🗑️ Excluir grupo</button>
+    </div>
+  </div>
+</div>
+
 <!-- HAMBURGER MENU -->
 <div class="hamburger-overlay" id="hamburger-overlay" onclick="closeHamburgerOutside(event)">
   <div class="hamburger-box">
@@ -792,7 +978,7 @@ mark{background:#fff3cd;color:#1a1a18;border-radius:3px;padding:0 2px}
     <div class="hamburger-sub">Escolha quais abas aparecem no menu inferior</div>
     <div id="hamburger-items"></div>
     <button class="btn-save" style="width:100%;padding:10px;border-radius:10px;font-family:inherit;cursor:pointer;font-size:13px;margin-top:12px" onclick="closeHamburger()">✅ Pronto</button>
-    <button style="width:100%;padding:9px;border-radius:10px;font-family:inherit;cursor:pointer;font-size:12px;margin-top:8px;background:#f5f4f0;border:.5px solid #ddd;color:#666" onclick="closeHamburger();showOnboarding()">🔄 Mudar nível de experiência</button>
+    <button style="width:100%;padding:9px;border-radius:10px;font-family:inherit;cursor:pointer;font-size:12px;margin-top:8px;background:#f5f4f0;border:.5px solid #ddd;color:#666" onclick="closeHamburger();qsAnswers={};qsHistory=[];qsStep=0;openGuideDrawer();qsRender()">🔄 Mudar nível de experiência</button>
   </div>
 </div>
 
@@ -2243,27 +2429,841 @@ function renderFavsPanel() {
     </div>`).join('');
 }
 
-// ── ONBOARDING ────────────────────────────────────────────────────────────────
-let selectedLevel = null;
+// ── CHAT ASSISTANT ────────────────────────────────────────────────────────────
+let chatHistory = []; // {role, content}
+let chatTyping = false;
+
+const CHAT_FAQ = [
+  { q: '📦 Como ativo um local do Banco?', a: 'Vá na aba **📦 Banco** → toque em **"Ativar"** no local que quiser. Ele vai aparecer no Roteiro da semana ou fim de semana. Quer que eu mostre o Banco agora?' },
+  { q: '📍 Como configuro meu endereço?', a: 'Toque em **"alterar"** na barra cinza no topo do app. Digite seu bairro ou endereço. Isso melhora o cálculo de rota e o Match. Qual é seu bairro?' },
+  { q: '✨ Como uso a IA para extrair locais?', a: 'Vá em **⚙️ Config → Extrair local de imagem**. Cole um print do Instagram com Ctrl+V ou arraste. A IA extrai tudo. Você já tem uma API Key configurada?' },
+  { q: '🤝 Como convido alguém?', a: 'Na aba **🤝 Match**, toque em **"＋ Adicionar pessoa"** ou **"📤 Convidar"**. A pessoa recebe um link, marca os locais que topa e envia o código de resposta. Quer testar o fluxo?' },
+  { q: '🔑 Como configuro o Groq grátis?', a: 'Acesse **⚙️ Config → selecione Groq → toque no botão verde** para abrir o console. Crie conta → API Keys → Create. Cola a chave no app e salva. Quer ir direto para Config?' },
+  { q: '💰 Como monetizo meu roteiro?', a: 'A aba **💰 Ganhar** tem 3 formas: vender o roteiro via link (Hotmart, Pix…), links de afiliado por local, e parceiro patrocinado com card no roteiro. Qual te interessa?' },
+];
+
+function chatHasKey(){ return !!(localStorage.getItem('sp_groq_key')||localStorage.getItem('sp_anthropic_key')); }
+
+function toggleChatDrawer(){
+  const d=document.getElementById('chat-drawer');
+  if(d.classList.contains('open')) closeChatDrawer();
+  else openChatDrawer();
+}
+
+function openChatDrawer(){
+  const d=document.getElementById('chat-drawer');
+  d.classList.add('open');
+  document.body.classList.add('chat-open');
+  const btn=document.getElementById('chat-btn');
+  if(btn) btn.classList.add('active');
+  const sub=document.getElementById('chat-header-sub');
+  if(sub) sub.textContent = chatHasKey() ? getProvider()+' conectado' : 'Modo FAQ — configure a IA para mais';
+  const nk=document.getElementById('chat-no-key');
+  if(nk) nk.style.display = chatHasKey()?'none':'block';
+  // Always fresh init — reflects current state
+  const msgs=document.getElementById('chat-messages');
+  if(msgs) msgs.innerHTML='';
+  chatHistory=[];
+  chatInit();
+  setTimeout(()=>{ const i=document.getElementById('chat-input'); if(i) i.focus(); },300);
+}
+
+function closeChatDrawer(){
+  document.getElementById('chat-drawer').classList.remove('open');
+  document.body.classList.remove('chat-open');
+  const btn=document.getElementById('chat-btn');
+  if(btn) btn.classList.remove('active');
+}
+
+function chatInit(){
+  chatHistory=[];
+  const hasKey=chatHasKey();
+  const ativos=[...state.semana,...state.fds].filter(d=>d.status==='ativo');
+  const banco=[...state.semana,...state.fds].filter(d=>d.status==='arquivado');
+  let welcome;
+  if(!hasKey){
+    welcome = `Olá! 👋 Sou o Assistente Rolefy.\n\nEstou em **modo FAQ** por enquanto — configure o **Groq gratuitamente** para eu virar um assistente completo com IA.\n\nO que você precisa agora?`;
+  } else if(ativos.length===0 && banco.length>0){
+    welcome = `Olá! 👋 Seu roteiro está vazio, mas você tem **${banco.length} local${banco.length>1?'is':''}** no Banco prontos para ativar.\n\nQuer que eu te ajude a escolher quais ativar?`;
+  } else if(ativos.length===0){
+    welcome = `Olá! 👋 Seu roteiro está vazio ainda.\n\nPosso te ajudar a **adicionar o primeiro local** — descreva um lugar que você quer visitar em SP!`;
+  } else {
+    welcome = `Olá! 👋 Você tem **${ativos.length} local${ativos.length>1?'is':''}** no roteiro${banco.length>0?` e **${banco.length}** no Banco`:''}.${state.origin?' Saindo de '+state.origin.split('–')[0].trim()+'.':''}\n\nComo posso ajudar?`;
+  }
+  chatAddMsg('bot', welcome);
+  if(!hasKey) chatShowFaqChips();
+  else chatShowSuggestChips();
+}
+
+function chatShowFaqChips(){
+  const msgs=document.getElementById('chat-messages'); if(!msgs) return;
+  const wrap=document.createElement('div'); wrap.className='chat-chips'; wrap.id='chat-chips';
+  CHAT_FAQ.forEach(f=>{
+    const btn=document.createElement('button'); btn.className='chat-chip-btn';
+    btn.textContent=f.q;
+    btn.onclick=()=>{ wrap.remove(); chatAddMsg('user',f.q); chatAddMsg('bot',f.a); };
+    wrap.appendChild(btn);
+  });
+  msgs.appendChild(wrap);
+  msgs.scrollTop=msgs.scrollHeight;
+}
+
+function chatShowSuggestChips(){
+  const msgs=document.getElementById('chat-messages'); if(!msgs) return;
+  const suggestions=[
+    '➕ Adicionar um local',
+    '📋 Ver o que está no roteiro',
+    '🤝 Como funciona o convite',
+    '💰 Como monetizar meu roteiro',
+    '🔍 Filtrar por estilo de rolê',
+  ];
+  const wrap=document.createElement('div'); wrap.className='chat-chips'; wrap.id='chat-chips';
+  suggestions.forEach(s=>{
+    const btn=document.createElement('button'); btn.className='chat-chip-btn';
+    btn.textContent=s;
+    btn.onclick=()=>{ wrap.remove(); chatSendText(s); };
+    wrap.appendChild(btn);
+  });
+  msgs.appendChild(wrap);
+  msgs.scrollTop=msgs.scrollHeight;
+}
+
+function chatAddMsg(role, text){
+  const msgs=document.getElementById('chat-messages'); if(!msgs) return;
+  // Remove chips when user sends
+  if(role==='user'){ const ch=document.getElementById('chat-chips'); if(ch) ch.remove(); }
+  const div=document.createElement('div'); div.className='chat-msg '+role;
+  // Simple markdown: **bold**, \n → <br>
+  div.innerHTML=text.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>');
+  msgs.appendChild(div);
+  msgs.scrollTop=msgs.scrollHeight;
+  if(role==='bot') chatHistory.push({role:'assistant',content:text});
+  else chatHistory.push({role:'user',content:text});
+}
+
+function chatShowTyping(){
+  const msgs=document.getElementById('chat-messages'); if(!msgs) return;
+  const t=document.createElement('div'); t.className='chat-typing'; t.id='chat-typing';
+  t.innerHTML='<span></span><span></span><span></span>';
+  msgs.appendChild(t); msgs.scrollTop=msgs.scrollHeight;
+}
+function chatHideTyping(){
+  const t=document.getElementById('chat-typing'); if(t) t.remove();
+}
+
+function chatBuildContext(){
+  const allLocais = [...state.semana,...state.fds].filter((d,i,a)=>a.findIndex(x=>x.id===d.id)===i);
+  const ativos    = allLocais.filter(d=>d.status==='ativo');
+  const banco     = allLocais.filter(d=>d.status==='arquivado');
+  const agendados = allLocais.filter(d=>d.status==='agendado');
+  const someday   = allLocais.filter(d=>d.status==='someday');
+  const fmtLocal  = d=>`${d.icon||'📍'} ${d.nome} [id:${d.id}] (${d.end||'sem endereço'}${d.hora&&d.hora!=='–'?', '+d.hora:''})`;
+
+  // Affiliates
+  const affEntries=Object.entries(state.affiliates||{});
+  const affLines=affEntries.length
+    ? affEntries.map(([id,a])=>{const d=allLocais.find(x=>x.id===id);return `  - ${d?d.nome:'?'} [id:${id}]: ${a.link} (CTA: "${a.cta}")`; }).join('\n')
+    : '  (nenhum)';
+
+  const lines = [
+    `NÍVEL: ${getUserLevel()||'não configurado'}`,
+    `IA: ${chatHasKey()?getProvider()+' configurado':'não configurada'}`,
+    `ORIGEM: ${state.origin||'não definida'}`,
+    ``,
+    `ROTEIRO ATIVO (${ativos.length} locais):`,
+    ativos.length ? ativos.map(d=>`  - ${fmtLocal(d)}`).join('\n') : '  (vazio)',
+    ``,
+    `BANCO — ARQUIVADOS (${banco.length}):`,
+    banco.length ? banco.slice(0,8).map(d=>`  - ${fmtLocal(d)}`).join('\n') : '  (vazio)',
+    banco.length>8 ? `  ... e mais ${banco.length-8}` : '',
+    ``,
+    `BANCO — AGENDADOS (${agendados.length}):`,
+    agendados.length ? agendados.map(d=>`  - ${fmtLocal(d)}${d.schedDate?' em '+d.schedDate:''}`).join('\n') : '  (vazio)',
+    ``,
+    `BANCO — SOMEDAY (${someday.length}):`,
+    someday.length ? someday.slice(0,5).map(d=>`  - ${fmtLocal(d)}`).join('\n') : '  (vazio)',
+    ``,
+    `FAVS (${(state.favs||[]).length}): ${(state.favs||[]).map(id=>{const d=allLocais.find(x=>x.id===id);return d?d.nome:'?';}).join(', ')||'nenhum'}`,
+    ``,
+    `PESSOAS NO MATCH (${(state.people||[]).length}):`,
+    (state.people||[]).length ? (state.people||[]).map(p=>`  - ${p.nome} [id:${p.id}] (${p.origin||'sem origem'}, dias: ${(p.days||[]).join('/')||'?'})`).join('\n') : '  (nenhuma)',
+    ``,
+    `GRUPOS (${(state.groups||[]).length}): ${(state.groups||[]).map(g=>g.nome).join(', ')||'nenhum'}`,
+    ``,
+    `INFLUENCIADORES (${(state.influencers||[]).length}):`,
+    (state.influencers||[]).length ? (state.influencers||[]).map(i=>`  - ${i.handle} [id:${i.id}] ${i.nicho?'('+i.nicho+')':''} ${i.followers?i.followers+' seguidores':''}`).join('\n') : '  (nenhum)',
+    ``,
+    `── MONETIZAÇÃO ──`,
+    `PARCEIRO PATROCINADO: ${state.sponsored?`${state.sponsored.nome} — "${state.sponsored.desc||''}" → ${state.sponsored.link} (CTA: "${state.sponsored.cta||''}")`:'(nenhum)'}`,
+    ``,
+    `LINKS DE AFILIADO (${affEntries.length}):`,
+    affLines,
+  ].filter(l=>l!==undefined);
+
+  return lines.join('\n');
+}
+
+function chatBuildSystemPrompt(){
+  return `Você é o Assistente Rolefy — assistente do app Roteiro SP que EXECUTA ações.
+Estilo: direto, amigável, UMA coisa por vez. Português, respostas curtas.
+
+ESTADO REAL DO APP AGORA:
+${chatBuildContext()}
+
+AÇÕES QUE VOCÊ PODE EXECUTAR:
+Você DEVE retornar um JSON estruturado com "text" e "actions". Exemplo:
+{"text":"Vou ativar o Conceição Discos para você! Quer que eu coloque na Semana ou no Fim de semana?","actions":[]}
+{"text":"Pronto! Ativei o Conceição Discos na aba Semana.","actions":[{"type":"activate_local","id":"s1","tab":"semana"}]}
+
+TIPOS DE AÇÃO DISPONÍVEIS:
+- {"type":"activate_local","id":"ID_DO_LOCAL","tab":"semana"|"fds"} — ativa local do Banco
+- {"type":"archive_local","id":"ID_DO_LOCAL"} — arquiva local do roteiro
+- {"type":"navigate","view":"roteiro"|"bank"|"people"|"groups"|"infl"|"cfg"|"favs"|"mono"} — navega para aba
+- {"type":"switch_tab","tab":"semana"|"fds"} — alterna entre Semana e FDS no roteiro
+- {"type":"open_add_form","tab":"semana"|"fds"} — abre formulário de adicionar local
+- {"type":"set_origin","value":"ENDEREÇO"} — configura endereço de origem
+- {"type":"open_config_ia"} — abre Config na seção de IA
+- {"type":"add_local","tab":"semana"|"fds","local":{"nome":"...","end":"...","hora":"...","icon":"...","cats":[],"nota":"..."}} — adiciona local novo
+- {"type":"set_sponsored","nome":"...","desc":"...","link":"...","cta":"..."} — define parceiro patrocinado
+- {"type":"remove_sponsored"} — remove parceiro patrocinado
+- {"type":"set_affiliate","localId":"ID","link":"https://...","cta":"Reservar"} — salva link de afiliado para um local
+- {"type":"remove_affiliate","localId":"ID"} — remove link de afiliado
+- {"type":"navigate_mono"} — abre a aba Ganhar (monetização)
+
+REGRAS CRÍTICAS:
+1. SEMPRE retorne JSON válido com "text" e "actions" (array, pode ser vazio)
+2. Antes de ativar um local, confirme tab (semana ou fds) se não estiver claro
+3. Para add_local: extraia nome, endereço, horário do que o usuário descreveu
+4. Use os IDs exatos do estado acima para activate_local, archive_local, set_affiliate, remove_affiliate
+5. Nunca liste mais de 3 locais de uma vez
+6. Se roteiro vazio e há Banco: proponha ativar (confirme antes de executar)
+7. Para monetização: se não há parceiro, explique o modelo; se tem, mostre o que está configurado
+8. Para afiliado: confirme o local e o link antes de salvar; use navigate_mono após configurar
+9. Uma ação por resposta, exceto quando óbvio (ex: navigate + set_sponsored juntos)
+10. Retorne APENAS o JSON, sem texto fora dele`;
+}
+
+// Execute actions returned by the AI
+function chatExecuteActions(actions){
+  if(!actions||!actions.length) return;
+  actions.forEach(a=>{
+    try {
+      if(a.type==='activate_local'){
+        const tab=a.tab||'semana';
+        setStatus(tab, a.id, 'ativo');
+        setTimeout(()=>{ renderBank(); showView('roteiro'); switchTab(tab, document.querySelector('.tab')); },100);
+      }
+      else if(a.type==='archive_local'){
+        const allLocais=[...state.semana,...state.fds];
+        const d=allLocais.find(x=>x.id===a.id); if(!d) return;
+        const tab=state.semana.find(x=>x.id===a.id)?'semana':'fds';
+        setStatus(tab, a.id, 'arquivado');
+      }
+      else if(a.type==='navigate'){
+        showView(a.view);
+      }
+      else if(a.type==='switch_tab'){
+        showView('roteiro');
+        setTimeout(()=>{
+          const btn=document.querySelector(`.tab[onclick*="${a.tab}"]`);
+          switchTab(a.tab, btn||document.querySelector('.tab'));
+        },100);
+      }
+      else if(a.type==='open_add_form'){
+        showView('roteiro');
+        setTimeout(()=>{
+          switchTab(a.tab||'semana', document.querySelector('.tab'));
+          setTimeout(()=>toggleForm(a.tab||'semana'),150);
+        },100);
+      }
+      else if(a.type==='set_origin'){
+        state.origin=a.value;
+        addToOriginHistory(a.value);
+        persist();
+        initOriginDisplay();
+      }
+      else if(a.type==='open_config_ia'){
+        showView('cfg');
+        setTimeout(()=>{
+          const el=document.querySelector('.cfg-section');
+          if(el) el.scrollIntoView({behavior:'smooth'});
+        },200);
+      }
+      else if(a.type==='add_local'){
+        const tab=a.tab||'semana';
+        const local=a.local||{};
+        const newLocal={
+          id:'u'+Date.now(),
+          nome:local.nome||'Local sem nome',
+          end:local.end||'',
+          hora:local.hora||'–',
+          dur:local.dur||'1h',
+          icon:local.icon||'📍',
+          nota:local.nota||'',
+          aviso:local.aviso||null,
+          cats:local.cats||[],
+          affinities:local.affinities||[],
+          rating:null, badge:null, badgeType:null,
+          dist:null, transporte:null,
+          status:'ativo',
+          schedDate:null, schedNote:null, notes:[]
+        };
+        state[tab].push(newLocal);
+        persist();
+        render();
+        showView('roteiro');
+        setTimeout(()=>switchTab(tab, document.querySelector('.tab')),100);
+      }
+      else if(a.type==='set_sponsored'){
+        state.sponsored={
+          nome:a.nome||'',
+          desc:a.desc||'',
+          link:a.link||'',
+          cta:a.cta||'Ver oferta'
+        };
+        persist(); render();
+        showView('mono');
+      }
+      else if(a.type==='remove_sponsored'){
+        state.sponsored=null;
+        persist(); render();
+      }
+      else if(a.type==='set_affiliate'){
+        if(!state.affiliates) state.affiliates={};
+        state.affiliates[a.localId]={link:a.link||'',cta:a.cta||'Reservar'};
+        // Apply to all locais with same name
+        const allLocais=[...state.semana,...state.fds];
+        const target=allLocais.find(d=>d.id===a.localId);
+        if(target) allLocais.filter(d=>d.nome===target.nome).forEach(d=>{state.affiliates[d.id]={link:a.link||'',cta:a.cta||'Reservar'};});
+        persist(); render();
+        showView('mono');
+      }
+      else if(a.type==='remove_affiliate'){
+        if(state.affiliates) delete state.affiliates[a.localId];
+        persist(); render();
+      }
+      else if(a.type==='navigate_mono'){
+        showView('mono');
+      }
+    } catch(e){ console.warn('chatExecuteAction error:', a.type, e); }
+  });
+}
+
+async function chatSendText(text){
+  if(chatTyping||!text.trim()) return;
+  chatAddMsg('user', text);
+  const inp=document.getElementById('chat-input'); if(inp){inp.value='';chatAutoResize(inp);}
+  const btn=document.getElementById('chat-send-btn'); if(btn) btn.disabled=true;
+
+  if(!chatHasKey()){
+    chatTyping=true; chatShowTyping();
+    await new Promise(r=>setTimeout(r,450));
+    chatHideTyping(); chatTyping=false;
+    // FAQ mode: try pattern match, fallback to nudge
+    const t=text.toLowerCase();
+    const faqMatch=CHAT_FAQ.find(f=>f.q.slice(2).toLowerCase().split(' ').some(w=>w.length>3&&t.includes(w)));
+    if(faqMatch){ chatAddMsg('bot',faqMatch.a); }
+    else if(t.includes('banco')||t.includes('ativ')){ chatAddMsg('bot','Para ativar locais do Banco, vá na aba **📦 Banco** → toque em **"Ativar"**. Com IA eu faço isso por você! Quer configurar o Groq (grátis)?'); }
+    else { chatAddMsg('bot','Preciso de IA para ajudar com isso! Configure o **Groq gratuitamente** — leva 2 minutos. Quer que eu abra as configurações?'); }
+    if(btn) btn.disabled=false;
+    return;
+  }
+
+  chatTyping=true; chatShowTyping();
+  try {
+    const systemPrompt=chatBuildSystemPrompt();
+    const provider=getProvider();
+    const key=getActiveKey();
+    const msgs=chatHistory.slice(-10).map(m=>({role:m.role,content:m.content}));
+    let raw='';
+
+    if(provider==='groq'){
+      const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{
+        method:'POST',
+        headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},
+        body:JSON.stringify({
+          model:getGroqModel(),
+          max_tokens:500,
+          response_format:{type:'json_object'},
+          messages:[{role:'system',content:systemPrompt},...msgs]
+        })
+      });
+      const d=await r.json();
+      if(d.error) throw new Error(d.error.message);
+      raw=d.choices?.[0]?.message?.content||'{}';
+    } else {
+      const r=await fetch('https://api.anthropic.com/v1/messages',{
+        method:'POST',
+        headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+        body:JSON.stringify({
+          model:'claude-sonnet-4-20250514',
+          max_tokens:500,
+          system:systemPrompt,
+          messages:msgs
+        })
+      });
+      const d=await r.json();
+      if(d.error) throw new Error(d.error.message);
+      raw=d.content?.[0]?.text||'{}';
+    }
+
+    chatHideTyping(); chatTyping=false;
+
+    // Parse JSON response
+    let parsed={text:'',actions:[]};
+    try {
+      // Strip markdown fences if present
+      const clean=raw.replace(/```json|```/g,'').trim();
+      parsed=JSON.parse(clean);
+    } catch(e){
+      // If not valid JSON, treat entire response as text
+      parsed={text:raw, actions:[]};
+    }
+
+    const responseText=parsed.text||parsed.message||parsed.response||'';
+    const responseActions=parsed.actions||[];
+
+    chatAddMsg('bot', responseText);
+
+    // Execute actions with slight delay so user sees the message first
+    if(responseActions.length){
+      setTimeout(()=>{
+        chatExecuteActions(responseActions);
+        // Update chat header after actions
+        const sub=document.getElementById('chat-header-sub');
+        if(sub) sub.textContent=getProvider()+' conectado';
+      },600);
+    }
+
+  } catch(e){
+    chatHideTyping(); chatTyping=false;
+    chatAddMsg('bot', `⚠️ Erro: ${e.message}`);
+  }
+  if(btn) btn.disabled=false;
+}
+
+function chatSend(){
+  const inp=document.getElementById('chat-input'); if(!inp) return;
+  chatSendText(inp.value.trim());
+}
+
+function chatOnKey(e){
+  if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); chatSend(); }
+}
+
+function chatAutoResize(el){
+  el.style.height='auto';
+  el.style.height=Math.min(el.scrollHeight,80)+'px';
+}
+
+// ── QUICK START ONBOARDING ────────────────────────────────────────────────────
+const QS_STEPS = [
+  {
+    id:'perfil', q:'Como você vai usar o app?', hint:'Isso define o nível e os recursos disponíveis.',
+    opts:[
+      {icon:'🚶',label:'Explorar locais para mim',desc:'Montar meu próprio roteiro de visitas',val:'individual'},
+      {icon:'👥',label:'Organizar rolês com amigos',desc:'Coordenar programas com outras pessoas',val:'social'},
+      {icon:'📸',label:'Gestão de influenciadores',desc:'Trabalho com criadores de conteúdo',val:'gestor'},
+    ],
+    tip:{
+      individual:{t:'blue',title:'🟢 Nível recomendado: Iniciante',body:'Interface limpa — Roteiro, Banco, Favs e Config. Sem distrações.'},
+      social:{t:'green',title:'🟡 Nível recomendado: Intermediário',body:'Match social, Grupos e convites por link. Ideal para coordenar rolês.'},
+      gestor:{t:'purple',title:'🔴 Nível recomendado: Avançado',body:'Acesso total: Influenciadores, Ganhar, IA e ferramentas de parceria.'},
+    },
+    next:()=>1
+  },
+  {
+    id:'locais', q:'Como vai adicionar seus locais?', hint:'Você pode mudar isso a qualquer momento.',
+    opts:[
+      {icon:'📱',label:'Tenho prints do Instagram',desc:'IA extrai nome, endereço e dicas automaticamente',val:'instagram'},
+      {icon:'✍️',label:'Vou digitar manualmente',desc:'Sei o nome e endereço dos locais',val:'manual'},
+      {icon:'📦',label:'Vou usar os exemplos primeiro',desc:'Quero ver como funciona antes de adicionar os meus',val:'exemplos'},
+    ],
+    tip:{
+      instagram:{t:'blue',title:'✨ Extração por IA',body:'Em ⚙️ Config → "Extrair local de imagem", arraste ou cole (Ctrl+V) o print. A IA extrai tudo. Vamos configurar a IA no próximo passo.'},
+      manual:{t:'green',title:'✍️ Formulário rápido',body:'Aba Roteiro → "＋ Adicionar local". Só nome e endereço são obrigatórios. Salva na hora.'},
+      exemplos:{t:'yellow',title:'📦 Exemplos no Banco',body:'O app já vem com locais de SP no Banco. Vá em 📦 Banco e toque em "Ativar" nos que quiser usar.'},
+    },
+    next:(a)=>a.locais==='instagram'?2:3
+  },
+  {
+    id:'ia', q:'Qual IA usar para extrair os prints?', hint:'Groq é gratuito e funciona muito bem.',
+    opts:[
+      {icon:'🆓',label:'Groq (gratuito)',desc:'Llama 4 — processa imagens sem custo',val:'groq'},
+      {icon:'💳',label:'Anthropic (Claude)',desc:'Melhor qualidade, requer API Key paga',val:'anthropic'},
+      {icon:'⏭️',label:'Configurar depois',desc:'Vou adicionar locais manualmente por enquanto',val:'skip'},
+    ],
+    tip:{
+      groq:{t:'green',title:'🔑 API Key gratuita',body:'No app: ⚙️ Config → Groq → botão "🔑 Abrir console.groq.com" → crie conta → API Keys → Create → cole aqui.'},
+      anthropic:{t:'blue',title:'🔑 API Key Anthropic',body:'console.anthropic.com → API Keys → Create Key (começa com sk-ant-). Cole em ⚙️ Config.'},
+      skip:{t:'yellow',title:'👍 Sem problema',body:'Configure a IA depois em ⚙️ Config. Por enquanto use o formulário manual.'},
+    },
+    next:()=>3
+  },
+  {
+    id:'origem', q:'De onde você normalmente sai?', hint:'Usado para calcular rotas e match com outras pessoas. Pode pular.',
+    opts:[
+      {icon:'📍',label:'Vou digitar meu endereço',desc:'Configura a origem agora',val:'digitar'},
+      {icon:'⏭️',label:'Preencher depois',desc:'Configuro quando for usar as rotas',val:'skip'},
+    ],
+    tip:{
+      digitar:{t:'green',title:'📍 Formato ideal',body:'Bairro, Cidade — ex: Pinheiros, SP\nOu completo: Rua X, 123 – Pinheiros, SP'},
+      skip:{t:'yellow',title:'⏭️ Funciona sem',body:'A origem é opcional. Você pode configurar a qualquer momento tocando em "alterar" no topo do app.'},
+    },
+    hasInput:(a)=>a.origem==='digitar',
+    inputPlaceholder:'Ex: Pinheiros, SP',
+    next:()=>4
+  },
+  {id:'fim', q:'', hint:'', opts:[], next:()=>-1}
+];
+
+let qsAnswers={}, qsHistory=[], qsStep=0;
+
+function toggleGuideDrawer(){
+  const drawer=document.getElementById('guide-drawer');
+  if(drawer.classList.contains('open')) closeGuideDrawer();
+  else openGuideDrawer();
+}
+function openGuideDrawer(){
+  document.getElementById('guide-drawer').classList.add('open');
+  document.body.classList.add('guide-open');
+  const btn=document.getElementById('guide-btn');
+  if(btn) btn.classList.add('active');
+  if(window.innerWidth<768) document.body.style.overflow='hidden';
+  const badge=document.getElementById('guide-badge');
+  if(badge) badge.classList.remove('show');
+  localStorage.setItem('sp_guide_opened','1');
+}
+function closeGuideDrawer(){
+  document.getElementById('guide-drawer').classList.remove('open');
+  document.body.classList.remove('guide-open');
+  document.body.style.overflow='';
+  const btn=document.getElementById('guide-btn');
+  if(btn) btn.classList.remove('active');
+  qsClearHighlights();
+}
+
 function showOnboarding(){
-  selectedLevel = null;
-  document.querySelectorAll('.onboard-level').forEach(b=>b.classList.remove('selected'));
-  document.getElementById('onboard-cta').disabled = true;
-  document.getElementById('onboard-overlay').classList.add('visible');
-}
-function selectLevel(lvl, btn){
-  selectedLevel = lvl;
-  document.querySelectorAll('.onboard-level').forEach(b=>b.classList.remove('selected'));
-  btn.classList.add('selected');
-  document.getElementById('onboard-cta').disabled = false;
-}
-function confirmLevel(){
-  if(!selectedLevel) return;
-  setUserLevel(selectedLevel);
+  qsAnswers={}; qsHistory=[]; qsStep=0;
+  // Show onboarding as drawer (not full overlay)
   document.getElementById('onboard-overlay').classList.remove('visible');
+  openGuideDrawer();
+  qsRender();
+}
+
+function qsRender(){
+  const step = QS_STEPS[qsStep];
+  const body = document.getElementById('qs-body');
+  body.innerHTML='';
+
+  // Progress
+  const seq = qsGetSeq();
+  const idx = seq.indexOf(qsStep);
+  const pct = idx<=0?0:Math.round((idx/(seq.length-1))*100);
+  document.getElementById('qs-progress').style.width = (qsStep===QS_STEPS.length-1?100:pct)+'%';
+
+  if(step.id==='fim'){ qsRenderFinal(body); return; }
+
+  // Back
+  if(qsHistory.length){
+    const back=document.createElement('button');
+    back.className='qs-back'; back.innerHTML='← Voltar';
+    back.onclick=qsBack; body.appendChild(back);
+  }
+
+  // Counter
+  const ctr=document.createElement('div');
+  ctr.className='qs-counter';
+  ctr.textContent=`${idx+1} de ${seq.length-1}`;
+  body.appendChild(ctr);
+
+  // Card
+  const card=document.createElement('div'); card.className='qs-card';
+  card.innerHTML=`<div class="qs-question">${step.q}</div><div class="qs-hint">${step.hint}</div>`;
+
+  // Options
+  const opts=document.createElement('div'); opts.className='qs-options';
+  step.opts.forEach(opt=>{
+    const btn=document.createElement('button'); btn.className='qs-opt';
+    if(qsAnswers[step.id]===opt.val) btn.classList.add('selected');
+    btn.innerHTML=`<span class="qs-opt-icon">${opt.icon}</span><div><div class="qs-opt-label">${opt.label}</div><div class="qs-opt-desc">${opt.desc}</div></div>`;
+    btn.onclick=()=>qsSelect(step, opt.val);
+    opts.appendChild(btn);
+  });
+  card.appendChild(opts);
+
+  // Input for origin
+  if(step.hasInput && step.hasInput(qsAnswers)){
+    const inp=document.createElement('input');
+    inp.className='qs-input'; inp.id='qs-origin-input';
+    inp.placeholder=step.inputPlaceholder||'';
+    inp.value=qsAnswers._originText||'';
+    inp.oninput=e=>{
+      qsAnswers._originText=e.target.value;
+      qsApplyLive();
+      const nb=document.getElementById('qs-next');
+      if(nb) nb.classList.toggle('visible', e.target.value.trim().length>0);
+    };
+    card.appendChild(inp);
+  }
+
+  // Tip
+  const tip=document.createElement('div'); tip.id='qs-tip'; tip.className='qs-tip';
+  card.appendChild(tip);
+  body.appendChild(card);
+
+  // Restore tip if already answered
+  if(qsAnswers[step.id]&&step.tip&&step.tip[qsAnswers[step.id]]){
+    qsShowTip(step.tip[qsAnswers[step.id]]);
+  }
+
+  // Next button
+  const nb=document.createElement('button'); nb.id='qs-next'; nb.className='qs-next';
+  const isLast=(seq.indexOf(qsStep)===seq.length-2);
+  nb.textContent=isLast?'Ver meu plano →':'Próximo →';
+  nb.onclick=qsNext;
+  const canNext = qsAnswers[step.id] && (step.id!=='origem'||qsAnswers.origem==='skip'||qsAnswers._originText);
+  if(canNext) nb.classList.add('visible');
+  body.appendChild(nb);
+}
+
+function qsSelect(step, val){
+  qsAnswers[step.id]=val;
+  document.querySelectorAll('.qs-opt').forEach(b=>b.classList.remove('selected'));
+  event.currentTarget.classList.add('selected');
+  if(step.tip&&step.tip[val]) qsShowTip(step.tip[val]);
+  // Apply live to app behind the drawer
+  qsApplyLive();
+  // Show input if needed
+  if(step.hasInput){
+    const existing=document.getElementById('qs-origin-input');
+    if(!existing&&step.hasInput(qsAnswers)){
+      const card=document.querySelector('.qs-card');
+      const inp=document.createElement('input');
+      inp.className='qs-input'; inp.id='qs-origin-input';
+      inp.placeholder=step.inputPlaceholder||'';
+      inp.value=qsAnswers._originText||'';
+      inp.oninput=e=>{
+        qsAnswers._originText=e.target.value;
+        qsApplyLive();
+        const nb=document.getElementById('qs-next');
+        if(nb) nb.classList.toggle('visible', e.target.value.trim().length>0);
+      };
+      const tip=document.getElementById('qs-tip');
+      card.insertBefore(inp, tip);
+      setTimeout(()=>inp.focus(),100);
+      return; // wait for input
+    } else if(existing&&!step.hasInput(qsAnswers)){
+      existing.remove();
+      qsAnswers._originText='';
+    }
+  }
+  const nb=document.getElementById('qs-next');
+  if(nb){
+    nb.classList.add('visible');
+    const seq=qsGetSeq();
+    nb.textContent=(seq.indexOf(qsStep)===seq.length-2)?'Ver meu plano →':'Próximo →';
+  }
+}
+
+function qsShowTip(t){
+  const box=document.getElementById('qs-tip'); if(!box) return;
+  box.className=`qs-tip ${t.t} visible`;
+  box.innerHTML=`<div class="qs-tip-title">${t.title}</div>${t.body.split('\n').map(l=>`<div>${l}</div>`).join('')}`;
+}
+
+function qsNext(){
+  qsHistory.push(qsStep);
+  qsStep=QS_STEPS[qsStep].next(qsAnswers);
+  qsRender();
+  document.getElementById('onboard-overlay').scrollTop=0;
+}
+
+function qsBack(){
+  qsStep=qsHistory.pop();
+  qsRender();
+  document.getElementById('onboard-overlay').scrollTop=0;
+}
+
+function qsGetSeq(){
+  const seq=[]; let s=0;
+  while(s>=0&&s<QS_STEPS.length){
+    seq.push(s);
+    if(s===QS_STEPS.length-1) break;
+    s=QS_STEPS[s].next(qsAnswers);
+  }
+  return seq;
+}
+
+function qsApplyAndClose(){
+  const levelMap={individual:'iniciante',social:'intermediario',gestor:'avancado'};
+  const lvl=levelMap[qsAnswers.perfil]||'iniciante';
+  setUserLevel(lvl);
+
+  if(qsAnswers.ia==='groq') localStorage.setItem('sp_provider','groq');
+  else if(qsAnswers.ia==='anthropic') localStorage.setItem('sp_provider','anthropic');
+
+  if(qsAnswers._originText&&qsAnswers._originText.trim()){
+    state.origin=qsAnswers._originText.trim();
+    addToOriginHistory(state.origin);
+    persist();
+  }
+
+  closeGuideDrawer();
   renderBottomNav();
   render();
+  renderAffinityBar();
+  initOriginDisplay();
+  loadApiKeys();
+
+  setTimeout(()=>{
+    if(qsAnswers.locais==='exemplos') showView('bank');
+    else if(qsAnswers.locais==='manual'){
+      showView('roteiro');
+      setTimeout(()=>toggleForm('semana'),200);
+    } else {
+      showView('roteiro');
+    }
+  },100);
 }
+
+// Aplica mudanças no app em tempo real enquanto o guia está aberto
+function qsApplyLive(){
+  const levelMap={individual:'iniciante',social:'intermediario',gestor:'avancado'};
+  const lvl=levelMap[qsAnswers.perfil];
+  if(lvl){
+    setUserLevel(lvl);
+    renderBottomNav();
+  }
+  if(qsAnswers._originText&&qsAnswers._originText.trim()){
+    state.origin=qsAnswers._originText.trim();
+    initOriginDisplay();
+  }
+  if(qsAnswers.ia==='groq') localStorage.setItem('sp_provider','groq');
+  else if(qsAnswers.ia==='anthropic') localStorage.setItem('sp_provider','anthropic');
+  // Highlight the relevant part of the app
+  qsHighlightForAnswer();
+}
+
+// Map of answers → what to highlight in the app
+const QS_HIGHLIGHT_MAP = {
+  // perfil → highlight the bottom nav
+  perfil: { individual:'roteiro', social:'people', gestor:'infl' },
+  // locais → highlight the relevant section
+  locais: { instagram:'cfg', manual:'roteiro', exemplos:'bank' },
+  // ia → highlight config
+  ia: { groq:'cfg', anthropic:'cfg' },
+  // origem → highlight top bar
+  origem: { digitar:'topbar' },
+};
+
+function qsHighlightForAnswer(){
+  qsClearHighlights();
+  // Determine latest answered step
+  const stepOrder=['perfil','locais','ia','origem'];
+  for(let i=stepOrder.length-1;i>=0;i--){
+    const sid=stepOrder[i];
+    const val=qsAnswers[sid];
+    if(val&&QS_HIGHLIGHT_MAP[sid]&&QS_HIGHLIGHT_MAP[sid][val]){
+      qsHighlight(QS_HIGHLIGHT_MAP[sid][val]);
+      break;
+    }
+  }
+}
+
+function qsClearHighlights(){
+  document.querySelectorAll('.qs-hl,.qs-hl-nav,.qs-spotlight').forEach(el=>{
+    el.classList.remove('qs-hl','qs-hl-nav','qs-spotlight');
+  });
+}
+
+function qsHighlight(target){
+  setTimeout(()=>{
+    if(target==='topbar'){
+      const bar=document.querySelector('.origin-bar');
+      if(bar){bar.classList.add('qs-hl');bar.scrollIntoView({behavior:'smooth',block:'nearest'});}
+      return;
+    }
+    if(target==='cfg'||target==='roteiro'||target==='bank'||target==='people'||target==='infl'){
+      // Navigate to the view so user sees it
+      showView(target==='cfg'?'cfg':target==='bank'?'bank':target==='people'?'people':target==='infl'?'infl':'roteiro');
+      // Highlight the nav button
+      setTimeout(()=>{
+        const navBtn=document.getElementById('nav-'+(target==='cfg'?'cfg':target));
+        if(navBtn){navBtn.classList.add('qs-hl-nav');}
+        // Also highlight the panel itself
+        const panel=document.getElementById('panel-'+target);
+        if(panel){panel.classList.add('qs-spotlight');}
+      },200);
+    }
+  },150);
+}
+
+function qsRenderFinal(body){
+  const {perfil,locais,ia,origem,_originText}=qsAnswers;
+  const levelMap={individual:'iniciante',social:'intermediario',gestor:'avancado'};
+  const lvl=levelMap[perfil]||'iniciante';
+  const levelLabel={iniciante:'🟢 Iniciante',intermediario:'🟡 Intermediário',avancado:'🔴 Avançado'}[lvl];
+  const icons={individual:'🗺️',social:'🤝',gestor:'📊'};
+  const titles={individual:'Roteiro pronto!',social:'Hora de juntar a galera!',gestor:'Tudo pronto!'};
+
+  // Header card
+  const hdrCard=document.createElement('div'); hdrCard.className='qs-card';
+  hdrCard.innerHTML=`<div class="qs-final">
+    <span class="qs-final-icon">${icons[perfil]||'🎉'}</span>
+    <div class="qs-final-title">${titles[perfil]||'Tudo pronto!'}</div>
+    <div class="qs-final-sub">App configurado conforme suas respostas.</div>
+  </div>`;
+  // Chips inside card
+  const chips=document.createElement('div'); chips.className='qs-chips';
+  chips.innerHTML=`<span class="qs-chip hi">${levelLabel}</span>`;
+  if(locais==='instagram'&&ia!=='skip') chips.innerHTML+=`<span class="qs-chip">✨ IA ativa</span>`;
+  if(_originText) chips.innerHTML+=`<span class="qs-chip">📍 Origem salva</span>`;
+  hdrCard.appendChild(chips);
+  body.appendChild(hdrCard);
+
+  // Action steps card
+  const card=document.createElement('div'); card.className='qs-card';
+  card.innerHTML='<div class="qs-question" style="font-size:13px;margin-bottom:.75rem">📋 Seus próximos passos</div>';
+  const steps=[];
+  if(locais==='instagram'&&ia==='groq')
+    steps.push(`Configure o Groq: <strong>⚙️ Config → Groq → 🔑 Abrir console.groq.com</strong>`);
+  if(locais==='instagram'&&ia==='anthropic')
+    steps.push(`Cole sua API Key em <strong>⚙️ Config → Anthropic</strong>`);
+  if(locais==='instagram')
+    steps.push(`<strong>⚙️ Config → Extrair local de imagem</strong> → cole o print`);
+  if(locais==='manual')
+    steps.push(`<strong>＋ Adicionar local</strong> no Roteiro → nome e endereço`);
+  if(locais==='exemplos')
+    steps.push(`<strong>📦 Banco</strong> → toque em <strong>"Ativar"</strong> nos exemplos`);
+  if(!_originText)
+    steps.push(`Configure origem: toque em <strong>"alterar"</strong> no topo`);
+  if(perfil==='social')
+    steps.push(`<strong>🤝 Match → 📤 Convidar</strong> → link para o WhatsApp`);
+  if(perfil==='gestor')
+    steps.push(`<strong>👤 Influenc. → ＋ Adicionar</strong> influenciadores`);
+  steps.push(`Explore os filtros de <strong>categoria</strong> e <strong>estilo de rolê</strong>`);
+  const stepsDiv=document.createElement('div');
+  stepsDiv.innerHTML=steps.map((s,i)=>`<div class="qs-action-step"><div class="qs-action-num">${i+1}</div><div class="qs-action-text">${s}</div></div>`).join('');
+  card.appendChild(stepsDiv);
+  body.appendChild(card);
+
+  // Enter button — outside card on dark bg
+  const btn=document.createElement('button'); btn.className='qs-enter-btn';
+  btn.textContent='🚀 Entrar no app →';
+  btn.onclick=qsApplyAndClose;
+  body.appendChild(btn);
+
+  const skip=document.createElement('button'); skip.className='qs-skip';
+  skip.textContent='↩️ Refazer o guia';
+  skip.onclick=()=>{qsAnswers={};qsHistory=[];qsStep=0;qsRender();document.getElementById('guide-panel-body')?.scrollTo(0,0)||document.getElementById('qs-body').scrollTo(0,0);};
+  body.appendChild(skip);
+}
+
+// Legacy stubs (usados pelo hambúrguer "Mudar nível")
+let selectedLevel=null;
+function selectLevel(lvl,btn){ selectedLevel=lvl; }
+function confirmLevel(){ if(selectedLevel){setUserLevel(selectedLevel);document.getElementById('onboard-overlay').classList.remove('visible');renderBottomNav();render();} }
 
 // ── TOOLTIP ───────────────────────────────────────────────────────────────────
 const TOOLTIPS = {
@@ -2783,7 +3783,151 @@ function saveGroup(){
   persist(); closeCreateGroup(); renderGroupsPanel();
 }
 function manageGroup(id){
-  alert('Em breve: gerenciar membros, roteiro do grupo e notificações.');
+  const g=(state.groups||[]).find(x=>x.id===id); if(!g) return;
+  window._mgGroupId=id;
+
+  // Fill basic info
+  document.getElementById('mg-title').textContent=(g.icon||'👥')+' '+g.nome;
+  document.getElementById('mg-icon').value=g.icon||'👥';
+  document.getElementById('mg-nome').value=g.nome;
+  document.getElementById('mg-desc').value=g.desc||'';
+
+  // Members list
+  mgRenderMembers(g);
+
+  // People from Match to add
+  mgRenderPeopleAdd(g);
+
+  // Cross: locais confirmados
+  mgRenderLocals(g);
+
+  document.getElementById('modal-manage-group').classList.add('visible');
+}
+
+function mgRenderMembers(g){
+  const list=document.getElementById('mg-members-list');
+  const members=g.members||[];
+  if(!members.length){
+    list.innerHTML='<div style="font-size:12px;color:#bbb;padding:4px 0">Nenhum membro ainda.</div>';
+    return;
+  }
+  list.innerHTML=members.map((m,i)=>`
+    <div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:.5px solid #f5f4f0">
+      <span style="width:28px;height:28px;border-radius:50%;background:#f5f4f0;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0">
+        ${(()=>{const p=(state.people||[]).find(p=>p.nome===m);return p&&p.icon?p.icon:m.charAt(0).toUpperCase();})()}
+      </span>
+      <span style="flex:1;font-size:13px;color:#1a1a18">${escHtml(m)}</span>
+      <button onclick="mgRemoveMember(${i})" style="background:none;border:none;color:#ccc;cursor:pointer;font-size:16px;padding:0 3px;transition:color .15s" onmouseover="this.style.color='#c0392b'" onmouseout="this.style.color='#ccc'">✕</button>
+    </div>`).join('');
+}
+
+function mgRenderPeopleAdd(g){
+  const container=document.getElementById('mg-people-add');
+  const members=g.members||[];
+  const available=(state.people||[]).filter(p=>!members.includes(p.nome));
+  if(!available.length){
+    container.innerHTML='<span style="font-size:11px;color:#bbb">Todos do Match já são membros</span>';
+    return;
+  }
+  container.innerHTML=available.map(p=>`
+    <button onclick="mgAddFromMatch('${escHtml(p.nome)}')" style="display:flex;align-items:center;gap:5px;padding:4px 10px;border-radius:16px;border:.5px solid #e5e4e0;background:#f5f4f0;font-size:11px;font-family:inherit;cursor:pointer;transition:all .15s" onmouseover="this.style.background='#e8f0fe';this.style.borderColor='#aac4f7'" onmouseout="this.style.background='#f5f4f0';this.style.borderColor='#e5e4e0'">
+      <span>${p.icon||p.nome.charAt(0)}</span><span>${escHtml(p.nome)}</span><span style="color:#888">＋</span>
+    </button>`).join('');
+}
+
+function mgRenderLocals(g){
+  const el=document.getElementById('mg-locals-cross');
+  const members=g.members||[];
+  const allLocais=[...state.semana,...state.fds].filter(d=>d.status==='ativo');
+  const people=(state.people||[]).filter(p=>members.includes(p.nome));
+
+  if(!people.length||!allLocais.length){
+    el.innerHTML='<div style="color:#bbb;font-size:12px">Adicione membros e locais ativos para ver o cruzamento.</div>';
+    return;
+  }
+
+  // For each local, who in the group confirmed?
+  const rows=allLocais.map(d=>{
+    const confirmed=people.filter(p=>(p.locals||[]).includes(d.id));
+    if(!confirmed.length) return null;
+    return {local:d, confirmed};
+  }).filter(Boolean).sort((a,b)=>b.confirmed.length-a.confirmed.length);
+
+  if(!rows.length){
+    el.innerHTML='<div style="color:#bbb;font-size:12px">Nenhum membro confirmou interesse nos locais ativos ainda.</div>';
+    return;
+  }
+
+  el.innerHTML=rows.map(({local:d, confirmed})=>`
+    <div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:.5px solid #f5f4f0">
+      <span style="font-size:18px;flex-shrink:0">${d.icon||'📍'}</span>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:12px;font-weight:500;color:#1a1a18">${escHtml(d.nome)}</div>
+        <div style="font-size:11px;color:#185FA5;margin-top:1px">${confirmed.map(p=>p.icon||p.nome.charAt(0)).join(' ')} ${confirmed.map(p=>escHtml(p.nome)).join(', ')}</div>
+      </div>
+      <span style="font-size:11px;font-weight:700;color:#2e7d32;background:#e8f5e9;padding:2px 8px;border-radius:10px;flex-shrink:0">${confirmed.length}/${people.length}</span>
+    </div>`).join('');
+}
+
+function mgAddFromMatch(nome){
+  const g=(state.groups||[]).find(x=>x.id===window._mgGroupId); if(!g) return;
+  if(!g.members) g.members=[];
+  if(!g.members.includes(nome)) g.members.push(nome);
+  mgRenderMembers(g);
+  mgRenderPeopleAdd(g);
+  mgRenderLocals(g);
+}
+
+function mgAddMemberManual(){
+  const inp=document.getElementById('mg-member-input');
+  const nome=inp.value.trim(); if(!nome) return;
+  const g=(state.groups||[]).find(x=>x.id===window._mgGroupId); if(!g) return;
+  if(!g.members) g.members=[];
+  if(!g.members.includes(nome)) g.members.push(nome);
+  inp.value='';
+  mgRenderMembers(g);
+  mgRenderPeopleAdd(g);
+}
+
+function mgRemoveMember(idx){
+  const g=(state.groups||[]).find(x=>x.id===window._mgGroupId); if(!g) return;
+  g.members.splice(idx,1);
+  mgRenderMembers(g);
+  mgRenderPeopleAdd(g);
+  mgRenderLocals(g);
+}
+
+function saveManageGroup(){
+  const g=(state.groups||[]).find(x=>x.id===window._mgGroupId); if(!g) return;
+  const nome=document.getElementById('mg-nome').value.trim();
+  if(!nome){document.getElementById('mg-nome').focus();return;}
+  g.icon=document.getElementById('mg-icon').value.trim()||'👥';
+  g.nome=nome;
+  g.desc=document.getElementById('mg-desc').value.trim();
+  persist();
+  closeManageGroup();
+  renderGroupsPanel();
+}
+
+function mgShareGroup(){
+  saveManageGroup();
+  const g=(state.groups||[]).find(x=>x.id===window._mgGroupId); if(!g) return;
+  closeManageGroup();
+  shareGroup(g.id);
+}
+
+function mgDeleteGroup(){
+  const g=(state.groups||[]).find(x=>x.id===window._mgGroupId); if(!g) return;
+  if(!confirm(`Excluir o grupo "${g.nome}"? Esta ação não pode ser desfeita.`)) return;
+  state.groups=state.groups.filter(x=>x.id!==window._mgGroupId);
+  persist();
+  closeManageGroup();
+  renderGroupsPanel();
+}
+
+function closeManageGroup(){
+  document.getElementById('modal-manage-group').classList.remove('visible');
+  window._mgGroupId=null;
 }
 
 // ── INFLUENCIADORES ───────────────────────────────────────────────────────────
@@ -2974,7 +4118,18 @@ if(checkInviteMode()){
   renderBottomNav();
   renderAffinityBar();
   initOriginDisplay();
-  showOnboarding();
+  if(!getUserLevel()){
+    // primeira vez — abre o guia como drawer
+    qsAnswers={}; qsHistory=[]; qsStep=0;
+    openGuideDrawer();
+    qsRender();
+  } else {
+    // usuário existente — mostra badge verde no ❓ se nunca abriu o guia
+    if(!localStorage.getItem('sp_guide_opened')){
+      const badge=document.getElementById('guide-badge');
+      if(badge) badge.classList.add('show');
+    }
+  }
 }
 </script>
 </body>
