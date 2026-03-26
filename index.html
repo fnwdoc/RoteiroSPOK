@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -2372,7 +2371,7 @@ function sharePerson(id){
       .filter((d,i,a)=>a.findIndex(x=>x.id===d.id)===i && d.status==='ativo')
       .map(d=>({id:d.id, nome:d.nome, icon:d.icon||'📍', end:d.end, hora:d.hora}))
   };
-  const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
+  const encoded = toBase64url(JSON.stringify(payload));
   const url = baseUrl.split('?')[0].split('#')[0] + '?invite=' + encoded;
   const msg = 'Ei '+p.nome+'! Te convidei para um rolê 🗺️\n\nVeja os locais e marque quais você quer ir:\n'+url+'\n\nMe manda o código de resposta que aparece no final!';
   navigator.clipboard.writeText(msg).then(()=>{
@@ -2393,7 +2392,7 @@ function processImportResponse(){
   const code = document.getElementById('import-response-code').value.trim();
   const errEl = document.getElementById('import-response-error');
   try {
-    const data = JSON.parse(decodeURIComponent(escape(atob(code))));
+    const data = JSON.parse(fromBase64url(code));
     if(!data.nome||!data.locals) throw new Error('Código inválido');
     if(!state.people) state.people=[];
     const existing = state.people.find(p=>p.nome.toLowerCase()===data.nome.toLowerCase());
@@ -2407,6 +2406,18 @@ function processImportResponse(){
     persist(); closeImportResponse(); renderPeoplePanel();
     alert('✅ Resposta de '+data.nome+' importada!');
   } catch(e){ errEl.textContent='Código inválido. Peça para a pessoa copiar o código gerado no app.'; }
+}
+
+// base64url — URL-safe (+ → -, / → _, = removido)
+function toBase64url(str){
+  return btoa(unescape(encodeURIComponent(str)))
+    .replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');
+}
+function fromBase64url(str){
+  // reconverte de volta para base64 padrão
+  let b64 = str.replace(/-/g,'+').replace(/_/g,'/');
+  while(b64.length%4) b64+='=';
+  return decodeURIComponent(escape(atob(b64)));
 }
 
 function testInvitePage(){
@@ -2438,7 +2449,7 @@ function checkInviteMode(){
     
     if(!inv) return false;
     
-    const data = JSON.parse(decodeURIComponent(escape(atob(inv))));
+    const data = JSON.parse(fromBase64url(inv));
     if(!data || !data.locais) return false;
     showInvitePage(data);
     return true;
@@ -2531,7 +2542,7 @@ function showInvitePage(data){
   window.generateInviteResponse=function(){
     const nome=document.getElementById('inv-nome').value.trim()||data.nome||'Convidado';
     if(!nome){document.getElementById('inv-nome').focus();return;}
-    const code=btoa(unescape(encodeURIComponent(JSON.stringify({v:1,nome,locals:window._invLocals,days:window._invDays,affinities:window._invAffs}))));
+    const code=toBase64url(JSON.stringify({v:1,nome,locals:window._invLocals,days:window._invDays,affinities:window._invAffs}));
     const area=document.getElementById('inv-response-area');
     document.getElementById('inv-response-code').value=code;
     area.style.display='block';
