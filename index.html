@@ -439,6 +439,7 @@ mark{background:#fff3cd;color:#1a1a18;border-radius:3px;padding:0 2px}
 </style>
 </head>
 <body>
+<div id="invite-page" style="display:none;min-height:100vh;background:#f5f4f0"></div>
 <div class="app">
   <div class="top-bar">
     <div class="app-title">
@@ -2400,62 +2401,86 @@ function processImportResponse(){
 }
 
 function checkInviteMode(){
-  const params = new URLSearchParams(window.location.search);
-  const inv = params.get('invite');
-  if(!inv) return false;
-  try { showInvitePage(JSON.parse(decodeURIComponent(escape(atob(inv))))); return true; }
-  catch(e){ return false; }
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const inv = params.get('invite');
+    if(!inv) return false;
+    const data = JSON.parse(decodeURIComponent(escape(atob(inv))));
+    if(!data || !data.locais) return false;
+    showInvitePage(data);
+    return true;
+  } catch(e){ return false; }
 }
 
 function showInvitePage(data){
-  document.getElementById('bottom-nav').style.display='none';
-  document.getElementById('filters-wrapper').style.display='none';
-  document.querySelector('.top-bar').style.display='none';
-  const app = document.querySelector('.app');
+  // Esconde o app inteiro, mostra container dedicado
+  document.querySelector('.app').style.display = 'none';
+  const page = document.getElementById('invite-page');
+  page.style.display = 'block';
   window._invLocals=[]; window._invDays=[]; window._invAffs=[];
-  app.innerHTML =
-    '<div style="padding:1.5rem 1.25rem 3rem;max-width:520px;margin:0 auto">'+
-    '<div style="text-align:center;margin-bottom:1.5rem">'+
-      '<div style="font-size:40px;margin-bottom:.5rem">🗺️</div>'+
-      '<div style="font-size:18px;font-weight:700;margin-bottom:.375rem">Você foi convidado para um rolê!</div>'+
-      '<div style="font-size:13px;color:#666;line-height:1.6">'+escHtml(data.inviter||'Seu amigo')+' quer saber<br>quais rolês combinam com você.</div>'+
+
+  page.innerHTML =
+    '<div style="max-width:520px;margin:0 auto;padding:1.5rem 1.25rem 4rem">'+
+    // Header
+    '<div style="text-align:center;padding:2rem 0 1.5rem">'+
+      '<div style="font-size:44px;margin-bottom:.75rem">🗺️</div>'+
+      '<div style="font-size:20px;font-weight:700;margin-bottom:.5rem;color:#1a1a18">Você foi convidado!</div>'+
+      '<div style="font-size:13px;color:#666;line-height:1.6;background:#fff;border-radius:12px;padding:.75rem 1rem;border:.5px solid #e5e4e0">'+
+        '<strong>'+escHtml(data.inviter||'Seu amigo')+'</strong> quer saber<br>quais rolês combinam com você.'+
+      '</div>'+
     '</div>'+
-    '<label style="font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.04em;display:block;margin-bottom:5px;font-weight:600">Seu nome</label>'+
-    '<input id="inv-nome" value="'+escHtml(data.nome||'')+'" placeholder="Como você se chama?" style="width:100%;font-size:14px;padding:10px 12px;border-radius:10px;border:.5px solid #ccc;font-family:inherit;margin-bottom:1.25rem"/>'+
-    '<div style="font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px;font-weight:600">Quais locais você topa?</div>'+
-    (data.locais||[]).map(l=>
-      '<div id="inv-l-'+l.id+'" onclick="invToggleLocal(\''+l.id+'\',this)" style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;border:.5px solid #e5e4e0;background:#fff;margin-bottom:6px;cursor:pointer;transition:all .15s">'+
-        '<span style="font-size:20px;flex-shrink:0">'+l.icon+'</span>'+
-        '<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:500">'+escHtml(l.nome)+'</div>'+
-        '<div style="font-size:11px;color:#888;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+escHtml(l.end)+(l.hora&&l.hora!=='–'?' · '+l.hora:'')+'</div></div>'+
-        '<span id="inv-chk-'+l.id+'" style="font-size:18px;color:#ddd;flex-shrink:0">○</span>'+
-      '</div>'
-    ).join('')+
-    '<div style="font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.04em;margin:1rem 0 8px;font-weight:600">Seus dias disponíveis</div>'+
-    '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:1.25rem">'+
-      ['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'].map(d=>
-        '<button onclick="invToggleDay(\''+d+'\',this)" style="padding:7px 13px;border-radius:20px;border:.5px solid #ddd;background:#fff;color:#666;font-size:12px;cursor:pointer;font-family:inherit">'+d+'</button>'
+    // Nome
+    '<div style="margin-bottom:1.25rem">'+
+      '<div style="font-size:10px;color:#888;text-transform:uppercase;letter-spacing:.06em;font-weight:700;margin-bottom:6px">Seu nome</div>'+
+      '<input id="inv-nome" value="'+escHtml(data.nome||'')+'" placeholder="Como você se chama?" style="width:100%;font-size:15px;padding:11px 14px;border-radius:12px;border:.5px solid #ccc;font-family:inherit;background:#fff"/>'+
+    '</div>'+
+    // Locais
+    '<div style="margin-bottom:1.25rem">'+
+      '<div style="font-size:10px;color:#888;text-transform:uppercase;letter-spacing:.06em;font-weight:700;margin-bottom:8px">Quais locais você topa ir?</div>'+
+      (data.locais||[]).map(l=>
+        '<div id="inv-l-'+l.id+'" onclick="invToggleLocal(\''+l.id+'\',this)" style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;border:.5px solid #e5e4e0;background:#fff;margin-bottom:6px;cursor:pointer;transition:all .15s">'+
+          '<span style="font-size:22px;flex-shrink:0">'+l.icon+'</span>'+
+          '<div style="flex:1;min-width:0">'+
+            '<div style="font-size:13px;font-weight:500;color:#1a1a18">'+escHtml(l.nome)+'</div>'+
+            '<div style="font-size:11px;color:#888;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+escHtml(l.end)+(l.hora&&l.hora!=='–'?' · '+l.hora:'')+'</div>'+
+          '</div>'+
+          '<span id="inv-chk-'+l.id+'" style="font-size:22px;flex-shrink:0;transition:all .15s">⬜</span>'+
+        '</div>'
       ).join('')+
     '</div>'+
-    '<div style="font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px;font-weight:600">Seu estilo de rolê</div>'+
-    '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:1.5rem">'+
-      AFFINITY_PROFILES.map(p=>
-        '<button onclick="invToggleAff(\''+p.id+'\',this)" style="padding:7px 12px;border-radius:20px;border:.5px solid #ddd;background:#fff;color:#666;font-size:12px;cursor:pointer;font-family:inherit">'+p.icon+' '+p.label+'</button>'
-      ).join('')+
+    // Dias
+    '<div style="margin-bottom:1.25rem">'+
+      '<div style="font-size:10px;color:#888;text-transform:uppercase;letter-spacing:.06em;font-weight:700;margin-bottom:8px">Seus dias disponíveis</div>'+
+      '<div style="display:flex;flex-wrap:wrap;gap:7px">'+
+        ['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'].map(d=>
+          '<button onclick="invToggleDay(\''+d+'\',this)" style="padding:8px 14px;border-radius:20px;border:.5px solid #ddd;background:#fff;color:#666;font-size:12px;cursor:pointer;font-family:inherit;transition:all .15s">'+d+'</button>'
+        ).join('')+
+      '</div>'+
     '</div>'+
-    '<button onclick="generateInviteResponse()" style="width:100%;padding:14px;border-radius:12px;background:#1a1a18;color:#fff;border:none;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer">✅ Gerar minha resposta</button>'+
-    '<div id="inv-response-area" style="display:none;background:#f9f9f7;border:.5px solid #e0e0dc;border-radius:12px;padding:1rem;margin-top:12px">'+
-      '<div style="font-size:13px;font-weight:500;margin-bottom:6px">Pronto! Copie e envie este código:</div>'+
-      '<textarea id="inv-response-code" readonly style="width:100%;font-size:11px;padding:8px;border-radius:8px;border:.5px solid #ccc;font-family:monospace;height:72px;resize:none;background:#fff"></textarea>'+
-      '<button onclick="navigator.clipboard.writeText(document.getElementById(\'inv-response-code\').value).then(()=>alert(\'✅ Copiado!\'))" style="width:100%;margin-top:8px;padding:11px;border-radius:8px;border:.5px solid #185FA5;background:#e8f0fe;color:#185FA5;font-size:13px;font-family:inherit;cursor:pointer;font-weight:600">📋 Copiar código de resposta</button>'+
+    // Afinidades
+    '<div style="margin-bottom:1.75rem">'+
+      '<div style="font-size:10px;color:#888;text-transform:uppercase;letter-spacing:.06em;font-weight:700;margin-bottom:8px">Seu estilo de rolê</div>'+
+      '<div style="display:flex;flex-wrap:wrap;gap:7px">'+
+        AFFINITY_PROFILES.map(p=>
+          '<button onclick="invToggleAff(\''+p.id+'\',this)" style="padding:8px 12px;border-radius:20px;border:.5px solid #ddd;background:#fff;color:#666;font-size:12px;cursor:pointer;font-family:inherit;transition:all .15s">'+p.icon+' '+p.label+'</button>'
+        ).join('')+
+      '</div>'+
+    '</div>'+
+    // CTA
+    '<button onclick="generateInviteResponse()" style="width:100%;padding:15px;border-radius:14px;background:#1a1a18;color:#fff;border:none;font-size:15px;font-weight:600;font-family:inherit;cursor:pointer;margin-bottom:12px">✅ Confirmar e gerar resposta</button>'+
+    '<div id="inv-response-area" style="display:none;background:#fff;border:.5px solid #e0e0dc;border-radius:14px;padding:1.25rem;margin-top:4px">'+
+      '<div style="font-size:14px;font-weight:600;margin-bottom:.5rem">Pronto! 🎉</div>'+
+      '<div style="font-size:12px;color:#666;margin-bottom:10px;line-height:1.5">Copie o código abaixo e envie para quem te convidou:</div>'+
+      '<textarea id="inv-response-code" readonly style="width:100%;font-size:11px;padding:10px;border-radius:10px;border:.5px solid #ccc;font-family:monospace;height:80px;resize:none;background:#f9f9f7"></textarea>'+
+      '<button onclick="navigator.clipboard.writeText(document.getElementById(\'inv-response-code\').value).then(()=>{this.textContent=\'✅ Copiado!\';setTimeout(()=>this.textContent=\'📋 Copiar código\',2000)})" style="width:100%;margin-top:10px;padding:12px;border-radius:10px;border:none;background:#1a1a18;color:#fff;font-size:13px;font-family:inherit;cursor:pointer;font-weight:600">📋 Copiar código</button>'+
     '</div>'+
     '</div>';
 
   window.invToggleLocal=function(id,el){
     const i=window._invLocals.indexOf(id);
     const chk=document.getElementById('inv-chk-'+id);
-    if(i>=0){window._invLocals.splice(i,1);el.style.background='#fff';el.style.borderColor='#e5e4e0';if(chk){chk.style.color='#ddd';chk.textContent='○';}}
-    else{window._invLocals.push(id);el.style.background='#e8f0fe';el.style.borderColor='#185FA5';if(chk){chk.style.color='#185FA5';chk.textContent='✓';}}
+    if(i>=0){window._invLocals.splice(i,1);el.style.background='#fff';el.style.borderColor='#e5e4e0';if(chk){chk.textContent='⬜';}}
+    else{window._invLocals.push(id);el.style.background='#e8f0fe';el.style.borderColor='#185FA5';if(chk){chk.textContent='✅';}}
   };
   window.invToggleDay=function(d,btn){
     const i=window._invDays.indexOf(d);
@@ -2469,10 +2494,12 @@ function showInvitePage(data){
   };
   window.generateInviteResponse=function(){
     const nome=document.getElementById('inv-nome').value.trim()||data.nome||'Convidado';
+    if(!nome){document.getElementById('inv-nome').focus();return;}
     const code=btoa(unescape(encodeURIComponent(JSON.stringify({v:1,nome,locals:window._invLocals,days:window._invDays,affinities:window._invAffs}))));
-    document.getElementById('inv-response-area').style.display='block';
+    const area=document.getElementById('inv-response-area');
     document.getElementById('inv-response-code').value=code;
-    document.getElementById('inv-response-area').scrollIntoView({behavior:'smooth'});
+    area.style.display='block';
+    area.scrollIntoView({behavior:'smooth',block:'center'});
   };
 }
 function closeAddPerson(){
