@@ -28,6 +28,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .origin-label{font-size:11px;color:#888;white-space:nowrap}
 .origin-val{font-size:13px;font-weight:500;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .link-btn{font-size:12px;color:#185FA5;background:none;border:none;cursor:pointer;font-family:inherit;white-space:nowrap}
+.origin-history{background:#fff;border:.5px solid #e0e0dc;border-radius:10px;margin-bottom:.5rem;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,.08)}
+.origin-history-item{display:flex;align-items:center;gap:8px;padding:9px 12px;cursor:pointer;font-size:13px;border-bottom:.5px solid #f5f4f0;transition:background .1s}
+.origin-history-item:last-child{border-bottom:none}
+.origin-history-item:hover{background:#f5f4f0}
+.origin-history-dot{width:7px;height:7px;border-radius:50%;background:#185FA5;flex-shrink:0}
+.origin-history-addr{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#1a1a18}
+.origin-history-del{background:none;border:none;cursor:pointer;color:#ccc;font-size:12px;padding:2px 4px;flex-shrink:0}
+.origin-history-del:hover{color:#c0392b}
+.origin-history-empty{padding:10px 12px;font-size:12px;color:#aaa;text-align:center}
 .edit-row{display:none;gap:6px;align-items:center;margin-bottom:.625rem}
 .edit-row.visible{display:flex}
 .edit-row input{flex:1;font-size:13px;padding:7px 10px;border-radius:8px;border:.5px solid #ccc;background:#fafaf8;font-family:inherit}
@@ -35,12 +44,23 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .tabs{display:flex;gap:6px}
 .tab{flex:1;padding:7px;border-radius:8px;border:.5px solid #ddd;background:transparent;cursor:pointer;font-size:13px;color:#666;font-family:inherit;transition:all .15s;text-align:center}
 .tab.active{background:#1a1a18;color:#fff;border-color:#1a1a18;font-weight:500}
+/* FILTER BARS WRAPPER */
+.filters-wrapper{border-bottom:.5px solid #e5e4e0;background:#fff}
+.filter-row{display:flex;align-items:center;gap:0;padding:0 1.25rem}
+.filter-row-label{font-size:9px;font-weight:700;color:#bbb;text-transform:uppercase;letter-spacing:.08em;white-space:nowrap;padding:.6rem 10px .6rem 0;border-right:.5px solid #ece;flex-shrink:0}
+.filter-row-scroll{display:flex;gap:6px;overflow-x:auto;padding:.5rem 0 .5rem 10px;scrollbar-width:none;flex:1;white-space:nowrap}
+.filter-row-scroll::-webkit-scrollbar{display:none}
+.filter-row+.filter-row{border-top:.5px solid #f5f4f0}
 /* FILTER */
-.filter-bar{padding:.75rem 1.25rem .5rem;border-bottom:.5px solid #e5e4e0;overflow-x:auto;white-space:nowrap;scrollbar-width:none}
-.filter-bar::-webkit-scrollbar{display:none}
-.filter-pill{display:inline-flex;align-items:center;gap:4px;padding:5px 11px;border-radius:20px;border:.5px solid #ddd;background:#fff;font-size:12px;color:#555;cursor:pointer;font-family:inherit;margin-right:6px;transition:all .15s;white-space:nowrap}
-.filter-pill.active{background:#1a1a18;color:#fff;border-color:#1a1a18}
-.filter-pill .dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.filter-bar{display:none}
+.filter-pill{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:20px;border:.5px solid #e0e0dc;background:#fafaf8;font-size:11px;color:#666;cursor:pointer;font-family:inherit;transition:all .15s;white-space:nowrap;flex-shrink:0}
+.filter-pill.active{background:#1a1a18;color:#fff;border-color:#1a1a18;font-weight:500}
+.filter-pill .dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+/* AFFINITY */
+.affinity-bar{display:none}
+.affinity-pill{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:20px;border:.5px solid #e0e0dc;background:#fafaf8;font-size:11px;color:#666;cursor:pointer;font-family:inherit;transition:all .15s;white-space:nowrap;flex-shrink:0}
+.affinity-pill.active{background:#1a1a18;color:#fff;border-color:#1a1a18;font-weight:500}
+
 /* PANELS */
 .panel{padding:1rem 1.25rem 5rem;display:none}
 .panel.visible{display:block}
@@ -284,40 +304,185 @@ mark{background:#fff3cd;color:#1a1a18;border-radius:3px;padding:0 2px}
 /* NOTE BADGE on card head */
 .note-badge{font-size:10px;background:#e8f0fe;color:#185FA5;padding:1px 6px;border-radius:8px;font-weight:500;flex-shrink:0}
 
-/* BOTTOM NAV */
+/* ONBOARDING MODAL */
+.onboard-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:300;align-items:flex-end;justify-content:center}
+.onboard-overlay.visible{display:flex}
+.onboard-box{background:#fff;width:100%;max-width:520px;border-radius:20px 20px 0 0;padding:1.75rem 1.5rem 2.5rem;text-align:center}
+.onboard-logo{font-size:32px;margin-bottom:.5rem}
+.onboard-title{font-size:18px;font-weight:700;margin-bottom:.25rem;color:#1a1a18}
+.onboard-sub{font-size:13px;color:#888;margin-bottom:1.5rem;line-height:1.5}
+.onboard-levels{display:flex;flex-direction:column;gap:10px;margin-bottom:1.25rem}
+.onboard-level{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:14px;border:1.5px solid #e5e4e0;cursor:pointer;text-align:left;background:#fff;font-family:inherit;transition:all .15s}
+.onboard-level:hover{border-color:#1a1a18;background:#fafaf8}
+.onboard-level.selected{border-color:#1a1a18;background:#1a1a18;color:#fff}
+.onboard-level.selected .ol-desc{color:#ccc}
+.ol-icon{font-size:24px;flex-shrink:0}
+.ol-info{flex:1}
+.ol-label{font-size:14px;font-weight:600}
+.ol-desc{font-size:11px;color:#888;margin-top:2px;line-height:1.4}
+.onboard-cta{width:100%;padding:13px;border-radius:12px;background:#1a1a18;color:#fff;border:none;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer}
+.onboard-cta:disabled{background:#ccc;cursor:not-allowed}
+/* TOOLTIP */
+.tooltip-bar{background:#fff8e1;border:.5px solid #ffe082;border-radius:10px;padding:.625rem 1rem;margin:0 0 .75rem;font-size:12px;color:#795548;display:none;align-items:center;gap:8px}
+.tooltip-bar.visible{display:flex}
+.tooltip-bar span{flex:1;line-height:1.4}
+.tooltip-close{background:none;border:none;cursor:pointer;color:#bbb;font-size:14px;padding:0 2px}
+/* GROUPS PANEL */
+.groups-panel{padding:1rem 1.25rem 5rem;display:none}
+.groups-panel.visible{display:block}
+/* PEOPLE / MATCH */
+.people-panel{padding:1rem 1.25rem 5rem;display:none}
+.people-panel.visible{display:block}
+.match-score-ring{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;border:2.5px solid #e5e4e0}
+.match-score-ring.high{border-color:#2e7d32;background:#e8f5e9;color:#2e7d32}
+.match-score-ring.mid{border-color:#f57f17;background:#fff8e1;color:#f57f17}
+.match-score-ring.low{border-color:#bbb;background:#f5f4f0;color:#888}
+.person-card{background:#fff;border:.5px solid #e5e4e0;border-radius:14px;padding:.875rem 1rem;margin-bottom:10px}
+.person-card-head{display:flex;align-items:center;gap:10px;margin-bottom:.5rem}
+.person-avatar{width:40px;height:40px;border-radius:50%;background:#e8eaf6;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;font-weight:600;color:#283593}
+.person-meta{flex:1;min-width:0}
+.person-name{font-size:13px;font-weight:600;color:#1a1a18}
+.person-origin{font-size:11px;color:#888;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.person-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:.375rem}
+.match-breakdown{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:.625rem}
+.match-dim{background:#f9f9f7;border-radius:8px;padding:6px 9px}
+.match-dim-label{font-size:9px;color:#aaa;text-transform:uppercase;letter-spacing:.04em;margin-bottom:2px}
+.match-dim-val{font-size:12px;font-weight:600;color:#1a1a18}
+.match-locals{margin-top:.625rem}
+.match-locals-title{font-size:10px;color:#888;text-transform:uppercase;letter-spacing:.04em;margin-bottom:5px;font-weight:600}
+.match-local-tag{display:inline-block;font-size:11px;padding:3px 9px;border-radius:10px;background:#e8f0fe;color:#185FA5;margin:2px;cursor:pointer}
+.person-actions{display:flex;gap:6px;margin-top:.75rem}
+.person-btn{flex:1;padding:7px;border-radius:9px;border:.5px solid #ddd;background:#f9f9f7;font-size:12px;font-family:inherit;cursor:pointer;color:#444}
+.person-btn.primary{background:#1a1a18;color:#fff;border-color:#1a1a18}
+.who-goes{margin-top:8px;padding-top:8px;border-top:.5px solid #f0f0ec}
+.who-goes-title{font-size:10px;color:#888;text-transform:uppercase;letter-spacing:.04em;margin-bottom:5px;font-weight:600}
+.who-goes-avatars{display:flex;flex-wrap:wrap;gap:5px}
+.who-goes-chip{display:flex;align-items:center;gap:5px;padding:3px 8px;border-radius:10px;background:#f0f6ff;border:.5px solid #aac4f7;font-size:11px;color:#185FA5;cursor:pointer}
+.group-card{background:#fff;border:.5px solid #e5e4e0;border-radius:14px;padding:1rem;margin-bottom:10px}
+.group-card-head{display:flex;align-items:center;gap:10px;margin-bottom:.5rem}
+.group-card-avatar{font-size:26px;flex-shrink:0}
+.group-card-info{flex:1;min-width:0}
+.group-card-name{font-size:14px;font-weight:600;color:#1a1a18}
+.group-card-meta{font-size:11px;color:#888;margin-top:2px}
+.group-card-badge{font-size:10px;padding:2px 8px;border-radius:10px;font-weight:500;background:#e8f5e9;color:#2e7d32}
+.group-card-badge.leader{background:#fce4ec;color:#c62828}
+.group-card-badge.member{background:#e8eaf6;color:#283593}
+.group-members{display:flex;gap:5px;flex-wrap:wrap;margin-top:.5rem}
+.group-member-tag{font-size:11px;padding:3px 9px;border-radius:10px;background:#f5f4f0;color:#555}
+.group-actions{display:flex;gap:6px;margin-top:.75rem}
+.group-btn{flex:1;padding:8px;border-radius:9px;border:.5px solid #ddd;background:#f9f9f7;font-size:12px;font-family:inherit;cursor:pointer;color:#444;font-weight:500}
+.group-btn.primary{background:#1a1a18;color:#fff;border-color:#1a1a18}
+.create-group-btn{width:100%;padding:12px;border:1.5px dashed #ccc;border-radius:14px;background:transparent;color:#666;font-size:13px;font-family:inherit;cursor:pointer;margin-bottom:12px;transition:all .15s}
+.create-group-btn:hover{border-color:#888;color:#333}
+.level-badge{font-size:9px;padding:1px 6px;border-radius:8px;font-weight:600;margin-left:5px}
+.level-badge.iniciante{background:#e8f5e9;color:#2e7d32}
+.level-badge.intermediario{background:#fff8e1;color:#f57f17}
+.level-badge.avancado{background:#fce4ec;color:#c62828}
+
+@keyframes rolefyReveal{
+  0%  {opacity:0;letter-spacing:.3em;filter:blur(4px)}
+  60% {opacity:1;letter-spacing:.05em;filter:blur(0)}
+  80% {transform:scale(1.08)}
+  100%{transform:scale(1);letter-spacing:normal}
+}
+.rolefy-active{animation:rolefyReveal .7s cubic-bezier(.22,1,.36,1) forwards;color:#1a1a18}
+
+/* PILL EDIT POPUP */
+.pill-popup-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:500;align-items:flex-end;justify-content:center}
+.pill-popup-overlay.visible{display:flex}
+.pill-popup{background:#fff;width:100%;max-width:520px;border-radius:20px 20px 0 0;padding:1.25rem 1.25rem 2rem;max-height:75vh;overflow-y:auto}
+.pill-popup-title{font-size:13px;font-weight:600;color:#1a1a18;margin-bottom:.875rem;padding-bottom:.625rem;border-bottom:.5px solid #f0f0ec}
+.pill-popup-opt{display:flex;align-items:center;gap:10px;padding:10px 4px;border-radius:9px;cursor:pointer;font-size:14px;font-family:inherit;background:none;border:none;width:100%;text-align:left;transition:background .12s}
+.pill-popup-opt:hover{background:#f5f4f0}
+.pill-popup-opt.danger{color:#c0392b}
+.pill-popup-divider{height:.5px;background:#f0f0ec;margin:.375rem 0}
+.pill-popup-swap{display:none;padding-top:4px}
+.pill-popup-swap.visible{display:block}
+.ctag{cursor:pointer;transition:opacity .12s}
+.ctag:hover{opacity:.75}
 .bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:520px;background:#fff;border-top:.5px solid #e5e4e0;display:flex;z-index:30}
 .bnav-btn{flex:1;padding:10px 2px 12px;border:none;background:transparent;cursor:pointer;font-family:inherit;display:flex;flex-direction:column;align-items:center;gap:3px;color:#999;font-size:9px}
 .bnav-btn.active{color:#1a1a18}
 .bnav-btn span:first-child{font-size:17px}
+/* HAMBURGER MENU */
+.hamburger-btn{background:none;border:.5px solid #e0e0dc;border-radius:8px;padding:5px 9px;cursor:pointer;font-size:16px;color:#555;line-height:1}
+.hamburger-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;align-items:flex-end;justify-content:center}
+.hamburger-overlay.visible{display:flex}
+.hamburger-box{background:#fff;width:100%;max-width:520px;border-radius:16px 16px 0 0;padding:1.25rem 1.25rem 2rem}
+.hamburger-title{font-size:14px;font-weight:600;margin-bottom:4px}
+.hamburger-sub{font-size:12px;color:#888;margin-bottom:1rem}
+.hamburger-item{display:flex;align-items:center;gap:12px;padding:12px 4px;border-bottom:.5px solid #f0f0ec;cursor:pointer}
+.hamburger-item:last-child{border-bottom:none}
+.hamburger-item-icon{font-size:20px;width:32px;text-align:center;flex-shrink:0}
+.hamburger-item-info{flex:1}
+.hamburger-item-label{font-size:14px;font-weight:500;color:#1a1a18}
+.hamburger-item-desc{font-size:11px;color:#888;margin-top:1px}
+.hamburger-item-check{width:22px;height:22px;border-radius:6px;border:1.5px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;transition:all .15s}
+.hamburger-item-check.on{background:#1a1a18;border-color:#1a1a18;color:#fff}
+.hamburger-item.fixed .hamburger-item-check{background:#f5f4f0;border-color:#e0e0dc;color:#bbb}
+/* AFFINITY badge inside cards */
+.affinity-badge{display:inline-block;font-size:9px;padding:1px 6px;border-radius:8px;background:#f3e5f5;color:#7b1fa2;font-weight:500;margin-left:3px}
+/* FAVS PANEL */
+.favs-panel{padding:1rem 1.25rem 5rem;display:none}
+.favs-panel.visible{display:block}
+.favs-empty{text-align:center;padding:3rem 0;color:#bbb;font-size:13px}
+.fav-card{background:#fff;border:.5px solid #e5e4e0;border-radius:12px;padding:.75rem 1rem;margin-bottom:8px;display:flex;align-items:center;gap:10px;cursor:pointer}
+.fav-card:hover{border-color:#ccc}
+.fav-icon{font-size:22px;flex-shrink:0}
+.fav-info{flex:1;min-width:0}
+.fav-name{font-size:13px;font-weight:500}
+.fav-addr{font-size:11px;color:#888;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fav-remove{background:none;border:none;cursor:pointer;font-size:16px;color:#ddd;padding:4px;flex-shrink:0}
+.fav-remove:hover{color:#c0392b}
+.fav-heart{font-size:15px;cursor:pointer;color:#ddd;flex-shrink:0;background:none;border:none;padding:2px;transition:color .15s}
+.fav-heart.on{color:#e74c3c}
 </style>
 </head>
 <body>
 <div class="app">
   <div class="top-bar">
     <div class="app-title">
-      <span>📍 Roteiro SP</span>
+      <button class="hamburger-btn" onclick="openHamburger()">☰</button>
+      <span id="app-title">📍 Roteiro SP</span>
       <button class="header-search-btn" onclick="openSearchOverlay()">🔍 Buscar</button>
     </div>
     <div class="origin-bar">
       <div class="origin-dot"></div>
       <span class="origin-label">De</span>
-      <span class="origin-val" id="origin-display">Av. Lacerda Franco, 1170 – Cambuci</span>
+      <span class="origin-val" id="origin-display">Definir ponto de partida…</span>
       <button class="link-btn" onclick="toggleEdit()">alterar</button>
     </div>
     <div class="edit-row" id="origin-edit">
-      <input type="text" id="origin-input" placeholder="Seu endereço de partida, São Paulo"/>
+      <input type="text" id="origin-input" placeholder="Rua, número – Bairro, Cidade" onkeydown="if(event.key==='Enter')saveOrigin()"/>
       <button onclick="saveOrigin()">ok</button>
     </div>
+    <div class="origin-history" id="origin-history" style="display:none"></div>
     <div class="tabs" id="day-tabs">
       <button class="tab active" onclick="switchTab('semana',this)">📅 Semana</button>
       <button class="tab" onclick="switchTab('fds',this)">🎉 Fim de semana</button>
     </div>
   </div>
-  <div class="filter-bar" id="filter-bar"></div>
+  <div class="filters-wrapper" id="filters-wrapper" style="display:none">
+    <div class="filter-row">
+      <span class="filter-row-label">Local</span>
+      <div class="filter-row-scroll" id="filter-bar"></div>
+    </div>
+    <div class="filter-row">
+      <span class="filter-row-label">Perfil</span>
+      <div class="filter-row-scroll" id="affinity-bar"></div>
+    </div>
+  </div>
+  <div class="tooltip-bar" id="tooltip-bar">
+    <span id="tooltip-text"></span>
+    <button class="tooltip-close" onclick="closeTooltip()">✕</button>
+  </div>
 
   <div id="panel-semana" class="panel visible"></div>
   <div id="panel-fds"    class="panel"></div>
   <div id="panel-bank"   class="bank-panel"></div>
+  <div id="panel-favs"   class="favs-panel"></div>
+  <div id="panel-groups" class="groups-panel"></div>
+  <div id="panel-people" class="people-panel"></div>
   <div id="panel-search" class="search-panel">
     <div class="search-wrap">
       <span class="search-icon">🔍</span>
@@ -359,6 +524,26 @@ mark{background:#fff3cd;color:#1a1a18;border-radius:3px;padding:0 2px}
         <div class="cfg-status" id="cfg-status"></div>
         <button class="action-btn primary" onclick="saveApiKeys()" style="margin-bottom:8px">💾 Salvar configurações</button>
         <button class="action-btn" onclick="testApi()">🧪 Testar conexão</button>
+      </div>
+    </div>
+    <div class="cfg-section">
+      <div class="cfg-title">🔗 URL pública do app</div>
+      <div class="cfg-card">
+        <h4>Link para convites</h4>
+        <p>Hospede o HTML no GitHub Pages ou Netlify e cole a URL aqui. Ela será usada nos links de convite do Match.</p>
+        <input type="url" id="cfg-public-url" placeholder="https://seuusuario.github.io/roteiro-sp.html"/>
+        <div id="cfg-url-status" style="font-size:11px;margin-bottom:8px"></div>
+        <button class="action-btn primary" onclick="savePublicUrl()">💾 Salvar URL</button>
+        <div style="margin-top:10px;padding-top:10px;border-top:.5px solid #e5e4e0">
+          <p style="font-size:11px;color:#888;line-height:1.6;margin-bottom:8px">
+            <strong>Como hospedar gratuitamente:</strong><br>
+            1. Crie conta em <strong>github.com</strong><br>
+            2. Crie repositório público → faça upload do arquivo HTML<br>
+            3. Settings → Pages → Branch: main → Save<br>
+            4. Copie a URL gerada e cole acima<br><br>
+            Ou use <strong>netlify.com</strong> → arraste o arquivo HTML → copie a URL.
+          </p>
+        </div>
       </div>
     </div>
     <div class="cfg-section">
@@ -520,15 +705,119 @@ mark{background:#fff3cd;color:#1a1a18;border-radius:3px;padding:0 2px}
     </div>
   </div>
 
-  <div class="bottom-nav">
-    <button class="bnav-btn active" id="nav-roteiro" onclick="showView('roteiro')"><span>🗺️</span><span>Roteiro</span></button>
-    <button class="bnav-btn"        id="nav-bank"    onclick="showView('bank')"   ><span>📦</span><span>Banco</span></button>
-    <button class="bnav-btn"        id="nav-infl"    onclick="showView('infl')"   ><span>👤</span><span>Influenc.</span></button>
-    <button class="bnav-btn"        id="nav-mono"    onclick="showView('mono')"   ><span>💰</span><span>Ganhar</span></button>
-    <button class="bnav-btn"        id="nav-cfg"     onclick="showView('cfg')"    ><span>⚙️</span><span>Config</span></button>
+  <div class="bottom-nav" id="bottom-nav"></div>
+</div>
+
+<!-- ONBOARDING -->
+<div class="onboard-overlay" id="onboard-overlay">
+  <div class="onboard-box">
+    <div class="onboard-logo">📍</div>
+    <div class="onboard-title">Bem-vindo ao Roteiro SP</div>
+    <div class="onboard-sub">Como você se descreveria?<br>Isso ajuda a personalizar a experiência para você.</div>
+    <div class="onboard-levels">
+      <button class="onboard-level" onclick="selectLevel('iniciante',this)">
+        <span class="ol-icon">🟢</span>
+        <div class="ol-info">
+          <div class="ol-label">Iniciante</div>
+          <div class="ol-desc">Quero explorar os locais e descobrir meus favoritos. Interface simples e guiada.</div>
+        </div>
+      </button>
+      <button class="onboard-level" onclick="selectLevel('intermediario',this)">
+        <span class="ol-icon">🟡</span>
+        <div class="ol-info">
+          <div class="ol-label">Intermediário</div>
+          <div class="ol-desc">Já conheço o app e quero gerenciar grupos e influenciadores.</div>
+        </div>
+      </button>
+      <button class="onboard-level" onclick="selectLevel('avancado',this)">
+        <span class="ol-icon">🔴</span>
+        <div class="ol-info">
+          <div class="ol-label">Avançado</div>
+          <div class="ol-desc">Quero acesso total — IA, monetização, drag & drop e todos os recursos.</div>
+        </div>
+      </button>
+    </div>
+    <button class="onboard-cta" id="onboard-cta" disabled onclick="confirmLevel()">Entrar →</button>
   </div>
 </div>
 
+<!-- MODAL CRIAR GRUPO -->
+<div class="modal-overlay" id="modal-create-group">
+  <div class="modal" style="max-height:85vh;overflow-y:auto">
+    <div class="modal-title">👥 Criar grupo</div>
+    <label>Nome do grupo</label>
+    <input id="cg-nome" placeholder="Ex: Turma do rolê de sexta"/>
+    <label>Emoji do grupo</label>
+    <input id="cg-icon" placeholder="🎭" style="width:80px"/>
+    <label>Descrição (opcional)</label>
+    <input id="cg-desc" placeholder="Ex: Galera que curte bar e exposição"/>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeCreateGroup()">Cancelar</button>
+      <button class="btn-save" onclick="saveGroup()">Criar grupo</button>
+    </div>
+  </div>
+</div>
+
+<!-- HAMBURGER MENU -->
+<div class="hamburger-overlay" id="hamburger-overlay" onclick="closeHamburgerOutside(event)">
+  <div class="hamburger-box">
+    <div class="hamburger-title">☰ Menu <span id="hburg-level-badge"></span></div>
+    <div class="hamburger-sub">Escolha quais abas aparecem no menu inferior</div>
+    <div id="hamburger-items"></div>
+    <button class="btn-save" style="width:100%;padding:10px;border-radius:10px;font-family:inherit;cursor:pointer;font-size:13px;margin-top:12px" onclick="closeHamburger()">✅ Pronto</button>
+    <button style="width:100%;padding:9px;border-radius:10px;font-family:inherit;cursor:pointer;font-size:12px;margin-top:8px;background:#f5f4f0;border:.5px solid #ddd;color:#666" onclick="closeHamburger();showOnboarding()">🔄 Mudar nível de experiência</button>
+  </div>
+</div>
+
+
+<!-- MODAL IMPORTAR RESPOSTA -->
+<div class="modal-overlay" id="modal-import-response">
+  <div class="modal">
+    <div class="modal-title">📥 Importar resposta</div>
+    <p style="font-size:12px;color:#666;margin-bottom:10px;line-height:1.5">Cole o código que a pessoa enviou após preencher o convite:</p>
+    <textarea id="import-response-code" placeholder="Cole o código aqui…" style="width:100%;font-size:12px;padding:8px 10px;border-radius:8px;border:.5px solid #ccc;font-family:monospace;height:80px;resize:none;margin-bottom:6px"></textarea>
+    <div id="import-response-error" style="font-size:11px;color:#c0392b;margin-bottom:8px"></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeImportResponse()">Cancelar</button>
+      <button class="btn-save" onclick="processImportResponse()">✅ Importar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL ADICIONAR PESSOA -->
+<div class="modal-overlay" id="modal-add-person">
+  <div class="modal" style="max-height:88vh;overflow-y:auto">
+    <div class="modal-title" id="modal-person-title">👤 Adicionar pessoa</div>
+    <label>Nome</label>
+    <input id="ap-nome" placeholder="Ex: Ana Paula"/>
+    <label>Emoji / Avatar</label>
+    <input id="ap-icon" placeholder="😊" style="width:70px"/>
+    <label>Origem (bairro ou cidade)</label>
+    <input id="ap-origin" placeholder="Ex: Pinheiros, SP"/>
+    <label>Dias disponíveis</label>
+    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px" id="ap-days-picker"></div>
+    <label>Perfis de afinidade</label>
+    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px" id="ap-aff-picker"></div>
+    <label>Locais de interesse</label>
+    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px" id="ap-locals-picker"></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeAddPerson()">Cancelar</button>
+      <button class="btn-save" onclick="savePerson()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- PILL EDIT POPUP -->
+<div id="pill-popup-overlay" class="pill-popup-overlay" onclick="closePillPopup()">
+  <div id="pill-popup" class="pill-popup" onclick="event.stopPropagation()">
+    <div class="pill-popup-title" id="pill-popup-title">Categoria</div>
+    <button class="pill-popup-opt" id="pill-opt-keep" onclick="pillAction('keep')">✅ Manter</button>
+    <button class="pill-popup-opt danger" id="pill-opt-remove" onclick="pillAction('remove')">🗑️ Remover</button>
+    <div class="pill-popup-divider"></div>
+    <button class="pill-popup-opt" onclick="pillShowSwap()">🔄 Trocar por…</button>
+    <div class="pill-popup-swap" id="pill-popup-swap"></div>
+  </div>
+</div>
 
 <!-- NOTES MODAL -->
 <div class="modal-overlay" id="modal-notes">
@@ -586,26 +875,41 @@ const CAT_MAP = {};
 CAT_GROUPS.forEach(g=>g.cats.forEach(c=>{CAT_MAP[c.id]=c;}));
 const ALL_CATS = CAT_GROUPS.flatMap(g=>g.cats);
 
+// ── AFFINITY PROFILES ─────────────────────────────────────────────────────────
+const AFFINITY_PROFILES = [
+  {id:'casal_rom',   icon:'💑', label:'Casal romântico'},
+  {id:'casal_casual',icon:'👫', label:'Casal casual'},
+  {id:'par_cia',     icon:'🤝', label:'Par de Cia'},
+  {id:'grupo',       icon:'👯', label:'Grupo de amigos'},
+  {id:'solo',        icon:'🧍', label:'Solteiro solo'},
+  {id:'familia',     icon:'👨‍👩‍👧', label:'Família'},
+  {id:'balada',      icon:'🕺', label:'Galera da balada'},
+  {id:'turista',     icon:'🧳', label:'Turistas'},
+];
+
+let activeAffinity = null;
+
 // ── STATE ─────────────────────────────────────────────────────────────────────
 let currentTab='semana', activeFilter='all', modalTarget=null;
 let collapsedGroups={}, dragId=null, dragTab=null;
 let formSelectedCats={}, currentImageB64=null, extractedData=null, extractedTab='semana';
 
 const DEFAULT_STATE = {
-  origin:'Av. Lacerda Franco, 1170 – Cambuci, São Paulo',
-  sponsored:null, affiliates:{}, influencers:[],
+  origin:'',
+  sponsored:null, affiliates:{}, influencers:[], favs:[], groups:[], people:[],
+  menuItems:['roteiro','favs','cfg'],
   semana:[
-    {id:'s1',nome:'Conceição Discos & Comes',cats:['almoco_rapido','exp_gastro'],icon:'🍚',hora:'12h00',dur:'1h30',dist:'3,5 km',transporte:'Ônibus (~10 min) ou a pé (~45 min)',end:'R. Imac. Conceição, 151 – Vila Buarque, São Paulo',nota:'Almoço com a chef Talitha. Arroz, música e alma. Ter–Sáb.',rating:'4.4',aviso:'Fecha às 17h!',badge:null,badgeType:null,status:'ativo',schedDate:null,schedNote:null},
-    {id:'s2',nome:'Farol Santander',cats:['evento_dia'],icon:'🏙️',hora:'14h00',dur:'1h30',dist:'1,5 km',transporte:'A pé (~20 min)',end:'R. João Brícola, 24 – Centro Histórico, São Paulo',nota:'Vista 360° do topo do Edifício Altino Arantes. Seg–Sáb 9h–19h.',rating:'4.7',aviso:null,badge:null,badgeType:null,status:'ativo',schedDate:null,schedNote:null},
-    {id:'s3',nome:'Notre Vin',cats:['jantar_rapido','exp_gastro','evento_noite','evento_musica','speakeasy'],icon:'🍷',hora:'19h00',dur:'2h',dist:'11 km',transporte:'Metrô + Uber (~30 min)',end:'R. João Moura, 1086 – Pinheiros, São Paulo',nota:'Wine bar com jazz ao vivo. Ter/qua: peça uma taça, ganha outra.',rating:'4.6',aviso:'Aberto a partir das 18h. Fechado seg/dom.',badge:'Double Trouble – ter/qua',badgeType:'tip',status:'ativo',schedDate:null,schedNote:null},
-    {id:'s4',nome:'Vila Secreta – Raful de Raful',cats:['evento_dia','evento_pago'],icon:'🏚️',hora:'(autônoma)',dur:'1h',dist:'1 km',transporte:'A pé (~12 min)',end:'R. Rubi, 50 – Aclimação, São Paulo',nota:'Vila histórica escondida. Coleção de 1700–1960. R$35.',rating:'4.9',aviso:'Visitas: sex 15h e sáb 10h apenas.',badge:'Sex 15h · Sáb 10h',badgeType:'warn',status:'ativo',schedDate:null,schedNote:null},
+    {id:'s1',nome:'Conceição Discos & Comes',cats:['almoco_rapido','exp_gastro'],affinities:['casal_casual','grupo','solo','turista'],icon:'🍚',hora:'12h00',dur:'1h30',dist:'3,5 km',transporte:'Ônibus (~10 min) ou a pé (~45 min)',end:'R. Imac. Conceição, 151 – Vila Buarque, São Paulo',nota:'Almoço com a chef Talitha. Arroz, música e alma. Ter–Sáb.',rating:'4.4',aviso:'Fecha às 17h!',badge:null,badgeType:null,status:'ativo',schedDate:null,schedNote:null},
+    {id:'s2',nome:'Farol Santander',cats:['evento_dia'],affinities:['casal_rom','casal_casual','familia','turista','solo'],icon:'🏙️',hora:'14h00',dur:'1h30',dist:'1,5 km',transporte:'A pé (~20 min)',end:'R. João Brícola, 24 – Centro Histórico, São Paulo',nota:'Vista 360° do topo do Edifício Altino Arantes. Seg–Sáb 9h–19h.',rating:'4.7',aviso:null,badge:null,badgeType:null,status:'ativo',schedDate:null,schedNote:null},
+    {id:'s3',nome:'Notre Vin',cats:['jantar_rapido','exp_gastro','evento_noite','evento_musica','speakeasy'],affinities:['casal_rom','casal_casual','par_cia','grupo'],icon:'🍷',hora:'19h00',dur:'2h',dist:'11 km',transporte:'Metrô + Uber (~30 min)',end:'R. João Moura, 1086 – Pinheiros, São Paulo',nota:'Wine bar com jazz ao vivo. Ter/qua: peça uma taça, ganha outra.',rating:'4.6',aviso:'Aberto a partir das 18h. Fechado seg/dom.',badge:'Double Trouble – ter/qua',badgeType:'tip',status:'ativo',schedDate:null,schedNote:null},
+    {id:'s4',nome:'Vila Secreta – Raful de Raful',cats:['evento_dia','evento_pago'],affinities:['casal_rom','par_cia','turista','solo'],icon:'🏚️',hora:'(autônoma)',dur:'1h',dist:'1 km',transporte:'A pé (~12 min)',end:'R. Rubi, 50 – Aclimação, São Paulo',nota:'Vila histórica escondida. Coleção de 1700–1960. R$35.',rating:'4.9',aviso:'Visitas: sex 15h e sáb 10h apenas.',badge:'Sex 15h · Sáb 10h',badgeType:'warn',status:'ativo',schedDate:null,schedNote:null},
   ],
   fds:[
-    {id:'f1',nome:'Vila Secreta – Raful de Raful',cats:['evento_dia','evento_pago'],icon:'🏚️',hora:'10h00 (sáb)',dur:'1h',dist:'1 km',transporte:'A pé (~12 min)',end:'R. Rubi, 50 – Aclimação, São Paulo',nota:'Visita guiada. R$35. Crianças até 10 anos grátis.',rating:'4.9',aviso:'Único horário no fds.',badge:'Sábados 10h',badgeType:'warn',status:'ativo',schedDate:null,schedNote:null},
-    {id:'f2',nome:'Conceição Discos & Comes',cats:['almoco_rapido','exp_gastro'],icon:'🍚',hora:'12h00',dur:'1h30',dist:'3,5 km',transporte:'Ônibus (~10 min) ou a pé (~45 min)',end:'R. Imac. Conceição, 151 – Vila Buarque, São Paulo',nota:'Almoço imperdível com a chef Talitha. Ter–Sáb.',rating:'4.4',aviso:'Fecha às 17h. Fila no sáb.',badge:null,badgeType:null,status:'ativo',schedDate:null,schedNote:null},
-    {id:'f3',nome:'Casa Bradesco – Sou Outro do Outro',cats:['evento_dia','evento_pago','evento_gratis'],icon:'🖼️',hora:'14h30',dur:'1h30',dist:'2 km',transporte:'A pé (~25 min)',end:'Alameda Rio Claro, 190 – Bela Vista, São Paulo',nota:'Exposição de Es Devlin. Labirinto de espelhos. Até 27/jul.',rating:'4.5',aviso:'Ter–Dom 12h–20h. Ingressos a partir de R$25.',badge:'Gratuito às terças',badgeType:'free',status:'ativo',schedDate:null,schedNote:null},
-    {id:'f4',nome:'Catedral da Sé – Luminiscence',cats:['evento_noite','evento_pago','evento_musica'],icon:'✨',hora:'20h30',dur:'1h',dist:'3 km',transporte:'Metrô Ana Rosa → Sé (~12 min)',end:'Praça da Sé – Centro, São Paulo',nota:'Show de luzes imersivo. Sessões a partir das 20h40.',rating:'4.7',aviso:'Confirme sessões em catedraldasesp.com.',badge:'15% off às segundas',badgeType:'free',status:'ativo',schedDate:null,schedNote:null},
-    {id:'f5',nome:'Le Club SP – Ashibah',cats:['evento_noite','evento_pago','eletronico','show'],icon:'🎧',hora:'23h00',dur:'3h',dist:'10 km',transporte:'Uber (~20 min)',end:'Av. Brig. Faria Lima, 4509 – Rooftop, São Paulo',nota:'Balada rooftop. Ashibah: sets hipnóticos e intensos.',rating:'4.4',aviso:'Abre 22h30. Apenas sex/sáb.',badge:null,badgeType:null,status:'ativo',schedDate:null,schedNote:null},
+    {id:'f1',nome:'Vila Secreta – Raful de Raful',cats:['evento_dia','evento_pago'],affinities:['casal_rom','par_cia','turista','solo'],icon:'🏚️',hora:'10h00 (sáb)',dur:'1h',dist:'1 km',transporte:'A pé (~12 min)',end:'R. Rubi, 50 – Aclimação, São Paulo',nota:'Visita guiada. R$35. Crianças até 10 anos grátis.',rating:'4.9',aviso:'Único horário no fds.',badge:'Sábados 10h',badgeType:'warn',status:'ativo',schedDate:null,schedNote:null},
+    {id:'f2',nome:'Conceição Discos & Comes',cats:['almoco_rapido','exp_gastro'],affinities:['casal_casual','grupo','solo','turista'],icon:'🍚',hora:'12h00',dur:'1h30',dist:'3,5 km',transporte:'Ônibus (~10 min) ou a pé (~45 min)',end:'R. Imac. Conceição, 151 – Vila Buarque, São Paulo',nota:'Almoço imperdível com a chef Talitha. Ter–Sáb.',rating:'4.4',aviso:'Fecha às 17h. Fila no sáb.',badge:null,badgeType:null,status:'ativo',schedDate:null,schedNote:null},
+    {id:'f3',nome:'Casa Bradesco – Sou Outro do Outro',cats:['evento_dia','evento_pago','evento_gratis'],affinities:['casal_rom','casal_casual','familia','turista','solo'],icon:'🖼️',hora:'14h30',dur:'1h30',dist:'2 km',transporte:'A pé (~25 min)',end:'Alameda Rio Claro, 190 – Bela Vista, São Paulo',nota:'Exposição de Es Devlin. Labirinto de espelhos. Até 27/jul.',rating:'4.5',aviso:'Ter–Dom 12h–20h. Ingressos a partir de R$25.',badge:'Gratuito às terças',badgeType:'free',status:'ativo',schedDate:null,schedNote:null},
+    {id:'f4',nome:'Catedral da Sé – Luminiscence',cats:['evento_noite','evento_pago','evento_musica'],affinities:['casal_rom','par_cia','grupo','turista'],icon:'✨',hora:'20h30',dur:'1h',dist:'3 km',transporte:'Metrô Ana Rosa → Sé (~12 min)',end:'Praça da Sé – Centro, São Paulo',nota:'Show de luzes imersivo. Sessões a partir das 20h40.',rating:'4.7',aviso:'Confirme sessões em catedraldasesp.com.',badge:'15% off às segundas',badgeType:'free',status:'ativo',schedDate:null,schedNote:null},
+    {id:'f5',nome:'Le Club SP – Ashibah',cats:['evento_noite','evento_pago','eletronico','show'],affinities:['grupo','balada','solo'],icon:'🎧',hora:'23h00',dur:'3h',dist:'10 km',transporte:'Uber (~20 min)',end:'Av. Brig. Faria Lima, 4509 – Rooftop, São Paulo',nota:'Balada rooftop. Ashibah: sets hipnóticos e intensos.',rating:'4.4',aviso:'Abre 22h30. Apenas sex/sáb.',badge:null,badgeType:null,status:'ativo',schedDate:null,schedNote:null},
   ],
 };
 
@@ -613,14 +917,37 @@ let state = JSON.parse(JSON.stringify(DEFAULT_STATE));
 
 // ── PERSIST ───────────────────────────────────────────────────────────────────
 function persist() {
-  try { localStorage.setItem('roteirosp_state', JSON.stringify(state)); } catch(e){}
+  try { localStorage.setItem('roteirosp_state', JSON.stringify(state)); } catch(e){ console.warn('persist failed', e); }
 }
+
+function migrateState(s) {
+  // garante que todos os campos novos existam em estados salvos antigos
+  if(!s.influencers) s.influencers=[];
+  if(!s.favs)        s.favs=[];
+  if(!s.groups)      s.groups=[];
+  if(!s.people)      s.people=[];
+  if(!s.menuItems)   s.menuItems=['roteiro','favs','cfg'];
+  if(!s.affiliates)  s.affiliates={};
+  if(s.origin===undefined) s.origin='';
+  // garante campos por local
+  ['semana','fds'].forEach(tab=>{
+    (s[tab]||[]).forEach(d=>{
+      if(!d.affinities) d.affinities=[];
+      if(!d.notes)      d.notes=[];
+      if(!d.cats)       d.cats=[];
+      if(d.status===undefined) d.status='ativo';
+    });
+  });
+  return s;
+}
+
 function loadPersisted() {
   try {
     const s = localStorage.getItem('roteirosp_state');
-    if (s) { state = JSON.parse(s); if(!state.influencers) state.influencers=[]; }
-  } catch(e){}
+    if(s) state = migrateState(JSON.parse(s));
+  } catch(e){ console.warn('loadPersisted failed', e); }
 }
+
 function saveToFile() {
   const blob = new Blob([JSON.stringify(state,null,2)],{type:'application/json'});
   const a = document.createElement('a');
@@ -628,34 +955,49 @@ function saveToFile() {
   a.download = 'roteiro-sp-'+new Date().toISOString().slice(0,10)+'.json';
   a.click(); URL.revokeObjectURL(a.href);
 }
+
 function importFromFile(e) {
   const f = e.target.files[0]; if(!f) return;
   const r = new FileReader();
   r.onload = ev => {
     try {
       const imported = JSON.parse(ev.target.result);
-      if (!imported.semana || !imported.fds) { alert('Arquivo inválido.'); return; }
-      state = imported; persist(); render();
+      if(!imported.semana || !imported.fds) { alert('Arquivo inválido — faltam campos semana/fds.'); return; }
+      state = migrateState(imported);
+      persist();
+      render();
+      renderBottomNav();
+      initOriginDisplay();
       alert('✅ Roteiro carregado com sucesso!');
     } catch(err) { alert('Erro ao importar: '+err.message); }
   };
   r.readAsText(f);
+  // reset input para permitir reimportar o mesmo arquivo
+  e.target.value = '';
 }
+
 function clearSavedData() {
-  if (!confirm('Apagar todos os dados salvos e voltar ao padrão?')) return;
+  if(!confirm('Apagar todos os dados salvos e voltar ao padrão?')) return;
   localStorage.removeItem('roteirosp_state');
-  state = JSON.parse(JSON.stringify(DEFAULT_STATE));
-  render(); alert('Dados apagados.');
+  localStorage.removeItem('sp_origin_history');
+  state = migrateState(JSON.parse(JSON.stringify(DEFAULT_STATE)));
+  render();
+  renderBottomNav();
+  initOriginDisplay();
+  alert('Dados apagados.');
 }
 
 // ── MAPS ──────────────────────────────────────────────────────────────────────
 function activeItems(tab) { return state[tab].filter(d=>d.status==='ativo'); }
 function filteredActive(tab) {
-  const items = activeItems(tab);
-  if (activeFilter==='all') return items;
-  const grp = CAT_GROUPS.find(g=>g.id===activeFilter);
-  if (grp) return items.filter(d=>d.cats&&d.cats.some(c=>grp.cats.map(x=>x.id).includes(c)));
-  return items.filter(d=>d.cats&&d.cats.includes(activeFilter));
+  let items = activeItems(tab);
+  if (activeFilter!=='all') {
+    const grp = CAT_GROUPS.find(g=>g.id===activeFilter);
+    if (grp) items = items.filter(d=>d.cats&&d.cats.some(c=>grp.cats.map(x=>x.id).includes(c)));
+    else items = items.filter(d=>d.cats&&d.cats.includes(activeFilter));
+  }
+  if (activeAffinity) items = items.filter(d=>(d.affinities||[]).includes(activeAffinity));
+  return items;
 }
 function fullRouteUrl(tab) {
   const data=filteredActive(tab); if(!data.length) return '#';
@@ -679,15 +1021,18 @@ function haversine(a, b) {
 
 async function optimizeRoute(tab) {
   const btn = document.getElementById('opt-btn-'+tab);
-  if (btn) { btn.disabled=true; btn.textContent='⏳ Otimizando…'; }
+  if(btn){btn.disabled=true;btn.textContent='⏳ Otimizando…';}
   const items = activeItems(tab);
-  if (items.length < 2) { alert('Adicione pelo menos 2 locais para otimizar.'); if(btn){btn.disabled=false;btn.textContent='✨ Otimizar rota e categorias';} return; }
+  if(items.length < 2){alert('Adicione pelo menos 2 locais para otimizar.');if(btn){btn.disabled=false;btn.textContent='✨ Otimizar rota com IA';}return;}
   const key = getActiveKey();
-  if (!key) { alert('Configure uma API Key em ⚙️ Config para usar a otimização.'); if(btn){btn.disabled=false;btn.textContent='✨ Otimizar rota e categorias';} return; }
-  const prompt = `Você é um especialista em roteiros urbanos em São Paulo.
+  if(!key){alert('Configure uma API Key em ⚙️ Config para usar a otimização.');if(btn){btn.disabled=false;btn.textContent='✨ Otimizar rota com IA';}return;}
+  const origin = state.origin||'São Paulo, SP';
+  const prompt = `Você é um especialista em roteiros urbanos.
+Ponto de partida: ${origin}
+
 Analise esta lista de locais e sugira:
-1. A MELHOR ORDEM de visitas considerando proximidade geográfica, horários de funcionamento e fluxo lógico do dia (almoço → tarde → noite).
-2. CATEGORIAS FALTANTES: para cada local, se estiver faltando categorias relevantes da lista disponível, sugira adicioná-las.
+1. A MELHOR ORDEM de visitas partindo da origem, considerando proximidade geográfica, horários de funcionamento e fluxo lógico do dia (almoço → tarde → noite).
+2. CATEGORIAS FALTANTES: para cada local, sugira categorias relevantes que estejam faltando.
 
 Locais (em ordem atual):
 ${items.map((d,i)=>`${i+1}. ${d.nome} | ${d.end} | Hora: ${d.hora} | Cats: ${(d.cats||[]).join(',')||'nenhuma'}`).join('\n')}
@@ -697,7 +1042,7 @@ Categorias disponíveis: ${ALL_CATS.map(c=>c.id+':'+c.label).join(', ')}
 Responda SOMENTE em JSON válido:
 {
   "ordem": [lista de ids na ordem sugerida, ex: ["s2","s1","s3"]],
-  "justificativa": "frase curta explicando a ordem",
+  "justificativa": "frase curta explicando a ordem considerando a origem",
   "categorias": [{"id":"id_do_local","adicionar":["cat_id1","cat_id2"]}],
   "resumo_cats": "frase curta sobre as categorias sugeridas"
 }`;
@@ -706,12 +1051,12 @@ Responda SOMENTE em JSON válido:
     const raw = await callAI(prompt);
     const clean = raw.replace(/```json|```/g,'').trim();
     const result = JSON.parse(clean);
-    pendingSuggestion = { tab, result };
+    pendingSuggestion = {tab, result};
     showSuggestion(tab, result);
   } catch(e) {
     alert('Erro na otimização: '+e.message);
   } finally {
-    if(btn){btn.disabled=false;btn.textContent='✨ Otimizar rota e categorias';}
+    if(btn){btn.disabled=false;btn.textContent='✨ Otimizar rota com IA';}
   }
 }
 
@@ -948,12 +1293,19 @@ function useExtracted() {
 // ── FILTER BAR ────────────────────────────────────────────────────────────────
 function renderFilterBar() {
   const bar=document.getElementById('filter-bar');
+  if(!bar) return;
   let h=`<button class="filter-pill${activeFilter==='all'?' active':''}" onclick="setFilter('all')">Todos</button>`;
-  CAT_GROUPS.forEach(g=>{
-    h+=`<button class="filter-pill${activeFilter===g.id?' active':''}" onclick="setFilter('${g.id}')"><span class="dot" style="background:${g.color}"></span>${g.icon} ${g.label}</button>`;
+  // divider
+  h+=`<span style="display:inline-block;width:.5px;height:16px;background:#e5e4e0;margin:0 4px;vertical-align:middle;flex-shrink:0"></span>`;
+  CAT_GROUPS.forEach((g,gi)=>{
+    // group pill
+    h+=`<button class="filter-pill${activeFilter===g.id?' active':''}" onclick="setFilter('${g.id}')" style="font-weight:600;${activeFilter===g.id?'':'border-color:#bbb'}"><span class="dot" style="background:${g.color}"></span>${g.icon} ${g.label}</button>`;
+    // subcategory pills — slightly smaller, indented feel via color
     g.cats.forEach(c=>{
-      h+=`<button class="filter-pill${activeFilter===c.id?' active':''}" onclick="setFilter('${c.id}')">${c.icon} ${c.label}</button>`;
+      h+=`<button class="filter-pill${activeFilter===c.id?' active':''}" onclick="setFilter('${c.id}')" style="${activeFilter!==c.id?'background:#f5f4f0;border-color:#e5e4e0;color:#777':''}">${c.icon} ${c.label}</button>`;
     });
+    if(gi < CAT_GROUPS.length-1)
+      h+=`<span style="display:inline-block;width:.5px;height:16px;background:#e5e4e0;margin:0 4px;vertical-align:middle;flex-shrink:0"></span>`;
   });
   bar.innerHTML=h;
 }
@@ -962,19 +1314,35 @@ function setFilter(id){activeFilter=id;renderFilterBar();renderPanel(currentTab)
 // ── RENDER ────────────────────────────────────────────────────────────────────
 function render(){renderFilterBar();renderPanel('semana');renderPanel('fds');renderBank();updateAffSelect();}
 
+function parseDur(dur){
+  if(!dur||dur==='–') return 0;
+  const h=(dur.match(/(\d+)h/)||[0,0])[1]*60;
+  const m=(dur.match(/(\d+)min/)||[0,0])[1]*1;
+  return parseInt(h)+parseInt(m);
+}
+function formatDurTotal(mins){
+  if(!mins) return '–';
+  const h=Math.floor(mins/60), m=mins%60;
+  return h&&m?`~${h}h${m}min`:h?`~${h}h`:`~${m}min`;
+}
+
 function renderPanel(tab) {
   const el=document.getElementById('panel-'+tab);
   const all=activeItems(tab);
-  const km=tab==='semana'?'~21 km':'~19 km';
-  const hrs=tab==='semana'?'~9h':'~11h';
+  // compute real duration from items
+  const totalMins = all.reduce((acc,d)=>acc+parseDur(d.dur),0);
+  const durStr = formatDurTotal(totalMins);
+  // distance: sum d.dist values if available, else show '–'
+  const dists = all.map(d=>(d.dist||'').replace(/[^\d,.]/g,'').replace(',','.')).map(Number).filter(n=>!isNaN(n)&&n>0);
+  const distStr = dists.length ? `~${dists.reduce((a,b)=>a+b,0).toFixed(1).replace('.',',')} km` : '–';
   let h='';
   h+=`<div class="summary">
     <div class="stat"><div class="stat-label">Ativos</div><div class="stat-val">${all.length}</div></div>
-    <div class="stat"><div class="stat-label">Distância</div><div class="stat-val">${km}</div></div>
-    <div class="stat"><div class="stat-label">Duração</div><div class="stat-val">${hrs}</div></div>
+    <div class="stat"><div class="stat-label">Distância</div><div class="stat-val">${distStr}</div></div>
+    <div class="stat"><div class="stat-label">Duração</div><div class="stat-val">${durStr}</div></div>
   </div>`;
   if(all.length) h+=`<a class="full-route-btn" href="${fullRouteUrl(tab)}" target="_blank">🗺️ Abrir rota completa no Google Maps</a>`;
-  h+=`<button class="optimize-btn" id="opt-btn-${tab}" onclick="optimizeRoute('${tab}')">✨ Otimizar rota e categorias com IA</button>`;
+  h+=`<button class="optimize-btn" id="opt-btn-${tab}" onclick="optimizeRoute('${tab}')">✨ Otimizar rota com IA</button>`;
   h+=`<div class="suggest-bar" id="suggest-bar-${tab}"></div>`;
   if(state.sponsored) h+=`<div class="sponsored-card"><div class="sponsored-head"><span class="sp-badge">Parceiro</span><div class="sp-info"><div class="sp-title">${state.sponsored.nome}</div><div class="sp-desc">${state.sponsored.desc||''}</div></div><button class="sp-cta" onclick="openLink('${state.sponsored.link}')">${state.sponsored.cta}</button></div></div>`;
   h+=`<div style="margin-bottom:1rem">
@@ -1008,10 +1376,12 @@ function renderPanel(tab) {
 
 function renderByGroups(tab) {
   let h='';
+  const renderedIds = new Set(); // evita duplicatas quando local tem múltiplas categorias
   CAT_GROUPS.forEach(g=>{
     const gids=g.cats.map(x=>x.id);
-    const items=activeItems(tab).filter(d=>d.cats&&d.cats.some(c=>gids.includes(c)));
+    const items=activeItems(tab).filter(d=>d.cats&&d.cats.some(c=>gids.includes(c))&&!renderedIds.has(d.id));
     if(!items.length)return;
+    items.forEach(d=>renderedIds.add(d.id));
     const col=collapsedGroups[tab+g.id];
     h+=`<div class="group-header${col?' collapsed':''}" onclick="toggleGroup('${tab}','${g.id}')"><span class="group-dot" style="background:${g.color}"></span><span class="group-label">${g.icon} ${g.label}</span><span class="group-count">${items.length}</span><span class="group-chevron">▼</span></div>`;
     if(!col){
@@ -1020,13 +1390,17 @@ function renderByGroups(tab) {
       h+=`</ul>`;
     }
   });
-  const uncat=activeItems(tab).filter(d=>!d.cats||!d.cats.length);
+  const uncat=activeItems(tab).filter(d=>(!d.cats||!d.cats.length)&&!renderedIds.has(d.id));
   if(uncat.length){
     const col=collapsedGroups[tab+'uncat'];
     h+=`<div class="group-header${col?' collapsed':''}" onclick="toggleGroup('${tab}','uncat')"><span class="group-dot" style="background:#bbb"></span><span class="group-label">📍 Sem categoria</span><span class="group-count">${uncat.length}</span><span class="group-chevron">▼</span></div>`;
     if(!col){h+=`<ul class="card-list" ondragover="onDragOver(event,'${tab}')" ondrop="onDrop(event,'${tab}')">`;uncat.forEach((d,i)=>{h+=cardHTML(d,i,tab,uncat);});h+=`</ul>`;}
   }
   return h;
+}
+
+function sepHTML(items, i) {
+  return `<div class="sep"><div class="sep-line"></div><span style="font-size:10px;color:#aaa;white-space:nowrap">${items[i+1]&&items[i+1].dist||''}</span><div class="sep-line"></div></div>`;
 }
 
 function renderFlatFiltered(tab) {
@@ -1041,7 +1415,8 @@ function cardHTML(d,i,tab,items) {
   const mc=d.cats&&d.cats.length?CAT_MAP[d.cats[0]]:null;
   const bg=mc?mc.bg:'#f5f4f0', col=mc?mc.color:'#555';
   const aff=state.affiliates[d.id];
-  const tags=(d.cats||[]).map(c=>CAT_MAP[c]?`<span class="ctag" style="background:${CAT_MAP[c].bg};color:${CAT_MAP[c].color}">${CAT_MAP[c].icon} ${CAT_MAP[c].label}</span>`:'').join('');
+  const tags=(d.cats||[]).map(c=>CAT_MAP[c]?`<span class="ctag" style="background:${CAT_MAP[c].bg};color:${CAT_MAP[c].color};cursor:pointer" onclick="openPillPopup(event,'cat','${tab}','${d.id}','${c}')">${CAT_MAP[c].icon} ${CAT_MAP[c].label}</span>`:'').join('');
+  const affTags=(d.affinities||[]).map(p=>{const af=AFFINITY_PROFILES.find(x=>x.id===p);return af?`<span class="ctag" style="background:#e8eaf6;color:#283593;cursor:pointer" onclick="openPillPopup(event,'aff','${tab}','${d.id}','${p}')">${af.icon} ${af.label}</span>`:''}).join('');
   return `<li class="dest-card" draggable="true" data-id="${d.id}" ondragstart="onDragStart(event,'${tab}',this)" ondragend="onDragEnd()" ondragenter="onDragEnter(event,this)">
     <div class="card-head">
       <span class="drag-handle">⠿</span>
@@ -1049,33 +1424,148 @@ function cardHTML(d,i,tab,items) {
       <div class="card-title-wrap" onclick="toggleCard('cb-${d.id}')">
         <div class="card-name">${d.icon||'📍'} ${d.nome}</div>
         <div class="card-addr">${d.end}</div>
-        ${tags?`<div class="card-tags">${tags}</div>`:''}
+        ${tags||affTags ? `<div class="card-tags">${tags}${affTags}</div>` : ''}
       </div>
       <div class="card-right" onclick="toggleCard('cb-${d.id}')">
         <div class="card-time">${d.hora}</div>${notesBadge(d)}<div class="chevron">▼</div>
       </div>
+      <button class="fav-heart${isFav(d.id)?' on':''}" data-id="${d.id}" onclick="toggleFav('${d.id}',event)">${isFav(d.id)?'❤️':'🤍'}</button>
     </div>
     <div class="card-body" id="cb-${d.id}">
       ${d.nota?`<div class="info-row"><span class="info-icon">📝</span><span class="info-text">${d.nota}</span></div>`:''}
-      ${d.dist?`<div class="info-row"><span class="info-icon">📍</span><span class="info-text muted">${d.dist}${d.transporte?' · '+d.transporte:''}</span></div>`:''}
-      ${d.dur?`<div class="info-row"><span class="info-icon">⏱️</span><span class="info-text muted">Permanência: ${d.dur}</span></div>`:''}
+      ${(d.dist||i===0) ? '<div class="info-row"><span class="info-icon">📍</span><span class="info-text muted">'+(i===0&&state.origin?'De: '+state.origin.split('–')[0].trim()+' · ':'')+(d.dist||'')+(d.transporte?' · '+d.transporte:'')+'</span></div>' : ''}
+      ${d.dur ? '<div class="info-row"><span class="info-icon">⏱️</span><span class="info-text muted">Permanência: '+d.dur+'</span></div>' : ''}
       ${d.rating?`<div class="info-row"><span class="info-icon">⭐</span><span class="info-text muted">${d.rating} no Google Maps</span></div>`:''}
       ${d.aviso?`<div class="info-row"><span class="info-icon">⚠️</span><span class="info-text" style="color:#c0392b">${d.aviso}</span></div>`:''}
       ${d.badge?`<span class="badge badge-${d.badgeType}">${d.badge}</span><br>`:''}
       ${aff?`<div class="aff-card"><span class="aff-text">🤝 Parceiro</span><button class="aff-btn" onclick="openLink('${aff.link}')">${aff.cta||'Reservar'}</button></div>`:''}
       ${inflMiniHTML(d.id)}
-      <a class="nav-btn-leg" href="${legUrl(items,i)}" target="_blank">🗺️ ${i===0?'Da origem até aqui':'Do ponto anterior até aqui'}</a>
+      ${whoGoesHTML(d.id)}
+      <a class="nav-btn-leg" href="${legUrl(items,i)}" target="_blank">🗺️ ${ i===0 ? (state.origin ? 'De '+state.origin.split('\u2013')[0].trim()+' até aqui' : 'Da origem até aqui') : 'De '+items[i-1].nome+' até aqui'}</a>
       ${(()=>{ const notes=d.notes||[]; if(!notes.length) return ''; const last=notes[notes.length-1]; return `<div class="notes-section"><div class="notes-header"><span class="notes-label">📝 Anotações (${notes.length})</span><button class="add-note-btn" onclick="openNotes('${tab}','${d.id}')">Ver todas / adicionar →</button></div><div class="note-entry" style="margin:0"><div class="note-meta">${last.source?`<span class="note-source">💬 ${escHtml(last.source)}</span>`:''}<span class="note-date">${formatDateTime(last.ts)}</span></div><div class="note-text">${escHtml(last.text)}</div></div></div>`; })()}
       ${(()=>{ const notes=d.notes||[]; if(notes.length) return ''; return `<div class="notes-section"><div class="notes-header"><span class="notes-label">📝 Anotações</span><button class="add-note-btn" onclick="openNotes('${tab}','${d.id}')">+ Adicionar →</button></div></div>`; })()}
+      <div style="margin-top:8px;margin-bottom:4px">
+        <div style="font-size:10px;color:#888;text-transform:uppercase;letter-spacing:.04em;margin-bottom:5px;font-weight:600">Categorias e perfis <span style="font-weight:400;font-size:10px;color:#bbb">— toque numa pill para editar</span></div>
+        <div style="display:flex;flex-wrap:wrap;gap:4px">
+          ${(d.cats||[]).map(c=>CAT_MAP[c]?'<span class="ctag" style="background:'+CAT_MAP[c].bg+';color:'+CAT_MAP[c].color+';cursor:pointer" onclick="openPillPopup(event,\'cat\',\''+tab+'\',\''+d.id+'\',\''+c+'\')">'+CAT_MAP[c].icon+' '+CAT_MAP[c].label+'</span>':'').join('')}
+          ${(d.affinities||[]).map(p=>{const af=AFFINITY_PROFILES.find(x=>x.id===p);return af?'<span class="ctag" style="background:#e8eaf6;color:#283593;cursor:pointer" onclick="openPillPopup(event,\'aff\',\''+tab+'\',\''+d.id+'\',\''+p+'\')">'+af.icon+' '+af.label+'</span>':''}).join('')}
+          <button style="padding:2px 8px;border-radius:10px;border:1px dashed #ccc;background:transparent;color:#888;font-size:10px;cursor:pointer;font-family:inherit" onclick="openAddPillPopup(event,'${tab}','${d.id}')">＋ Adicionar</button>
+        </div>
+      </div>
       <div class="status-actions">
         <button class="status-btn" style="color:#185FA5" onclick="openSchedule('${tab}','${d.id}')">📅 Agendar</button>
         <button class="status-btn" style="color:#854f0b" onclick="setStatus('${tab}','${d.id}','someday')">🌙 Someday</button>
         <button class="status-btn" style="color:#185FA5" onclick="openNotes('${tab}','${d.id}')">📝 Anotações</button>
         <button class="status-btn" style="color:#666" onclick="setStatus('${tab}','${d.id}','arquivado')">📦 Arquivar</button>
+        <button class="status-btn" style="color:#c0392b;grid-column:span 2" onclick="deleteLocal('${tab}','${d.id}')">🗑️ Excluir local</button>
       </div>
     </div>
   </li>`;
 }
+
+// ── PILL POPUP ────────────────────────────────────────────────────────────────
+let pillCtx = null; // {type:'cat'|'aff', tab, localId, pillId}
+
+function openPillPopup(e, type, tab, localId, pillId) {
+  e.stopPropagation();
+  pillCtx = {type, tab, localId, pillId};
+  const title = document.getElementById('pill-popup-title');
+  const swap  = document.getElementById('pill-popup-swap');
+  swap.classList.remove('visible');
+  swap.innerHTML = '';
+  document.getElementById('pill-opt-keep').style.display='';
+  document.getElementById('pill-opt-remove').style.display='';
+  if(type==='cat') {
+    const c = CAT_MAP[pillId];
+    title.textContent = c ? c.icon+' '+c.label : 'Categoria';
+  } else {
+    const af = AFFINITY_PROFILES.find(x=>x.id===pillId);
+    title.textContent = af ? af.icon+' '+af.label : 'Perfil';
+  }
+  document.getElementById('pill-popup-overlay').classList.add('visible');
+}
+
+function openAddPillPopup(e, tab, localId) {
+  e.stopPropagation();
+  pillCtx = {type:'add', tab, localId, pillId:null};
+  const title = document.getElementById('pill-popup-title');
+  const swap  = document.getElementById('pill-popup-swap');
+  document.getElementById('pill-opt-keep').style.display='none';
+  document.getElementById('pill-opt-remove').style.display='none';
+  title.textContent = '＋ Adicionar categoria ou perfil';
+  swap.innerHTML = buildSwapOptions(tab, localId, 'add');
+  swap.classList.add('visible');
+  document.getElementById('pill-popup-overlay').classList.add('visible');
+}
+
+function pillShowSwap() {
+  if(!pillCtx) return;
+  const swap = document.getElementById('pill-popup-swap');
+  swap.innerHTML = buildSwapOptions(pillCtx.tab, pillCtx.localId, 'swap');
+  swap.classList.add('visible');
+}
+
+function buildSwapOptions(tab, localId, mode) {
+  const item = (state[tab]||[]).find(d=>d.id===localId); if(!item) return '';
+  const existCats = item.cats||[];
+  const existAffs = item.affinities||[];
+  const availCats = ALL_CATS.filter(c=>mode==='add'?!existCats.includes(c.id):c.id!==pillCtx.pillId);
+  const availAffs = AFFINITY_PROFILES.filter(p=>mode==='add'?!existAffs.includes(p.id):p.id!==pillCtx.pillId);
+  let h = '';
+  if(availCats.length){
+    h += '<div style="font-size:10px;color:#888;font-weight:600;text-transform:uppercase;letter-spacing:.04em;padding:4px 2px 6px;border-top:.5px solid #f0f0ec;margin-top:4px">Categorias</div>';
+    h += '<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px">';
+    h += availCats.map(c=>'<button style="padding:4px 10px;border-radius:10px;border:.5px solid '+c.color+';background:'+c.bg+';color:'+c.color+';font-size:11px;cursor:pointer;font-family:inherit" onclick="pillSwapTo(\'cat\',\''+c.id+'\')">'+c.icon+' '+c.label+'</button>').join('');
+    h += '</div>';
+  }
+  if(availAffs.length){
+    h += '<div style="font-size:10px;color:#888;font-weight:600;text-transform:uppercase;letter-spacing:.04em;padding:4px 2px 6px;border-top:.5px solid #f0f0ec">Perfis</div>';
+    h += '<div style="display:flex;flex-wrap:wrap;gap:5px">';
+    h += availAffs.map(p=>'<button style="padding:4px 10px;border-radius:10px;border:.5px solid #9fa8da;background:#e8eaf6;color:#283593;font-size:11px;cursor:pointer;font-family:inherit" onclick="pillSwapTo(\'aff\',\''+p.id+'\')">'+p.icon+' '+p.label+'</button>').join('');
+    h += '</div>';
+  }
+  return h;
+}
+
+function pillAction(action) {
+  if(!pillCtx) return;
+  const {type, tab, localId, pillId} = pillCtx;
+  const item = (state[tab]||[]).find(d=>d.id===localId); if(!item) return;
+  if(action==='remove') {
+    if(type==='cat') item.cats=(item.cats||[]).filter(c=>c!==pillId);
+    else item.affinities=(item.affinities||[]).filter(a=>a!==pillId);
+    persist(); closePillPopup(); renderPanel(tab);
+  } else {
+    closePillPopup();
+  }
+}
+
+function pillSwapTo(newType, newId) {
+  if(!pillCtx) return;
+  const {type, tab, localId, pillId} = pillCtx;
+  const item = (state[tab]||[]).find(d=>d.id===localId); if(!item) return;
+  if(pillCtx.type==='add') {
+    // just add
+    if(newType==='cat'){ item.cats=item.cats||[]; if(!item.cats.includes(newId)) item.cats.push(newId); }
+    else { item.affinities=item.affinities||[]; if(!item.affinities.includes(newId)) item.affinities.push(newId); }
+  } else {
+    // remove old, add new
+    if(type==='cat') item.cats=(item.cats||[]).filter(c=>c!==pillId);
+    else item.affinities=(item.affinities||[]).filter(a=>a!==pillId);
+    if(newType==='cat'){ item.cats=item.cats||[]; if(!item.cats.includes(newId)) item.cats.push(newId); }
+    else { item.affinities=item.affinities||[]; if(!item.affinities.includes(newId)) item.affinities.push(newId); }
+  }
+  persist(); closePillPopup(); renderPanel(tab);
+}
+
+function closePillPopup() {
+  document.getElementById('pill-popup-overlay').classList.remove('visible');
+  document.getElementById('pill-opt-keep').style.display='';
+  document.getElementById('pill-opt-remove').style.display='';
+  document.getElementById('pill-popup-swap').classList.remove('visible');
+  pillCtx = null;
+}
+// close on outside click — handled by overlay onclick
 
 // ── TAG PICKER ────────────────────────────────────────────────────────────────
 function buildTagPickers(tab) {
@@ -1116,6 +1606,17 @@ function setStatus(tab,id,status){
   if(status!=='agendado'){item.schedDate=null;item.schedNote=null;}
   persist();render();if(status!=='ativo')showView('bank');
 }
+function deleteLocal(tab,id){
+  const item=state[tab].find(d=>d.id===id);if(!item)return;
+  if(!confirm('Excluir "'+item.nome+'" permanentemente?\n\nEsta ação não pode ser desfeita.'))return;
+  state[tab]=state[tab].filter(d=>d.id!==id);
+  // limpar favs e vínculos de pessoas e influenciadores
+  state.favs=(state.favs||[]).filter(f=>f!==id);
+  (state.people||[]).forEach(p=>{p.locals=(p.locals||[]).filter(l=>l!==id);});
+  (state.influencers||[]).forEach(inf=>{inf.locals=(inf.locals||[]).filter(l=>l!==id);});
+  if(state.affiliates) delete state.affiliates[id];
+  persist();render();
+}
 function openSchedule(tab,id){
   modalTarget={tab,id};
   document.getElementById('modal-date').value='';
@@ -1142,7 +1643,7 @@ function renderBank(){
     items.forEach(d=>{
       const tab=state.semana.find(x=>x.id===d.id)?'semana':'fds';
       const tags=(d.cats||[]).map(c=>CAT_MAP[c]?`<span class="ctag" style="background:${CAT_MAP[c].bg};color:${CAT_MAP[c].color};font-size:10px">${CAT_MAP[c].icon} ${CAT_MAP[c].label}</span>`:'').join('');
-      h+=`<div class="bank-card"><span class="bank-icon">${d.icon||'📍'}</span><div class="bank-info"><div class="bank-name">${d.nome}</div><div class="bank-addr">${d.end}</div>${(d.notes&&d.notes.length)?`<div style="font-size:11px;color:#185FA5;margin-top:3px;cursor:pointer" onclick="openNotes('${tab}','${d.id}')">📝 ${d.notes.length} anotaç${d.notes.length===1?'ão':'ões'} →</div>`:''}${tags?`<div class="card-tags" style="margin-top:4px">${tags}</div>`:''} ${d.schedDate?`<div class="bank-date">📅 ${formatDate(d.schedDate)}${d.schedNote?' · '+d.schedNote:''}</div>`:''} ${d.status==='someday'?`<div class="bank-date" style="color:#854f0b">🌙 Data indefinida</div>`:''}</div><div class="bank-actions"><button class="bank-act-btn activate" onclick="setStatus('${tab}','${d.id}','ativo')">Ativar</button>${d.status!=='agendado'?`<button class="bank-act-btn" onclick="openSchedule('${tab}','${d.id}')">Agendar</button>`:''}</div></div>`;
+      h+=`<div class="bank-card"><span class="bank-icon">${d.icon||'📍'}</span><div class="bank-info"><div class="bank-name">${d.nome}</div><div class="bank-addr">${d.end}</div>${(d.notes&&d.notes.length)?`<div style="font-size:11px;color:#185FA5;margin-top:3px;cursor:pointer" onclick="openNotes('${tab}','${d.id}')">📝 ${d.notes.length} anotaç${d.notes.length===1?'ão':'ões'} →</div>`:''}${tags?`<div class="card-tags" style="margin-top:4px">${tags}</div>`:''} ${d.schedDate?`<div class="bank-date">📅 ${formatDate(d.schedDate)}${d.schedNote?' · '+d.schedNote:''}</div>`:''} ${d.status==='someday'?`<div class="bank-date" style="color:#854f0b">🌙 Data indefinida</div>`:''}</div><div class="bank-actions"><button class="bank-act-btn activate" onclick="setStatus('${tab}','${d.id}','ativo')">Ativar</button>${d.status!=='agendado'?`<button class="bank-act-btn" onclick="openSchedule('${tab}','${d.id}')">Agendar</button>`:''}<button class="bank-act-btn" style="color:#c0392b" onclick="deleteLocal('${tab}','${d.id}')">🗑️</button></div></div>`;
     });
     return h+'</div>';
   };
@@ -1287,8 +1788,69 @@ function jumpToLocal(tab,id){
 function toggleCard(bid){const b=document.getElementById(bid);if(b)b.closest('.dest-card').classList.toggle('expanded');}
 
 // ── UI ────────────────────────────────────────────────────────────────────────
-function toggleEdit(){document.getElementById('origin-edit').classList.toggle('visible');if(document.getElementById('origin-edit').classList.contains('visible'))document.getElementById('origin-input').focus();}
-function saveOrigin(){const v=document.getElementById('origin-input').value.trim();if(v){state.origin=v;document.getElementById('origin-display').textContent=v;persist();render();}document.getElementById('origin-edit').classList.remove('visible');}
+// ── ORIGIN HISTORY ────────────────────────────────────────────────────────────
+function getOriginHistory(){ try{ return JSON.parse(localStorage.getItem('sp_origin_history')||'[]'); }catch(e){return[];} }
+function saveOriginHistory(list){ try{ localStorage.setItem('sp_origin_history', JSON.stringify(list)); }catch(e){} }
+function addToOriginHistory(addr){
+  if(!addr) return;
+  let h = getOriginHistory().filter(x=>x!==addr);
+  h.unshift(addr);
+  h = h.slice(0,8); // max 8 recentes
+  saveOriginHistory(h);
+}
+function removeFromOriginHistory(addr){
+  saveOriginHistory(getOriginHistory().filter(x=>x!==addr));
+  renderOriginHistory();
+}
+function renderOriginHistory(){
+  const panel = document.getElementById('origin-history');
+  const hist = getOriginHistory();
+  if(!hist.length){
+    panel.innerHTML='<div class="origin-history-empty">Nenhum endereço salvo ainda</div>';
+    return;
+  }
+  panel.innerHTML = hist.map(addr=>`
+    <div class="origin-history-item" onclick="selectOriginHistory('${addr.replace(/'/g,"\\'")}')">
+      <span class="origin-history-dot"></span>
+      <span class="origin-history-addr">${escHtml(addr)}</span>
+      <button class="origin-history-del" onclick="event.stopPropagation();removeFromOriginHistory('${addr.replace(/'/g,"\\'")}')">✕</button>
+    </div>`).join('');
+}
+function selectOriginHistory(addr){
+  document.getElementById('origin-input').value = addr;
+  saveOrigin();
+}
+
+function toggleEdit(){
+  const row = document.getElementById('origin-edit');
+  const hist = document.getElementById('origin-history');
+  const isVisible = row.classList.toggle('visible');
+  if(isVisible){
+    const inp = document.getElementById('origin-input');
+    inp.value = state.origin||'';
+    inp.focus();
+    inp.select();
+    renderOriginHistory();
+    hist.style.display = 'block';
+  } else {
+    hist.style.display = 'none';
+  }
+}
+function saveOrigin(){
+  const v = document.getElementById('origin-input').value.trim();
+  state.origin = v;
+  document.getElementById('origin-display').textContent = v||'Definir ponto de partida…';
+  document.getElementById('origin-edit').classList.remove('visible');
+  document.getElementById('origin-history').style.display = 'none';
+  if(v) addToOriginHistory(v);
+  persist();
+  render();
+  // re-render panels to reflect new origin in trechos
+  renderPanel('semana');
+  renderPanel('fds');
+  initOriginDisplay();
+}
+function initOriginDisplay(){const d=document.getElementById('origin-display');if(d)d.textContent=state.origin||'Definir ponto de partida…';}
 function toggleForm(tab){document.getElementById('add-form-'+tab).classList.toggle('visible');buildTagPickers(tab);}
 function openLink(url){if(url)window.open(url,'_blank');}
 function addLocal(tab){
@@ -1304,19 +1866,32 @@ function switchTab(tab,btn){
   document.getElementById('panel-semana').classList.toggle('visible',tab==='semana');
   document.getElementById('panel-fds').classList.toggle('visible',tab==='fds');
 }
+let currentView = 'roteiro';
 function showView(view){
-  ['panel-semana','panel-fds','panel-bank','panel-search','panel-cfg','panel-mono','panel-infl'].forEach(id=>document.getElementById(id).classList.remove('visible'));
+  currentView = view;
+  ['panel-semana','panel-fds','panel-bank','panel-search','panel-cfg','panel-mono','panel-infl','panel-favs','panel-groups','panel-people'].forEach(id=>document.getElementById(id).classList.remove('visible'));
   document.getElementById('day-tabs').style.display='none';
-  document.getElementById('filter-bar').style.display='none';
-  document.querySelectorAll('.bnav-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById('nav-'+view).classList.add('active');
+  document.getElementById('filters-wrapper').style.display='none';
+  renderBottomNav();
   if(view==='roteiro'){
     document.getElementById('day-tabs').style.display='flex';
-    document.getElementById('filter-bar').style.display='block';
+    document.getElementById('filters-wrapper').style.display='block';
+    renderFilterBar();
+    renderAffinityBar();
     document.getElementById('panel-'+currentTab).classList.add('visible');
+    showTooltipForLevel();
   } else if(view==='infl'){
     document.getElementById('panel-infl').classList.add('visible');
     renderInflPanel();
+  } else if(view==='favs'){
+    document.getElementById('panel-favs').classList.add('visible');
+    renderFavsPanel();
+  } else if(view==='groups'){
+    document.getElementById('panel-groups').classList.add('visible');
+    renderGroupsPanel();
+  } else if(view==='people'){
+    document.getElementById('panel-people').classList.add('visible');
+    renderPeoplePanel();
   } else {
     document.getElementById('panel-'+view).classList.add('visible');
   }
@@ -1360,9 +1935,42 @@ function closeSearchOverlay(){
   document.getElementById('search-overlay-input').value='';
   document.getElementById('search-overlay-results').innerHTML='';
   document.getElementById('search-overlay-meta').textContent='Digite para buscar em todos os locais.';
+  const title=document.getElementById('app-title');
+  if(title.textContent==='✦ Rolefy'){title.classList.remove('rolefy-active');title.textContent='📍 Roteiro SP';}
 }
 function closeSearchOverlayOutside(e){if(e.target===document.getElementById('search-overlay'))closeSearchOverlay();}
 function doSearchOverlay(q){
+  // ── easter egg ──
+  const title=document.getElementById('app-title');
+  if(q.trim().toLowerCase()==='easter egg'){
+    // fechar overlay primeiro, depois revelar
+    document.getElementById('search-overlay').classList.remove('visible');
+    document.getElementById('search-overlay-input').value='';
+    setTimeout(()=>{
+      title.classList.remove('rolefy-active');
+      title.textContent='✦ Rolefy';
+      void title.offsetWidth; // force reflow para reiniciar animação
+      title.classList.add('rolefy-active');
+      // mini toast
+      const toast=document.createElement('div');
+      toast.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1a1a18;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;z-index:999;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,.2)';
+      toast.textContent='🤫 Você encontrou o Rolefy';
+      document.body.appendChild(toast);
+      setTimeout(()=>toast.remove(), 3000);
+      // volta ao nome original depois de 4s
+      setTimeout(()=>{
+        title.classList.remove('rolefy-active');
+        title.textContent='📍 Roteiro SP';
+      }, 4000);
+    }, 200);
+    return;
+  }
+  // reset title se ainda estiver como Rolefy
+  if(title.textContent==='✦ Rolefy'){
+    title.classList.remove('rolefy-active');
+    title.textContent='📍 Roteiro SP';
+  }
+  // ── busca normal ──
   const meta=document.getElementById('search-overlay-meta');
   const res=document.getElementById('search-overlay-results');
   if(!q||q.length<2){meta.textContent='Digite para buscar em todos os locais.';res.innerHTML='';return;}
@@ -1391,6 +1999,563 @@ function doSearchOverlay(q){
 function jumpToLocalOverlay(tab,id){
   closeSearchOverlay();
   jumpToLocal(tab,id);
+}
+
+// ── DYNAMIC NAV ───────────────────────────────────────────────────────────────
+const ALL_NAV_ITEMS = [
+  {id:'roteiro', icon:'🗺️', label:'Roteiro',   fixed:true,  desc:'Seu roteiro de visitas'},
+  {id:'favs',    icon:'❤️',  label:'Favs',      fixed:false, desc:'Locais que você curtiu'},
+  {id:'bank',    icon:'📦',  label:'Banco',     fixed:false, desc:'Locais salvos fora do roteiro'},
+  {id:'people',  icon:'🤝',  label:'Match',     fixed:false, desc:'Pessoas com roteiro compatível'},
+  {id:'groups',  icon:'👥',  label:'Grupos',    fixed:false, desc:'Seus grupos e comunidades'},
+  {id:'infl',    icon:'👤',  label:'Influenc.', fixed:false, desc:'Perfis de influenciadores'},
+  {id:'mono',    icon:'💰',  label:'Ganhar',    fixed:false, desc:'Monetização e parcerias'},
+  {id:'cfg',     icon:'⚙️',  label:'Config',    fixed:true,  desc:'Configurações e IA'},
+];
+
+const LEVEL_MENUS = {
+  iniciante:    ['roteiro','favs','cfg'],
+  intermediario:['roteiro','favs','bank','people','cfg'],
+  avancado:     ['roteiro','favs','bank','people','groups','infl','mono','cfg'],
+};
+
+function getUserLevel(){ return localStorage.getItem('sp_user_level')||null; }
+function setUserLevel(lvl){ localStorage.setItem('sp_user_level', lvl); state.menuItems = LEVEL_MENUS[lvl]||LEVEL_MENUS.iniciante; persist(); }
+
+function renderBottomNav() {
+  const items = (state.menuItems||['roteiro','favs','cfg']);
+  // always include roteiro and cfg
+  const ordered = ALL_NAV_ITEMS.filter(n=>items.includes(n.id)||n.fixed);
+  document.getElementById('bottom-nav').innerHTML = ordered.map(n=>
+    `<button class="bnav-btn${currentView===n.id?' active':''}" id="nav-${n.id}" onclick="showView('${n.id}')"><span>${n.icon}</span><span>${n.label}</span></button>`
+  ).join('');
+}
+
+// ── HAMBURGER ─────────────────────────────────────────────────────────────────
+function openHamburger() {
+  const lvl = getUserLevel()||'iniciante';
+  const badge = document.getElementById('hburg-level-badge');
+  if(badge) badge.innerHTML = `<span class="level-badge ${lvl}">${lvl}</span>`;
+  const items = document.getElementById('hamburger-items');
+  items.innerHTML = ALL_NAV_ITEMS.map(n=>{
+    const on = (state.menuItems||[]).includes(n.id)||n.fixed;
+    return `<div class="hamburger-item${n.fixed?' fixed':''}" onclick="${n.fixed?'':` toggleMenuItem('${n.id}',this)`}">
+      <span class="hamburger-item-icon">${n.icon}</span>
+      <div class="hamburger-item-info">
+        <div class="hamburger-item-label">${n.label}${n.fixed?'<span style="font-size:10px;color:#bbb;margin-left:6px">sempre visível</span>':''}</div>
+        <div class="hamburger-item-desc">${n.desc}</div>
+      </div>
+      <div class="hamburger-item-check${on?' on':''}" id="hcheck-${n.id}">${on?'✓':''}</div>
+    </div>`;
+  }).join('');
+  document.getElementById('hamburger-overlay').classList.add('visible');
+}
+function toggleMenuItem(id, row) {
+  const items = state.menuItems||[];
+  const idx = items.indexOf(id);
+  const check = document.getElementById('hcheck-'+id);
+  if(idx>=0){ items.splice(idx,1); check.className='hamburger-item-check'; check.textContent=''; }
+  else { items.push(id); check.className='hamburger-item-check on'; check.textContent='✓'; }
+  state.menuItems = items;
+  persist();
+  renderBottomNav();
+}
+function closeHamburger(){ document.getElementById('hamburger-overlay').classList.remove('visible'); }
+function closeHamburgerOutside(e){ if(e.target===document.getElementById('hamburger-overlay')) closeHamburger(); }
+
+// ── AFFINITY BAR ──────────────────────────────────────────────────────────────
+function renderAffinityBar() {
+  const bar = document.getElementById('affinity-bar');
+  if(!bar) return;
+  bar.innerHTML = `<button class="affinity-pill${!activeAffinity?' active':''}" onclick="setAffinity(null)">Todos</button>`+
+    AFFINITY_PROFILES.map(p=>`<button class="affinity-pill${activeAffinity===p.id?' active':''}" onclick="setAffinity('${p.id}')">${p.icon} ${p.label}</button>`).join('');
+}
+function setAffinity(id) {
+  activeAffinity = id;
+  renderAffinityBar();
+  renderPanel(currentTab);
+}
+function toggleAffinity(tab, localId, affinityId, btn) {
+  const item = state[tab].find(d=>d.id===localId); if(!item) return;
+  item.affinities = item.affinities||[];
+  const idx = item.affinities.indexOf(affinityId);
+  if(idx>=0){ item.affinities.splice(idx,1); btn.style.background='#fff'; btn.style.color='#666'; btn.style.borderColor='#ddd'; }
+  else { item.affinities.push(affinityId); btn.style.background='#1a1a18'; btn.style.color='#fff'; btn.style.borderColor='#1a1a18'; }
+  persist();
+}
+
+// ── FAVS ──────────────────────────────────────────────────────────────────────
+function isFav(localId){ return (state.favs||[]).includes(localId); }
+function toggleFav(localId, e) {
+  if(e){e.stopPropagation();}
+  const favs = state.favs||[];
+  const idx = favs.indexOf(localId);
+  if(idx>=0) favs.splice(idx,1); else favs.push(localId);
+  state.favs = favs;
+  persist();
+  // re-render heart buttons in-place
+  document.querySelectorAll(`.fav-heart[data-id="${localId}"]`).forEach(btn=>{
+    btn.classList.toggle('on', isFav(localId));
+    btn.textContent = isFav(localId)?'❤️':'🤍';
+  });
+  if(currentView==='favs') renderFavsPanel();
+}
+function renderFavsPanel() {
+  const panel = document.getElementById('panel-favs');
+  if(!panel) return;
+  const all = [...state.semana,...state.fds].filter((d,i,a)=>a.findIndex(x=>x.id===d.id)===i);
+  const favLocals = (state.favs||[]).map(id=>all.find(d=>d.id===id)).filter(Boolean);
+  if(!favLocals.length){
+    panel.innerHTML=`<div class="favs-empty">❤️<br><br>Você ainda não favoritou nenhum local.<br><span style="font-size:12px">Toque em 🤍 dentro de qualquer card.</span></div>`;
+    return;
+  }
+  panel.innerHTML=`<div style="font-size:12px;color:#888;margin-bottom:.875rem">${favLocals.length} local${favLocals.length>1?'is favoritados':'favoritado'}</div>`+
+    favLocals.map(d=>`<div class="fav-card" onclick="jumpToLocal('${state.semana.find(x=>x.id===d.id)?'semana':'fds'}','${d.id}')">
+      <span class="fav-icon">${d.icon||'📍'}</span>
+      <div class="fav-info">
+        <div class="fav-name">${escHtml(d.nome)}</div>
+        <div class="fav-addr">${escHtml(d.end)}</div>
+      </div>
+      <button class="fav-remove" onclick="toggleFav('${d.id}',event)" title="Remover dos favs">✕</button>
+    </div>`).join('');
+}
+
+// ── ONBOARDING ────────────────────────────────────────────────────────────────
+let selectedLevel = null;
+function showOnboarding(){
+  selectedLevel = null;
+  document.querySelectorAll('.onboard-level').forEach(b=>b.classList.remove('selected'));
+  document.getElementById('onboard-cta').disabled = true;
+  document.getElementById('onboard-overlay').classList.add('visible');
+}
+function selectLevel(lvl, btn){
+  selectedLevel = lvl;
+  document.querySelectorAll('.onboard-level').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+  document.getElementById('onboard-cta').disabled = false;
+}
+function confirmLevel(){
+  if(!selectedLevel) return;
+  setUserLevel(selectedLevel);
+  document.getElementById('onboard-overlay').classList.remove('visible');
+  renderBottomNav();
+  render();
+}
+
+// ── TOOLTIP ───────────────────────────────────────────────────────────────────
+const TOOLTIPS = {
+  iniciante: [
+    '💡 Toque em um local para ver detalhes e opções.',
+    '❤️ Use o coração para salvar seus favoritos na aba Favs.',
+    '➕ Adicione novos locais com o botão abaixo do roteiro.',
+    '🔍 Toque em "Buscar" no topo para encontrar qualquer local.',
+  ]
+};
+let tooltipIdx = 0;
+function showTooltipForLevel(){
+  const lvl = getUserLevel();
+  if(lvl !== 'iniciante') return;
+  const tips = TOOLTIPS.iniciante;
+  const bar = document.getElementById('tooltip-bar');
+  document.getElementById('tooltip-text').textContent = tips[tooltipIdx % tips.length];
+  bar.classList.add('visible');
+}
+function closeTooltip(){
+  document.getElementById('tooltip-bar').classList.remove('visible');
+  tooltipIdx++;
+}
+
+// ── PEOPLE / MATCH ────────────────────────────────────────────────────────────
+const DAYS = ['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'];
+let editingPersonId = null;
+let apSelectedDays=[], apSelectedAffs=[], apSelectedLocals=[];
+
+function calcMatchScore(person) {
+  const myOrigin = (state.origin||'').toLowerCase();
+  const theirOrigin = (person.origin||'').toLowerCase();
+  const allLocals = [...state.semana,...state.fds].filter((d,i,a)=>a.findIndex(x=>x.id===d.id)===i&&d.status==='ativo');
+
+  // 1. Proximidade de origem (0-25)
+  let originScore = 0;
+  if(myOrigin && theirOrigin) {
+    const myParts = myOrigin.split(/[\s,–-]+/).filter(p=>p.length>3);
+    const theirParts = theirOrigin.split(/[\s,–-]+/).filter(p=>p.length>3);
+    const common = myParts.filter(p=>theirParts.some(t=>t.includes(p)||p.includes(t)));
+    originScore = common.length ? Math.min(25, common.length*12) : 0;
+  }
+
+  // 2. Locais em comum (0-35)
+  const myLocalIds = allLocals.map(d=>d.id);
+  const theirLocals = person.locals||[];
+  const commonLocals = myLocalIds.filter(id=>theirLocals.includes(id));
+  const localScore = allLocals.length ? Math.round((commonLocals.length/Math.max(allLocals.length,theirLocals.length))*35) : 0;
+
+  // 3. Dias em comum (0-20)
+  const myDays = DAYS; // usuário quer todos por padrão
+  const theirDays = person.days||[];
+  const commonDays = theirDays.length ? theirDays.length : 0;
+  const dayScore = Math.round((commonDays/7)*20);
+
+  // 4. Perfil de afinidade em comum (0-20)
+  const myAffs = [...new Set([...state.semana,...state.fds].flatMap(d=>d.affinities||[]))];
+  const theirAffs = person.affinities||[];
+  const commonAffs = myAffs.filter(a=>theirAffs.includes(a));
+  const affScore = myAffs.length ? Math.round((commonAffs.length/Math.max(myAffs.length,theirAffs.length))*20) : (theirAffs.length?0:10);
+
+  const total = originScore+localScore+dayScore+affScore;
+  return {total, originScore, localScore, dayScore, affScore, commonLocals, commonDays:theirDays};
+}
+
+function scoreClass(s){ return s>=65?'high':s>=35?'mid':'low'; }
+
+function renderPeoplePanel() {
+  const panel = document.getElementById('panel-people');
+  if(!panel) return;
+  const people = state.people||[];
+  const allLocals = [...state.semana,...state.fds].filter((d,i,a)=>a.findIndex(x=>x.id===d.id)===i&&d.status==='ativo');
+
+  let h = '<div style="display:flex;gap:8px;margin-bottom:12px">'+
+    '<button class="add-btn-main" onclick="openAddPerson()" style="flex:1;margin:0">＋ Adicionar pessoa</button>'+
+    '<button onclick="openImportResponse()" style="padding:10px 14px;border:1.5px dashed #aac4f7;border-radius:12px;background:#e8f0fe;color:#185FA5;font-size:12px;font-family:inherit;cursor:pointer;white-space:nowrap;font-weight:500">📥 Importar resposta</button>'+
+    '</div>';
+
+  if(!people.length) {
+    h += '<div style="text-align:center;padding:2.5rem 0;color:#bbb;font-size:13px">🤝<br><br>Adicione pessoas para ver<br>quem tem rolê compatível com você.</div>';
+    panel.innerHTML = h; return;
+  }
+
+  // sort by match score desc
+  const scored = people.map(p=>({p, s:calcMatchScore(p)})).sort((a,b)=>b.s.total-a.s.total);
+
+  h += scored.map(({p,s})=>{
+    const cls = scoreClass(s.total);
+    const commonLocalNames = s.commonLocals.map(id=>{const loc=allLocals.find(d=>d.id===id);return loc?'<span class="match-local-tag" onclick="jumpToLocal(\''+( state.semana.find(d=>d.id===id)?'semana':'fds')+'\',\''+id+'\')">'+escHtml(loc.icon||'📍')+' '+escHtml(loc.nome)+'</span>':''}).filter(Boolean).join('');
+    const daysStr = (p.days||[]).length ? (p.days||[]).join(', ') : 'Qualquer dia';
+    const affsStr = (p.affinities||[]).map(a=>{const af=AFFINITY_PROFILES.find(x=>x.id===a);return af?af.icon+' '+af.label:''}).filter(Boolean).join(' · ')||'–';
+    return '<div class="person-card">'+
+      '<div class="person-card-head">'+
+        '<div class="person-avatar">'+(p.icon||p.nome.charAt(0).toUpperCase())+'</div>'+
+        '<div class="person-meta">'+
+          '<div class="person-name">'+escHtml(p.nome)+'</div>'+
+          '<div class="person-origin">📍 '+(p.origin?escHtml(p.origin):'Origem não informada')+'</div>'+
+          '<div class="person-tags">'+
+            (p.days||[]).map(d=>'<span class="ctag" style="background:#f5f4f0;color:#555">'+d+'</span>').join('')+
+          '</div>'+
+        '</div>'+
+        '<div class="match-score-ring '+cls+'">'+s.total+'%</div>'+
+      '</div>'+
+      '<div class="match-breakdown">'+
+        '<div class="match-dim"><div class="match-dim-label">📍 Origem</div><div class="match-dim-val">'+s.originScore+'/25</div></div>'+
+        '<div class="match-dim"><div class="match-dim-label">🗺️ Locais</div><div class="match-dim-val">'+s.localScore+'/35</div></div>'+
+        '<div class="match-dim"><div class="match-dim-label">📅 Dias</div><div class="match-dim-val">'+s.dayScore+'/20</div></div>'+
+        '<div class="match-dim"><div class="match-dim-label">👥 Perfil</div><div class="match-dim-val">'+s.affScore+'/20</div></div>'+
+      '</div>'+
+      (commonLocalNames ? '<div class="match-locals"><div class="match-locals-title">Locais em comum</div>'+commonLocalNames+'</div>' : '')+
+      '<div class="person-actions">'+
+        '<button class="person-btn" onclick="editPerson(\''+p.id+'\')">✏️ Editar</button>'+
+        '<button class="person-btn" onclick="removePerson(\''+p.id+'\')">🗑️</button>'+
+        '<button class="person-btn primary" onclick="sharePerson(\''+p.id+'\')">📤 Convidar</button>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+
+  panel.innerHTML = h;
+}
+
+function openAddPerson(id) {
+  editingPersonId = id||null;
+  apSelectedDays=[]; apSelectedAffs=[]; apSelectedLocals=[];
+  const allLocals = [...state.semana,...state.fds].filter((d,i,a)=>a.findIndex(x=>x.id===d.id)===i&&d.status==='ativo');
+  let person = null;
+  if(id) { person=(state.people||[]).find(p=>p.id===id); }
+
+  document.getElementById('modal-person-title').textContent = id?'✏️ Editar pessoa':'👤 Adicionar pessoa';
+  document.getElementById('ap-nome').value = person?person.nome:'';
+  document.getElementById('ap-icon').value = person?person.icon:'';
+  apSelectedDays = person?(person.days||[]).slice():[];
+  apSelectedAffs = person?(person.affinities||[]).slice():[];
+  apSelectedLocals = person?(person.locals||[]).slice():[];
+
+  // days picker
+  document.getElementById('ap-days-picker').innerHTML = DAYS.map(d=>
+    '<button type="button" style="padding:5px 12px;border-radius:20px;border:.5px solid '+(apSelectedDays.includes(d)?'#1a1a18':'#ddd')+';background:'+(apSelectedDays.includes(d)?'#1a1a18':'#fff')+';color:'+(apSelectedDays.includes(d)?'#fff':'#666')+';font-size:12px;cursor:pointer;font-family:inherit" onclick="toggleApDay(\''+d+'\',this)">'+d+'</button>'
+  ).join('');
+
+  // affinity picker
+  document.getElementById('ap-aff-picker').innerHTML = AFFINITY_PROFILES.map(p=>
+    '<button type="button" style="padding:5px 11px;border-radius:20px;border:.5px solid '+(apSelectedAffs.includes(p.id)?'#1a1a18':'#ddd')+';background:'+(apSelectedAffs.includes(p.id)?'#1a1a18':'#fff')+';color:'+(apSelectedAffs.includes(p.id)?'#fff':'#666')+';font-size:12px;cursor:pointer;font-family:inherit" onclick="toggleApAff(\''+p.id+'\',this)">'+p.icon+' '+p.label+'</button>'
+  ).join('');
+
+  // locals picker
+  document.getElementById('ap-locals-picker').innerHTML = allLocals.map(d=>
+    '<button type="button" style="padding:5px 11px;border-radius:20px;border:.5px solid '+(apSelectedLocals.includes(d.id)?'#185FA5':'#ddd')+';background:'+(apSelectedLocals.includes(d.id)?'#e8f0fe':'#fff')+';color:'+(apSelectedLocals.includes(d.id)?'#185FA5':'#666')+';font-size:12px;cursor:pointer;font-family:inherit" onclick="toggleApLocal(\''+d.id+'\',this)">'+escHtml(d.icon||'📍')+' '+escHtml(d.nome)+'</button>'
+  ).join('');
+
+  document.getElementById('modal-add-person').classList.add('visible');
+}
+
+function toggleApDay(d,btn){
+  const i=apSelectedDays.indexOf(d);
+  if(i>=0){apSelectedDays.splice(i,1);btn.style.background='#fff';btn.style.color='#666';btn.style.borderColor='#ddd';}
+  else{apSelectedDays.push(d);btn.style.background='#1a1a18';btn.style.color='#fff';btn.style.borderColor='#1a1a18';}
+}
+function toggleApAff(id,btn){
+  const i=apSelectedAffs.indexOf(id);
+  if(i>=0){apSelectedAffs.splice(i,1);btn.style.background='#fff';btn.style.color='#666';btn.style.borderColor='#ddd';}
+  else{apSelectedAffs.push(id);btn.style.background='#1a1a18';btn.style.color='#fff';btn.style.borderColor='#1a1a18';}
+}
+function toggleApLocal(id,btn){
+  const i=apSelectedLocals.indexOf(id);
+  if(i>=0){apSelectedLocals.splice(i,1);btn.style.background='#fff';btn.style.color='#666';btn.style.borderColor='#ddd';}
+  else{apSelectedLocals.push(id);btn.style.background='#e8f0fe';btn.style.color='#185FA5';btn.style.borderColor='#185FA5';}
+}
+
+function savePerson(){
+  const nome=document.getElementById('ap-nome').value.trim();
+  if(!nome){alert('Informe o nome.');return;}
+  if(!state.people) state.people=[];
+  if(editingPersonId){
+    const p=state.people.find(x=>x.id===editingPersonId);
+    if(p){p.nome=nome;p.icon=document.getElementById('ap-icon').value.trim();p.origin=document.getElementById('ap-origin').value.trim();p.days=apSelectedDays.slice();p.affinities=apSelectedAffs.slice();p.locals=apSelectedLocals.slice();}
+  } else {
+    state.people.push({id:'p'+Date.now(),nome,icon:document.getElementById('ap-icon').value.trim(),origin:document.getElementById('ap-origin').value.trim(),days:apSelectedDays.slice(),affinities:apSelectedAffs.slice(),locals:apSelectedLocals.slice()});
+  }
+  persist(); closeAddPerson(); renderPeoplePanel();
+}
+function editPerson(id){ openAddPerson(id); }
+function removePerson(id){
+  if(!confirm('Remover esta pessoa?'))return;
+  state.people=(state.people||[]).filter(p=>p.id!==id);
+  persist(); renderPeoplePanel();
+}
+function savePublicUrl(){
+  const v=document.getElementById('cfg-public-url').value.trim();
+  const st=document.getElementById('cfg-url-status');
+  if(v && !v.startsWith('http')){ st.style.color='#c0392b'; st.textContent='⚠️ URL deve começar com https://'; return; }
+  localStorage.setItem('sp_public_url', v);
+  st.style.color='#2e7d32';
+  st.textContent = v ? '✅ URL salva!' : 'URL removida.';
+  setTimeout(()=>st.textContent='', 3000);
+}
+function loadPublicUrl(){
+  const v=localStorage.getItem('sp_public_url')||'';
+  const el=document.getElementById('cfg-public-url');
+  if(el) el.value=v;
+}
+function getPublicUrl(){
+  const saved=localStorage.getItem('sp_public_url')||'';
+  // fallback: se estiver rodando em http(s) usa a URL atual
+  if(!saved && window.location.protocol.startsWith('http')) return window.location.href.split('?')[0];
+  return saved;
+}
+
+function sharePerson(id){
+  const p=(state.people||[]).find(x=>x.id===id); if(!p) return;
+  const baseUrl = getPublicUrl();
+  if(!baseUrl){
+    alert('⚠️ Configure a URL pública do app em ⚙️ Config → "URL pública do app" antes de enviar convites.\n\nSem isso o link não funcionará para o Alex.');
+    showView('cfg');
+    return;
+  }
+  const payload = {
+    v:1,
+    inviter: state.origin||'seu amigo',
+    nome: p.nome,
+    locais: [...state.semana,...state.fds]
+      .filter((d,i,a)=>a.findIndex(x=>x.id===d.id)===i && d.status==='ativo')
+      .map(d=>({id:d.id, nome:d.nome, icon:d.icon||'📍', end:d.end, hora:d.hora}))
+  };
+  const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
+  const url = baseUrl.split('?')[0] + '?invite=' + encoded;
+  const msg = 'Ei '+p.nome+'! Te convidei para um rolê 🗺️\n\nVeja os locais e marque quais você quer ir:\n'+url+'\n\nMe manda o código de resposta que aparece no final!';
+  navigator.clipboard.writeText(msg).then(()=>{
+    alert('✅ Convite copiado!\n\nCole no WhatsApp para o '+p.nome+' abrir e responder.');
+  });
+}
+
+function openImportResponse(){
+  document.getElementById('modal-import-response').classList.add('visible');
+  document.getElementById('import-response-code').value='';
+  document.getElementById('import-response-error').textContent='';
+}
+function closeImportResponse(){ document.getElementById('modal-import-response').classList.remove('visible'); }
+function processImportResponse(){
+  const code = document.getElementById('import-response-code').value.trim();
+  const errEl = document.getElementById('import-response-error');
+  try {
+    const data = JSON.parse(decodeURIComponent(escape(atob(code))));
+    if(!data.nome||!data.locals) throw new Error('Código inválido');
+    if(!state.people) state.people=[];
+    const existing = state.people.find(p=>p.nome.toLowerCase()===data.nome.toLowerCase());
+    if(existing){
+      existing.days=data.days||[]; existing.locals=data.locals||[];
+      existing.affinities=data.affinities||[];
+      if(data.origin) existing.origin=data.origin;
+    } else {
+      state.people.push({id:'p'+Date.now(),nome:data.nome,icon:data.icon||'',origin:data.origin||'',days:data.days||[],affinities:data.affinities||[],locals:data.locals||[]});
+    }
+    persist(); closeImportResponse(); renderPeoplePanel();
+    alert('✅ Resposta de '+data.nome+' importada!');
+  } catch(e){ errEl.textContent='Código inválido. Peça para a pessoa copiar o código gerado no app.'; }
+}
+
+function checkInviteMode(){
+  const params = new URLSearchParams(window.location.search);
+  const inv = params.get('invite');
+  if(!inv) return false;
+  try { showInvitePage(JSON.parse(decodeURIComponent(escape(atob(inv))))); return true; }
+  catch(e){ return false; }
+}
+
+function showInvitePage(data){
+  document.getElementById('bottom-nav').style.display='none';
+  document.getElementById('filters-wrapper').style.display='none';
+  document.querySelector('.top-bar').style.display='none';
+  const app = document.querySelector('.app');
+  window._invLocals=[]; window._invDays=[]; window._invAffs=[];
+  app.innerHTML =
+    '<div style="padding:1.5rem 1.25rem 3rem;max-width:520px;margin:0 auto">'+
+    '<div style="text-align:center;margin-bottom:1.5rem">'+
+      '<div style="font-size:40px;margin-bottom:.5rem">🗺️</div>'+
+      '<div style="font-size:18px;font-weight:700;margin-bottom:.375rem">Você foi convidado para um rolê!</div>'+
+      '<div style="font-size:13px;color:#666;line-height:1.6">'+escHtml(data.inviter||'Seu amigo')+' quer saber<br>quais rolês combinam com você.</div>'+
+    '</div>'+
+    '<label style="font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.04em;display:block;margin-bottom:5px;font-weight:600">Seu nome</label>'+
+    '<input id="inv-nome" value="'+escHtml(data.nome||'')+'" placeholder="Como você se chama?" style="width:100%;font-size:14px;padding:10px 12px;border-radius:10px;border:.5px solid #ccc;font-family:inherit;margin-bottom:1.25rem"/>'+
+    '<div style="font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px;font-weight:600">Quais locais você topa?</div>'+
+    (data.locais||[]).map(l=>
+      '<div id="inv-l-'+l.id+'" onclick="invToggleLocal(\''+l.id+'\',this)" style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;border:.5px solid #e5e4e0;background:#fff;margin-bottom:6px;cursor:pointer;transition:all .15s">'+
+        '<span style="font-size:20px;flex-shrink:0">'+l.icon+'</span>'+
+        '<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:500">'+escHtml(l.nome)+'</div>'+
+        '<div style="font-size:11px;color:#888;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+escHtml(l.end)+(l.hora&&l.hora!=='–'?' · '+l.hora:'')+'</div></div>'+
+        '<span id="inv-chk-'+l.id+'" style="font-size:18px;color:#ddd;flex-shrink:0">○</span>'+
+      '</div>'
+    ).join('')+
+    '<div style="font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.04em;margin:1rem 0 8px;font-weight:600">Seus dias disponíveis</div>'+
+    '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:1.25rem">'+
+      ['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'].map(d=>
+        '<button onclick="invToggleDay(\''+d+'\',this)" style="padding:7px 13px;border-radius:20px;border:.5px solid #ddd;background:#fff;color:#666;font-size:12px;cursor:pointer;font-family:inherit">'+d+'</button>'
+      ).join('')+
+    '</div>'+
+    '<div style="font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px;font-weight:600">Seu estilo de rolê</div>'+
+    '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:1.5rem">'+
+      AFFINITY_PROFILES.map(p=>
+        '<button onclick="invToggleAff(\''+p.id+'\',this)" style="padding:7px 12px;border-radius:20px;border:.5px solid #ddd;background:#fff;color:#666;font-size:12px;cursor:pointer;font-family:inherit">'+p.icon+' '+p.label+'</button>'
+      ).join('')+
+    '</div>'+
+    '<button onclick="generateInviteResponse()" style="width:100%;padding:14px;border-radius:12px;background:#1a1a18;color:#fff;border:none;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer">✅ Gerar minha resposta</button>'+
+    '<div id="inv-response-area" style="display:none;background:#f9f9f7;border:.5px solid #e0e0dc;border-radius:12px;padding:1rem;margin-top:12px">'+
+      '<div style="font-size:13px;font-weight:500;margin-bottom:6px">Pronto! Copie e envie este código:</div>'+
+      '<textarea id="inv-response-code" readonly style="width:100%;font-size:11px;padding:8px;border-radius:8px;border:.5px solid #ccc;font-family:monospace;height:72px;resize:none;background:#fff"></textarea>'+
+      '<button onclick="navigator.clipboard.writeText(document.getElementById(\'inv-response-code\').value).then(()=>alert(\'✅ Copiado!\'))" style="width:100%;margin-top:8px;padding:11px;border-radius:8px;border:.5px solid #185FA5;background:#e8f0fe;color:#185FA5;font-size:13px;font-family:inherit;cursor:pointer;font-weight:600">📋 Copiar código de resposta</button>'+
+    '</div>'+
+    '</div>';
+
+  window.invToggleLocal=function(id,el){
+    const i=window._invLocals.indexOf(id);
+    const chk=document.getElementById('inv-chk-'+id);
+    if(i>=0){window._invLocals.splice(i,1);el.style.background='#fff';el.style.borderColor='#e5e4e0';if(chk){chk.style.color='#ddd';chk.textContent='○';}}
+    else{window._invLocals.push(id);el.style.background='#e8f0fe';el.style.borderColor='#185FA5';if(chk){chk.style.color='#185FA5';chk.textContent='✓';}}
+  };
+  window.invToggleDay=function(d,btn){
+    const i=window._invDays.indexOf(d);
+    if(i>=0){window._invDays.splice(i,1);btn.style.background='#fff';btn.style.color='#666';btn.style.borderColor='#ddd';}
+    else{window._invDays.push(d);btn.style.background='#1a1a18';btn.style.color='#fff';btn.style.borderColor='#1a1a18';}
+  };
+  window.invToggleAff=function(id,btn){
+    const i=window._invAffs.indexOf(id);
+    if(i>=0){window._invAffs.splice(i,1);btn.style.background='#fff';btn.style.color='#666';btn.style.borderColor='#ddd';}
+    else{window._invAffs.push(id);btn.style.background='#1a1a18';btn.style.color='#fff';btn.style.borderColor='#1a1a18';}
+  };
+  window.generateInviteResponse=function(){
+    const nome=document.getElementById('inv-nome').value.trim()||data.nome||'Convidado';
+    const code=btoa(unescape(encodeURIComponent(JSON.stringify({v:1,nome,locals:window._invLocals,days:window._invDays,affinities:window._invAffs}))));
+    document.getElementById('inv-response-area').style.display='block';
+    document.getElementById('inv-response-code').value=code;
+    document.getElementById('inv-response-area').scrollIntoView({behavior:'smooth'});
+  };
+}
+function closeAddPerson(){
+  document.getElementById('modal-add-person').classList.remove('visible');
+  editingPersonId=null;
+}
+
+function whoGoesHTML(localId){
+  const people=(state.people||[]).filter(p=>(p.locals||[]).includes(localId));
+  if(!people.length) return '';
+  return '<div class="who-goes"><div class="who-goes-title">Quem quer ir</div><div class="who-goes-avatars">'+
+    people.map(p=>'<div class="who-goes-chip" onclick="showView(\'people\')"><span>'+(p.icon||p.nome.charAt(0))+'</span><span>'+escHtml(p.nome)+'</span>'+(p.days&&p.days.length?'<span style="color:#aaa">'+p.days.join(', ')+'</span>':'')+'</div>').join('')+
+  '</div></div>';
+}
+
+// ── GROUPS ────────────────────────────────────────────────────────────────────
+function renderGroupsPanel(){
+  const panel = document.getElementById('panel-groups');
+  if(!panel) return;
+  const lvl = getUserLevel();
+  const groups = state.groups||[];
+  const canCreate = lvl==='intermediario'||lvl==='avancado';
+  let h = `<div style="font-size:12px;color:#888;margin-bottom:.875rem;display:flex;align-items:center;gap:8px">
+    <span style="flex:1">${groups.length} grupo${groups.length!==1?'s':''}</span>
+    <span class="level-badge ${lvl}">${lvl}</span>
+  </div>`;
+  if(canCreate){
+    h += `<button class="create-group-btn" onclick="openCreateGroup()">👥 Criar novo grupo</button>`;
+  } else {
+    h += `<div style="background:#f5f4f0;border-radius:12px;padding:.875rem 1rem;margin-bottom:12px;font-size:12px;color:#888;line-height:1.5">
+      🟡 Para criar grupos, evolua para <strong>Intermediário</strong> no menu ☰.
+    </div>`;
+  }
+  if(!groups.length){
+    h += `<div style="text-align:center;padding:2.5rem 0;color:#bbb;font-size:13px">👥<br><br>Nenhum grupo ainda.<br>${canCreate?'Crie o primeiro acima ↑':'Peça para alguém te adicionar.'}</div>`;
+  } else {
+    h += groups.map(g=>{
+      const isLeader = g.leader === 'eu';
+      return `<div class="group-card">
+        <div class="group-card-head">
+          <span class="group-card-avatar">${g.icon||'👥'}</span>
+          <div class="group-card-info">
+            <div class="group-card-name">${escHtml(g.nome)}</div>
+            <div class="group-card-meta">${(g.members||[]).length} membro${(g.members||[]).length!==1?'s':''} · criado por ${isLeader?'você':escHtml(g.createdBy||'')}</div>
+          </div>
+          <span class="group-card-badge ${isLeader?'leader':'member'}">${isLeader?'Líder':'Membro'}</span>
+        </div>
+        ${g.desc?`<div style="font-size:12px;color:#666;margin-bottom:.5rem">${escHtml(g.desc)}</div>`:''}
+        <div class="group-members">${(g.members||[]).map(m=>`<span class="group-member-tag">${escHtml(m)}</span>`).join('')}</div>
+        <div class="group-actions">
+          <button class="group-btn" onclick="shareGroup('${g.id}')">🔗 Compartilhar</button>
+          ${isLeader?`<button class="group-btn primary" onclick="manageGroup('${g.id}')">⚙️ Gerenciar</button>`:''}
+        </div>
+      </div>`;
+    }).join('');
+  }
+  panel.innerHTML = h;
+}
+
+function openCreateGroup(){ document.getElementById('modal-create-group').classList.add('visible'); }
+function closeCreateGroup(){ document.getElementById('modal-create-group').classList.remove('visible'); }
+function saveGroup(){
+  const nome = document.getElementById('cg-nome').value.trim();
+  if(!nome){alert('Informe o nome do grupo.');return;}
+  if(!state.groups) state.groups=[];
+  state.groups.push({
+    id:'g'+Date.now(),
+    nome,
+    icon:document.getElementById('cg-icon').value.trim()||'👥',
+    desc:document.getElementById('cg-desc').value.trim(),
+    leader:'eu',
+    createdBy:'eu',
+    members:[],
+  });
+  ['cg-nome','cg-icon','cg-desc'].forEach(id=>document.getElementById(id).value='');
+  persist(); closeCreateGroup(); renderGroupsPanel();
+}
+function shareGroup(id){
+  const g=(state.groups||[]).find(x=>x.id===id);if(!g)return;
+  navigator.clipboard.writeText(`Junte-se ao grupo "${g.nome}" no Roteiro SP!`).then(()=>alert('✅ Link copiado!'));
+}
+function manageGroup(id){
+  alert('Em breve: gerenciar membros, roteiro do grupo e notificações.');
 }
 
 // ── INFLUENCIADORES ───────────────────────────────────────────────────────────
@@ -1573,6 +2738,11 @@ function inflMiniHTML(localId){
 loadPersisted();
 render();
 loadApiKeys();
+loadPublicUrl();
+renderBottomNav();
+renderAffinityBar();
+initOriginDisplay();
+if(!checkInviteMode()) showOnboarding();
 </script>
 </body>
 </html>
