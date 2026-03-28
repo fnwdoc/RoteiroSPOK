@@ -5222,15 +5222,21 @@ function buildInvitePayload(nome, isGroup, customLocalIds, waNumber){
     isGroup: !!isGroup,
     inviter: state.origin ? state.origin.split('–')[0].trim() : 'Seu amigo',
     waNumber: waNumber||null,
+    baseUrl: (localStorage.getItem('sp_public_url')||window.location.href).split('?')[0].split('#')[0],
     nome,
     quemVai,
     locais: locais.map(d=>({
       id:d.id, nome:d.nome, icon:d.icon||'📍',
-      end:d.end, hora:d.hora, nota:d.nota||'',
-      aviso:d.aviso||'', badge:d.badge||'',
+      end:d.end||'', hora:d.hora||'', dur:d.dur||'',
+      nota:d.nota||'', aviso:d.aviso||'',
+      badge:d.badge||'', badgeType:d.badgeType||'',
+      rating:d.rating||'', dist:d.dist||'', transporte:d.transporte||'',
+      schedDate:d.schedDate||'', schedNote:d.schedNote||'',
+      links:(d.links||[]),
+      notes:(d.notes||[]).map(n=>({source:n.source||'',text:n.text||'',ts:n.ts||''})),
       cats:(d.cats||[]).map(c=>{const cm=CAT_MAP[c];return cm?cm.icon+' '+cm.label:null}).filter(Boolean),
       affinities:(d.affinities||[]).map(a=>{const af=AFFINITY_PROFILES.find(x=>x.id===a);return af?af.icon+' '+af.label:null}).filter(Boolean),
-      mapsUrl:'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(d.end)
+      mapsUrl:'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(d.end||d.nome)
     }))
   };
 }
@@ -5446,6 +5452,65 @@ function testInvitePage(){
   askWaNumber((waNum)=>{
     showInvitePage(buildInvitePayload('Convidado', true, null, waNum));
   });
+}
+
+function checkResponseMode(){
+  try {
+    let resp = null;
+    try { resp = new URLSearchParams(window.location.search).get('response'); } catch(e){}
+    if(!resp){
+      const m = window.location.href.match(/[?&]response=([^&]+)/);
+      if(m) resp = decodeURIComponent(m[1]);
+    }
+    if(!resp) return false;
+
+    // Load app normally first, then auto-import
+    render(); loadApiKeys(); loadPublicUrl(); applyAdminState(); renderAffinityBar(); initOriginDisplay();
+    if(!getUserLevel()) setUserLevel('intermediario');
+
+    const data = decodeInviteStr(resp);
+    if(!data||!data.nome||!data.locals) return false;
+
+    const localsV2 = Array.isArray(data.locals)
+      ? data.locals.map(x=>typeof x==='string'?{id:x,status:'sim'}:x)
+      : [];
+    const localIds = localsV2.filter(x=>x.status!=='nao').map(x=>x.id);
+
+    if(!state.people) state.people=[];
+    const existing = state.people.find(p=>p.nome.toLowerCase()===data.nome.toLowerCase());
+    if(existing){
+      existing.days=data.days||[];
+      existing.locals=localIds;
+      existing.localStatuses=localsV2;
+      existing.affinities=data.affinities||[];
+      if(data.origin) existing.origin=data.origin;
+      if(data.whatsapp) existing.whatsapp=data.whatsapp;
+    } else {
+      state.people.push({
+        id:'p'+Date.now(), nome:data.nome, icon:'',
+        origin:data.origin||'', whatsapp:data.whatsapp||'',
+        days:data.days||[], affinities:data.affinities||[],
+        locals:localIds, localStatuses:localsV2,
+      });
+    }
+    persist(); renderPeoplePanel(); showView('people');
+
+    const sim=localsV2.filter(x=>x.status==='sim').length;
+    const talvez=localsV2.filter(x=>x.status==='talvez').length;
+    const nao=localsV2.filter(x=>x.status==='nao').length;
+    const waLine=data.whatsapp?'\n📲 WhatsApp: wa.me/'+data.whatsapp:'';
+
+    // Show toast-style notification
+    setTimeout(()=>{
+      const toast=document.createElement('div');
+      toast.style.cssText='position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#1a1a18;color:#fff;padding:12px 20px;border-radius:14px;font-size:13px;font-family:inherit;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,.3);max-width:320px;text-align:center;line-height:1.5';
+      toast.innerHTML=`✅ <strong>${escHtml(data.nome)}</strong> importado!<br><span style="font-size:11px;opacity:.7">✅${sim} · 🤔${talvez} · ❌${nao}${data.whatsapp?' · 💬 WA salvo':''}</span>`;
+      document.body.appendChild(toast);
+      setTimeout(()=>toast.remove(),4000);
+    },500);
+
+    return true;
+  } catch(e){ console.warn('checkResponseMode error:', e); return false; }
 }
 
 function checkInviteMode(){
@@ -5685,21 +5750,27 @@ function showInvitePage(data){
     const whatsapp=document.getElementById('inv-whatsapp')?.value.replace(/\D/g,'')||'';
     const localsV2=Object.entries(window._invLocals).map(([id,status])=>({id,status}));
     const code=compressPayload({v:2,nome,origin,whatsapp:whatsapp||undefined,locals:localsV2,days:window._invDays,affinities:window._invAffs});
-    const area=document.getElementById('inv-response-area');
+
     document.getElementById('inv-response-code').value=code;
 
-    // WhatsApp button — opens chat to organizer WITH the code
+    // Build return link — organizador clica e importa automaticamente
+    const baseUrl=(data.baseUrl||window.location.href).split('?')[0].split('#')[0];
+    const returnUrl=baseUrl+'?response='+code;
+
+    // WhatsApp button — opens chat to organizer WITH return link
     const waBtn=document.getElementById('inv-wa-btn');
-    if(waBtn){
-      if(data.waNumber){
-        const waText=encodeURIComponent(`Minha resposta para o rolê — ${data.nome||''}:\n\n${code}`);
-        waBtn.href='https://wa.me/'+data.waNumber+'?text='+waText;
-        waBtn.style.display='flex';
-      } else {
-        waBtn.style.display='none';
-      }
+    if(waBtn && data.waNumber){
+      const waText=encodeURIComponent(
+        `Oi! Aqui está minha resposta para o rolê "${data.nome||''}" 🗺️\n\n`+
+        `Clique para importar automático:\n${returnUrl}`
+      );
+      waBtn.href='https://wa.me/'+data.waNumber+'?text='+waText;
+      waBtn.style.display='flex';
+    } else if(waBtn){
+      waBtn.style.display='none';
     }
 
+    const area=document.getElementById('inv-response-area');
     area.style.display='block';
     setTimeout(()=>area.scrollIntoView({behavior:'smooth',block:'center'}),100);
   };
@@ -5708,9 +5779,13 @@ function showInvitePage(data){
     const card=document.getElementById('inv-event-card'); if(!card) return;
     const isOpen=card.style.display!=='none'&&card.innerHTML!=='';
     if(isOpen){ card.style.display='none'; return; }
-    // Build card with all event info from the payload
+
+    const formatDate=s=>{if(!s)return'';const[y,m,d]=s.split('-');return`${d}/${m}/${y}`;};
+    const badgeColor={free:'#e8f5e9|#2e7d32',tip:'#e8f0fe|#185FA5',warn:'#fff8e1|#f57f17'};
+
     let h=`<div style="background:#f9f9f7;border-radius:14px;padding:14px;border:.5px solid #e5e4e0">
-      <div style="font-size:13px;font-weight:700;color:#1a1a18;margin-bottom:12px">📋 Informações do rolê</div>`;
+      <div style="font-size:13px;font-weight:700;color:#1a1a18;margin-bottom:12px">📋 Card do rolê</div>`;
+
     (data.locais||[]).forEach(l=>{
       const myStatus=window._invLocals[l.id];
       const statusBadge=myStatus==='sim'
@@ -5720,25 +5795,42 @@ function showInvitePage(data){
         :myStatus==='nao'
         ?'<span style="font-size:11px;background:#fce4ec;color:#c62828;padding:2px 8px;border-radius:8px;font-weight:600">❌ Não vou</span>'
         :'';
+
+      const bc=l.badgeType&&badgeColor[l.badgeType]?badgeColor[l.badgeType].split('|'):['#f5f4f0','#555'];
+      const linksHtml=(l.links||[]).map(lk=>`<a href="${escHtml(lk.url)}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:10px;background:#e8f0fe;border:.5px solid #aac4f7;font-size:11px;color:#185FA5;text-decoration:none;margin:2px">🔗 ${escHtml(lk.nome||lk.url)}</a>`).join('');
+      const notesHtml=(l.notes||[]).map(n=>`<div style="padding:7px 9px;background:#f5f4f0;border-radius:8px;margin-top:5px;font-size:11px;color:#555;line-height:1.5">${n.source?`<span style="font-size:10px;color:#aaa;font-weight:600">${escHtml(n.source)} · </span>`:''}${escHtml(n.text)}</div>`).join('');
+      const catsHtml=(l.cats||[]).map(c=>`<span style="font-size:10px;padding:2px 7px;border-radius:6px;background:#f0f0ec;color:#555">${escHtml(c)}</span>`).join(' ');
+
       h+=`<div style="background:#fff;border-radius:12px;padding:12px;margin-bottom:8px;border:.5px solid #e5e4e0">
         <div style="display:flex;align-items:flex-start;gap:10px">
           <span style="font-size:26px;flex-shrink:0">${l.icon||'📍'}</span>
           <div style="flex:1;min-width:0">
-            <div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:3px">
+            <div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:4px">
               <span style="font-size:14px;font-weight:700;color:#1a1a18">${escHtml(l.nome)}</span>
               ${statusBadge}
+              ${l.rating?`<span style="font-size:11px;color:#f57f17">⭐ ${escHtml(l.rating)}</span>`:''}
             </div>
             ${l.end?`<div style="font-size:11px;color:#888;margin-bottom:4px">📍 ${escHtml(l.end)}</div>`:''}
-            ${l.hora&&l.hora!=='–'?`<div style="font-size:12px;color:#555;margin-bottom:4px">🕐 ${escHtml(l.hora)}</div>`:''}
-            ${l.nota?`<div style="font-size:11px;color:#555;padding:7px 9px;background:#f5f4f0;border-radius:8px;line-height:1.5;margin-bottom:6px">${escHtml(l.nota)}</div>`:''}
+            <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:4px">
+              ${l.hora&&l.hora!=='–'?`<span style="font-size:12px;color:#555">🕐 ${escHtml(l.hora)}</span>`:''}
+              ${l.dur?`<span style="font-size:12px;color:#888">⏱ ${escHtml(l.dur)}</span>`:''}
+              ${l.dist?`<span style="font-size:12px;color:#888">📏 ${escHtml(l.dist)}</span>`:''}
+              ${l.transporte?`<span style="font-size:12px;color:#888">🚌 ${escHtml(l.transporte)}</span>`:''}
+              ${l.schedDate?`<span style="font-size:12px;color:#185FA5">📅 ${formatDate(l.schedDate)}${l.schedNote?' · '+escHtml(l.schedNote):''}</span>`:''}
+            </div>
+            ${l.badge?`<div style="display:inline-block;font-size:11px;padding:3px 9px;border-radius:8px;background:${bc[0]};color:${bc[1]};margin-bottom:6px;font-weight:600">${escHtml(l.badge)}</div>`:''}
+            ${l.nota?`<div style="font-size:11px;color:#555;padding:7px 9px;background:#f5f4f0;border-radius:8px;line-height:1.5;margin-bottom:6px">💬 ${escHtml(l.nota)}</div>`:''}
             ${l.aviso?`<div style="font-size:11px;color:#c0392b;margin-bottom:5px">⚠️ ${escHtml(l.aviso)}</div>`:''}
-            ${l.badge?`<div style="font-size:11px;background:#fff3cd;color:#856404;padding:3px 9px;border-radius:8px;display:inline-block;margin-bottom:5px">${escHtml(l.badge)}</div>`:''}
+            ${catsHtml?`<div style="margin-bottom:6px;display:flex;flex-wrap:wrap;gap:4px">${catsHtml}</div>`:''}
+            ${notesHtml?`<div style="margin-bottom:6px">${notesHtml}</div>`:''}
+            ${linksHtml?`<div style="margin-bottom:6px;display:flex;flex-wrap:wrap;gap:4px">${linksHtml}</div>`:''}
             ${l.mapsUrl?`<a href="${l.mapsUrl}" target="_blank" style="display:inline-flex;align-items:center;gap:4px;font-size:12px;color:#185FA5;text-decoration:none;font-weight:500">🗺️ Abrir no Maps</a>`:''}
           </div>
         </div>
       </div>`;
     });
-    h+=`<div style="font-size:11px;color:#aaa;text-align:center;margin-top:6px">Organizado por ${escHtml(data.inviter||'')}</div>`;
+
+    h+=`<div style="font-size:11px;color:#aaa;text-align:center;margin-top:8px">Organizado por ${escHtml(data.inviter||'')}</div>`;
     h+='</div>';
     card.innerHTML=h;
     card.style.display='block';
@@ -6729,7 +6821,9 @@ function inflMiniHTML(localId){
 loadPersisted(); // sempre primeiro — state precisa existir
 // Init cal drawer side
 (()=>{ const d=document.getElementById('cal-drawer'); if(d) d.className=`cal-drawer ${calGetSide()}`; })();
-if(checkInviteMode()){
+if(checkResponseMode()){
+  // modo resposta: importa automaticamente e mostra app normal
+} else if(checkInviteMode()){
   // modo convite: app fica escondido, só mostra tela de convite
 } else {
   // modo normal
