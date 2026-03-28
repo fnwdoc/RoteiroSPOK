@@ -5685,32 +5685,31 @@ function showInvitePage(data){
       </div>
 
       <!-- CONFIRMAR -->
-      <button onclick="generateInviteResponse()" style="width:100%;padding:16px;border-radius:14px;background:#1a1a18;color:#fff;border:none;font-size:16px;font-weight:700;font-family:inherit;cursor:pointer;margin-bottom:12px;letter-spacing:.01em">✅ Confirmar e gerar resposta</button>
+      <button onclick="generateInviteResponse()" style="width:100%;padding:16px;border-radius:14px;background:#1a1a18;color:#fff;border:none;font-size:16px;font-weight:700;font-family:inherit;cursor:pointer;margin-bottom:12px;letter-spacing:.01em">✅ Confirmar e enviar resposta</button>
       <div style="background:#fff3cd;border:.5px solid #ffc107;border-radius:12px;padding:14px 16px;margin-bottom:1.5rem;text-align:center">
         <div style="font-size:13px;font-weight:700;color:#856404;margin-bottom:4px">📲 Como funciona?</div>
-        <div style="font-size:14px;color:#533f03;line-height:1.6">Ao confirmar, você vai receber um <strong>código</strong>.<br>Envie esse código para <strong>${inviterName}</strong> pelo WhatsApp.</div>
+        <div style="font-size:14px;color:#533f03;line-height:1.6">Ao confirmar, toque em <strong>💬 Enviar pelo WhatsApp</strong>.<br>${data.waNumber?`Sua resposta vai direto para <strong>${inviterName}</strong>.`:'A resposta é importada automaticamente.'}</div>
       </div>
 
       <!-- ÁREA DA RESPOSTA -->
       <div id="inv-response-area" style="display:none;background:#fff;border:1.5px solid #a5d6a7;border-radius:16px;padding:1.25rem;margin-top:4px">
         <div style="text-align:center;margin-bottom:1rem">
           <div style="font-size:32px;margin-bottom:.5rem">🎉</div>
-          <div style="font-size:16px;font-weight:700;color:#1a1a18;margin-bottom:.25rem">Resposta gerada!</div>
-          <div style="font-size:12px;color:#666;line-height:1.5">Envie para <strong>${inviterName}</strong> pelo WhatsApp</div>
+          <div style="font-size:16px;font-weight:700;color:#1a1a18;margin-bottom:.25rem">Pronto!</div>
+          <div style="font-size:12px;color:#666;line-height:1.5">Toque no botão abaixo para enviar sua resposta para <strong>${inviterName}</strong></div>
         </div>
-        <a id="inv-wa-btn" href="#" target="_blank" style="display:none;width:100%;padding:14px;border-radius:12px;background:#25D366;color:#fff;border:none;font-size:15px;font-family:inherit;cursor:pointer;font-weight:700;text-decoration:none;align-items:center;justify-content:center;gap:8px;margin-bottom:10px;box-sizing:border-box">
-          <span style="font-size:20px">💬</span> Enviar pelo WhatsApp
+        <a id="inv-wa-btn" href="#" target="_blank" style="display:none;width:100%;padding:16px;border-radius:12px;background:#25D366;color:#fff;border:none;font-size:16px;font-family:inherit;cursor:pointer;font-weight:700;text-decoration:none;align-items:center;justify-content:center;gap:10px;margin-bottom:1rem;box-sizing:border-box">
+          <span style="font-size:22px">💬</span> Enviar pelo WhatsApp
         </a>
-        <textarea id="inv-response-code" readonly style="width:100%;font-size:11px;padding:10px;border-radius:10px;border:.5px solid #ccc;font-family:monospace;height:90px;resize:none;background:#f9f9f7;box-sizing:border-box"></textarea>
-        <button onclick="navigator.clipboard.writeText(document.getElementById('inv-response-code').value).then(()=>{this.textContent='✅ Copiado!';setTimeout(()=>this.textContent='📋 Copiar código',2000)})" style="width:100%;margin-top:8px;padding:12px;border-radius:12px;border:none;background:#1a1a18;color:#fff;font-size:13px;font-family:inherit;cursor:pointer;font-weight:600">📋 Copiar código manualmente</button>
-        <!-- Card do rolê -->
-        <div style="margin-top:1rem;padding-top:1rem;border-top:.5px solid #e5e4e0">
-          <button onclick="showInviteEventCard()" style="width:100%;padding:13px;border-radius:12px;background:#e8f0fe;border:.5px solid #aac4f7;color:#185FA5;font-size:14px;font-family:inherit;cursor:pointer;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px">
-            <span style="font-size:18px">🗺️</span> Ver o card do rolê
-          </button>
+        <!-- Fallback code oculto mas acessível -->
+        <textarea id="inv-response-code" readonly style="display:none"></textarea>
+        <div id="inv-no-wa" style="display:none;background:#f5f4f0;border-radius:10px;padding:10px 12px;margin-bottom:1rem">
+          <div style="font-size:11px;color:#888;margin-bottom:6px">Número não configurado — copie o código manualmente:</div>
+          <textarea id="inv-response-code-visible" readonly style="width:100%;font-size:11px;padding:8px;border-radius:8px;border:.5px solid #ddd;font-family:monospace;height:70px;resize:none;background:#fff;box-sizing:border-box"></textarea>
+          <button onclick="navigator.clipboard.writeText(document.getElementById('inv-response-code-visible').value).then(()=>{this.textContent='✅ Copiado!';setTimeout(()=>this.textContent='📋 Copiar código',2000)})" style="width:100%;margin-top:6px;padding:10px;border-radius:9px;border:none;background:#1a1a18;color:#fff;font-size:12px;font-family:inherit;cursor:pointer;font-weight:600">📋 Copiar código</button>
         </div>
-        <!-- Card expandido -->
-        <div id="inv-event-card" style="display:none;margin-top:1rem"></div>
+        <!-- Card do rolê — aparece direto -->
+        <div id="inv-event-card" style="margin-top:.5rem"></div>
       </div>
       <div style="text-align:center;padding:1.5rem 0 .5rem;font-size:10px;color:#ccc">Rolefy v2.1</div>
 
@@ -5763,34 +5762,42 @@ function showInvitePage(data){
     const localsV2=Object.entries(window._invLocals).map(([id,status])=>({id,status}));
     const code=compressPayload({v:2,nome,origin,whatsapp:whatsapp||undefined,locals:localsV2,days:window._invDays,affinities:window._invAffs});
 
-    document.getElementById('inv-response-code').value=code;
+    // Hidden code for fallback
+    const codeEl=document.getElementById('inv-response-code');
+    if(codeEl) codeEl.value=code;
+    const codeVisible=document.getElementById('inv-response-code-visible');
+    if(codeVisible) codeVisible.value=code;
 
-    // Build return link — organizador clica e importa automaticamente
+    // Return link for automatic import
     const baseUrl=(data.baseUrl||window.location.href).split('?')[0].split('#')[0];
     const returnUrl=baseUrl+'?response='+code;
 
-    // WhatsApp button — opens chat to organizer WITH return link
+    // WhatsApp button
     const waBtn=document.getElementById('inv-wa-btn');
-    if(waBtn && data.waNumber){
+    const noWaEl=document.getElementById('inv-no-wa');
+    if(data.waNumber){
       const waText=encodeURIComponent(
-        `Oi! Aqui está minha resposta para o rolê "${data.nome||''}" 🗺️\n\n`+
-        `Clique para importar automático:\n${returnUrl}`
+        `Oi! Minha resposta para o rolê "${data.nome||''}" 🗺️\n\nClique para importar automático:\n${returnUrl}`
       );
-      waBtn.href='https://wa.me/'+data.waNumber+'?text='+waText;
-      waBtn.style.display='flex';
-    } else if(waBtn){
-      waBtn.style.display='none';
+      if(waBtn){ waBtn.href='https://wa.me/'+data.waNumber+'?text='+waText; waBtn.style.display='flex'; }
+      if(noWaEl) noWaEl.style.display='none';
+    } else {
+      if(waBtn) waBtn.style.display='none';
+      if(noWaEl) noWaEl.style.display='block';
     }
 
+    // Show response area
     const area=document.getElementById('inv-response-area');
     area.style.display='block';
-    setTimeout(()=>area.scrollIntoView({behavior:'smooth',block:'center'}),100);
+
+    // Show event card directly (no button needed)
+    showInviteEventCard();
+
+    setTimeout(()=>area.scrollIntoView({behavior:'smooth',block:'start'}),100);
   };
 
   window.showInviteEventCard=function(){
     const card=document.getElementById('inv-event-card'); if(!card) return;
-    const isOpen=card.style.display!=='none'&&card.innerHTML!=='';
-    if(isOpen){ card.style.display='none'; return; }
 
     const formatDate=s=>{if(!s)return'';const[y,m,d]=s.split('-');return`${d}/${m}/${y}`;};
     const badgeColor={free:'#e8f5e9|#2e7d32',tip:'#e8f0fe|#185FA5',warn:'#fff8e1|#f57f17'};
