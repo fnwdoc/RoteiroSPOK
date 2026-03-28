@@ -5345,7 +5345,7 @@ function processImportResponse(){
   const errEl = document.getElementById('import-response-error');
   try {
     const data = decodeInviteStr(code);
-    if(!data.nome||!data.locals) throw new Error('Código inválido');
+    if(!data.nome) throw new Error('Código inválido');
 
     const localsV2 = Array.isArray(data.locals)
       ? data.locals.map(x=>typeof x==='string'?{id:x,status:'sim'}:x)
@@ -5411,7 +5411,10 @@ function minifyPayload(obj){
 }
 
 function compressPayload(payload){
-  return toBase64url(JSON.stringify(minifyPayload(payload)));
+  // Preserve locals array even when empty — it's required for import
+  const minified = minifyPayload(payload);
+  if(payload.locals !== undefined && !minified.locals) minified.locals = [];
+  return toBase64url(JSON.stringify(minified));
 }
 function decompressPayload(str){
   return JSON.parse(fromBase64url(str));
@@ -5469,7 +5472,7 @@ function checkResponseMode(){
     if(!getUserLevel()) setUserLevel('intermediario');
 
     const data = decodeInviteStr(resp);
-    if(!data||!data.nome||!data.locals) return false;
+    if(!data||!data.nome) return false;
 
     const localsV2 = Array.isArray(data.locals)
       ? data.locals.map(x=>typeof x==='string'?{id:x,status:'sim'}:x)
