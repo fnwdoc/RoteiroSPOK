@@ -5625,7 +5625,7 @@ function showInvitePage(data){
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
           <div style="width:24px;height:24px;border-radius:50%;background:#1a1a18;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">1</div>
           <div>
-            <div style="font-size:14px;font-weight:700;color:#1a1a18">Vote em cada local</div>
+            <div style="font-size:14px;font-weight:700;color:#1a1a18">Vote em cada local <span style="color:#c0392b">*</span></div>
             <div style="font-size:11px;color:#888">Toque ✅ Sim, 🤔 Talvez ou ❌ Não em cada um</div>
           </div>
         </div>
@@ -5669,14 +5669,14 @@ function showInvitePage(data){
           </div>
         </div>
         <div style="background:#f9f9f7;border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:14px">
-          <div>
-            <div style="font-size:11px;font-weight:700;color:#555;margin-bottom:8px">Seus dias disponíveis</div>
+          <div id="inv-days-section">
+            <div style="font-size:11px;font-weight:700;color:#555;margin-bottom:8px">Seus dias disponíveis <span style="color:#c0392b">*</span> <span style="font-size:10px;font-weight:400;color:#888">(mín. 2)</span></div>
             <div style="display:flex;flex-wrap:wrap;gap:6px">
               ${['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'].map(d=>`<button onclick="invToggleDay('${d}',this)" style="padding:7px 13px;border-radius:20px;border:.5px solid #ddd;background:#fff;color:#666;font-size:12px;cursor:pointer;font-family:inherit;transition:all .15s">${d}</button>`).join('')}
             </div>
           </div>
-          <div>
-            <div style="font-size:11px;font-weight:700;color:#555;margin-bottom:8px">Seu estilo de rolê</div>
+          <div id="inv-affs-section">
+            <div style="font-size:11px;font-weight:700;color:#555;margin-bottom:8px">Seu estilo de rolê <span style="color:#c0392b">*</span> <span style="font-size:10px;font-weight:400;color:#888">(mín. 2)</span></div>
             <div style="display:flex;flex-wrap:wrap;gap:6px">
               ${AFFINITY_PROFILES.map(p=>`<button onclick="invToggleAff('${p.id}',this)" style="padding:7px 12px;border-radius:20px;border:.5px solid #ddd;background:#fff;color:#666;font-size:12px;cursor:pointer;font-family:inherit;transition:all .15s">${p.icon} ${p.label}</button>`).join('')}
             </div>
@@ -5685,6 +5685,7 @@ function showInvitePage(data){
       </div>
 
       <!-- CONFIRMAR -->
+      <div id="inv-validation-box" style="display:none;background:#fce4ec;border:1.5px solid #f48fb1;border-radius:12px;padding:14px 16px;margin-bottom:12px"></div>
       <button onclick="generateInviteResponse()" style="width:100%;padding:16px;border-radius:14px;background:#1a1a18;color:#fff;border:none;font-size:16px;font-weight:700;font-family:inherit;cursor:pointer;margin-bottom:12px;letter-spacing:.01em">✅ Confirmar e enviar resposta</button>
       <div style="background:#fff3cd;border:.5px solid #ffc107;border-radius:12px;padding:14px 16px;margin-bottom:1.5rem;text-align:center">
         <div style="font-size:13px;font-weight:700;color:#856404;margin-bottom:4px">📲 Como funciona?</div>
@@ -5750,16 +5751,70 @@ function showInvitePage(data){
   };
 
   window.generateInviteResponse=function(){
+    const errors=[];
+
+    // Validar nome
     const nome=document.getElementById('inv-nome').value.trim();
     if(!nome){
-      document.getElementById('inv-nome').focus();
       document.getElementById('inv-nome').style.borderColor='#c0392b';
       document.getElementById('inv-nome').placeholder='⚠️ Informe seu nome para continuar';
+      errors.push('nome');
+    } else {
+      document.getElementById('inv-nome').style.borderColor='#ddd';
+    }
+
+    // Validar votos — pelo menos 1 local respondido
+    const localsV2=Object.entries(window._invLocals).map(([id,status])=>({id,status}));
+    const totalLocais=(data.locais||[]).length;
+    if(totalLocais>0 && localsV2.length===0){
+      errors.push('locais');
+      // Highlight all local cards
+      (data.locais||[]).forEach(l=>{
+        const card=document.getElementById('inv-card-'+l.id);
+        if(card){ card.style.borderColor='#c0392b'; card.style.background='#fff5f5'; }
+      });
+    } else {
+      (data.locais||[]).forEach(l=>{
+        const card=document.getElementById('inv-card-'+l.id);
+        if(card && !window._invLocals[l.id]){ card.style.borderColor='#c0392b'; card.style.background='#fff5f5'; errors.push('local_'+l.id); }
+      });
+    }
+
+    // Validar dias — mínimo 2
+    if(window._invDays.length < 2){
+      errors.push('days');
+      document.getElementById('inv-days-section').style.outline='2px solid #c0392b';
+      document.getElementById('inv-days-section').style.borderRadius='12px';
+    } else {
+      document.getElementById('inv-days-section').style.outline='none';
+    }
+
+    // Validar affinities — mínimo 2
+    if(window._invAffs.length < 2){
+      errors.push('affs');
+      document.getElementById('inv-affs-section').style.outline='2px solid #c0392b';
+      document.getElementById('inv-affs-section').style.borderRadius='12px';
+    } else {
+      document.getElementById('inv-affs-section').style.outline='none';
+    }
+
+    // Mostrar erros
+    const errBox=document.getElementById('inv-validation-box');
+    if(errors.length>0){
+      const msgs=[];
+      if(errors.includes('nome')) msgs.push('• Informe seu nome');
+      if(errors.some(e=>e==='locais'||e.startsWith('local_'))) msgs.push('• Vote em todos os locais (✅ Sim, 🤔 Talvez ou ❌ Não)');
+      if(errors.includes('days')) msgs.push('• Escolha pelo menos 2 dias disponíveis');
+      if(errors.includes('affs')) msgs.push('• Escolha pelo menos 2 estilos de rolê');
+      errBox.innerHTML='<div style="font-size:13px;font-weight:700;color:#c0392b;margin-bottom:6px">⚠️ Complete antes de confirmar:</div>'+msgs.map(m=>`<div style="font-size:13px;color:#c0392b;margin:3px 0">${m}</div>`).join('');
+      errBox.style.display='block';
+      errBox.scrollIntoView({behavior:'smooth',block:'center'});
       return;
     }
+    errBox.style.display='none';
+
     const origin=document.getElementById('inv-origin').value.trim();
     const whatsapp=document.getElementById('inv-whatsapp')?.value.replace(/\D/g,'')||'';
-    const localsV2=Object.entries(window._invLocals).map(([id,status])=>({id,status}));
     const code=compressPayload({v:2,nome,origin,whatsapp:whatsapp||undefined,locals:localsV2,days:window._invDays,affinities:window._invAffs});
 
     // Hidden code for fallback
