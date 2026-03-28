@@ -5626,6 +5626,14 @@ function showInvitePage(data){
         </a>
         <textarea id="inv-response-code" readonly style="width:100%;font-size:11px;padding:10px;border-radius:10px;border:.5px solid #ccc;font-family:monospace;height:90px;resize:none;background:#f9f9f7;box-sizing:border-box"></textarea>
         <button onclick="navigator.clipboard.writeText(document.getElementById('inv-response-code').value).then(()=>{this.textContent='✅ Copiado!';setTimeout(()=>this.textContent='📋 Copiar código',2000)})" style="width:100%;margin-top:8px;padding:12px;border-radius:12px;border:none;background:#1a1a18;color:#fff;font-size:13px;font-family:inherit;cursor:pointer;font-weight:600">📋 Copiar código manualmente</button>
+        <!-- Card do rolê -->
+        <div style="margin-top:1rem;padding-top:1rem;border-top:.5px solid #e5e4e0">
+          <button onclick="showInviteEventCard()" style="width:100%;padding:13px;border-radius:12px;background:#e8f0fe;border:.5px solid #aac4f7;color:#185FA5;font-size:14px;font-family:inherit;cursor:pointer;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px">
+            <span style="font-size:18px">🗺️</span> Ver o card do rolê
+          </button>
+        </div>
+        <!-- Card expandido -->
+        <div id="inv-event-card" style="display:none;margin-top:1rem"></div>
       </div>
       <div style="text-align:center;padding:1.5rem 0 .5rem;font-size:10px;color:#ccc">Rolefy v2.1</div>
 
@@ -5694,6 +5702,47 @@ function showInvitePage(data){
 
     area.style.display='block';
     setTimeout(()=>area.scrollIntoView({behavior:'smooth',block:'center'}),100);
+  };
+
+  window.showInviteEventCard=function(){
+    const card=document.getElementById('inv-event-card'); if(!card) return;
+    const isOpen=card.style.display!=='none'&&card.innerHTML!=='';
+    if(isOpen){ card.style.display='none'; return; }
+    // Build card with all event info from the payload
+    let h=`<div style="background:#f9f9f7;border-radius:14px;padding:14px;border:.5px solid #e5e4e0">
+      <div style="font-size:13px;font-weight:700;color:#1a1a18;margin-bottom:12px">📋 Informações do rolê</div>`;
+    (data.locais||[]).forEach(l=>{
+      const myStatus=window._invLocals[l.id];
+      const statusBadge=myStatus==='sim'
+        ?'<span style="font-size:11px;background:#e8f5e9;color:#2e7d32;padding:2px 8px;border-radius:8px;font-weight:600">✅ Vou!</span>'
+        :myStatus==='talvez'
+        ?'<span style="font-size:11px;background:#fff8e1;color:#f57f17;padding:2px 8px;border-radius:8px;font-weight:600">🤔 Talvez</span>'
+        :myStatus==='nao'
+        ?'<span style="font-size:11px;background:#fce4ec;color:#c62828;padding:2px 8px;border-radius:8px;font-weight:600">❌ Não vou</span>'
+        :'';
+      h+=`<div style="background:#fff;border-radius:12px;padding:12px;margin-bottom:8px;border:.5px solid #e5e4e0">
+        <div style="display:flex;align-items:flex-start;gap:10px">
+          <span style="font-size:26px;flex-shrink:0">${l.icon||'📍'}</span>
+          <div style="flex:1;min-width:0">
+            <div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:3px">
+              <span style="font-size:14px;font-weight:700;color:#1a1a18">${escHtml(l.nome)}</span>
+              ${statusBadge}
+            </div>
+            ${l.end?`<div style="font-size:11px;color:#888;margin-bottom:4px">📍 ${escHtml(l.end)}</div>`:''}
+            ${l.hora&&l.hora!=='–'?`<div style="font-size:12px;color:#555;margin-bottom:4px">🕐 ${escHtml(l.hora)}</div>`:''}
+            ${l.nota?`<div style="font-size:11px;color:#555;padding:7px 9px;background:#f5f4f0;border-radius:8px;line-height:1.5;margin-bottom:6px">${escHtml(l.nota)}</div>`:''}
+            ${l.aviso?`<div style="font-size:11px;color:#c0392b;margin-bottom:5px">⚠️ ${escHtml(l.aviso)}</div>`:''}
+            ${l.badge?`<div style="font-size:11px;background:#fff3cd;color:#856404;padding:3px 9px;border-radius:8px;display:inline-block;margin-bottom:5px">${escHtml(l.badge)}</div>`:''}
+            ${l.mapsUrl?`<a href="${l.mapsUrl}" target="_blank" style="display:inline-flex;align-items:center;gap:4px;font-size:12px;color:#185FA5;text-decoration:none;font-weight:500">🗺️ Abrir no Maps</a>`:''}
+          </div>
+        </div>
+      </div>`;
+    });
+    h+=`<div style="font-size:11px;color:#aaa;text-align:center;margin-top:6px">Organizado por ${escHtml(data.inviter||'')}</div>`;
+    h+='</div>';
+    card.innerHTML=h;
+    card.style.display='block';
+    setTimeout(()=>card.scrollIntoView({behavior:'smooth',block:'start'}),100);
   };
 }
 function closeAddPerson(){
