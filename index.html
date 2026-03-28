@@ -3566,9 +3566,18 @@ COMO O APP FUNCIONA:
 - Calendário: mostra todos com data — confirmados em destaque (escuro/bold), com data em cinza
 - Match: pessoas convidadas que responderam ✅/🤔/❌ por local via convite
 - Grupos: têm locais do evento (subset privado) + membros do Match + data do evento
-- Convite: gera link com locais do evento → pessoa responde → você importa código de resposta
 - Links úteis: cada local pode ter links (ingressos, reserva, maps) — aparecem no card e banco
 - Tags: categorias (gastro, eventos...) e perfis de afinidade (romântico, casual, grupo...) por local
+
+FLUXO DE CONVITE (NOVO — AUTOMÁTICO):
+1. Organizador gera convite → informa seu WhatsApp → copia link
+2. Convidado abre link → vota ✅/🤔/❌ em cada local → preenche nome + WhatsApp → confirma
+3. App gera link de retorno (?response=CODIGO) → convidado toca "💬 Enviar pelo WhatsApp"
+4. WhatsApp abre com mensagem pronta para o organizador contendo o link de retorno
+5. Organizador toca o link → app importa a resposta AUTOMATICAMENTE → toast de confirmação
+- Não é mais necessário copiar/colar código manualmente
+- Código manual ainda funciona como fallback em Match → 📥 Importar resposta
+- WhatsApp do convidado é salvo no perfil dele no Match (link 💬 clicável)
 
 AÇÕES QUE VOCÊ PODE EXECUTAR (retorne JSON {"text":"...","actions":[...]}):
 - {"type":"activate_local","id":"ID","tab":"semana"|"fds"} — ativa local do Banco no roteiro
@@ -4298,17 +4307,17 @@ const TIMELINES = {
         action: { label:'⚙️ Configurar URL', fn:()=>{ showView('cfg'); } }
       },
       {
-        id: 'pessoa',
-        title: 'Ter a pessoa no Match',
-        desc: 'Adicione a pessoa na aba Match ou envie o link diretamente.',
-        check: ()=>(state.people||[]).length>0,
-        action: { label:'＋ Adicionar pessoa', fn:()=>{ showView('people'); setTimeout(()=>openAddPerson(),200); } },
-        optional: true
+        id: 'wa',
+        title: 'Ter seu WhatsApp configurado',
+        desc: 'O convidado vai te enviar a resposta via WhatsApp. Configure em ⚙️ Config → WhatsApp ou informe na hora de gerar o convite.',
+        check: ()=>!!localStorage.getItem('sp_wa_default'),
+        optional: true,
+        action: { label:'⚙️ Configurar WhatsApp', fn:()=>{ showView('cfg'); } }
       },
       {
         id: 'enviar',
         title: 'Enviar o convite',
-        desc: 'No card da pessoa em Match → 📤 Convidar. Ou em Grupos → 📤 Convidar grupo.',
+        desc: 'No card do local → 📤 Convidar → escolha Match ou Grupo. Ou em Match no card da pessoa → 📤 Convidar. O app pede seu WhatsApp para receber respostas.',
         check: ()=>false,
         optional: true,
         actions: [
@@ -4318,10 +4327,10 @@ const TIMELINES = {
       },
       {
         id: 'importar',
-        title: 'Importar a resposta da pessoa',
-        desc: 'A pessoa gera um código de resposta. Você importa em Match → 📥 Importar resposta.',
-        check: ()=>(state.people||[]).some(p=>(p.localStatuses||[]).length>0),
-        action: { label:'📥 Importar resposta', fn:()=>{ showView('people'); setTimeout(()=>openImportResponse(),200); } }
+        title: 'Receber resposta — automático!',
+        desc: 'O convidado vota, confirma e toca "💬 Enviar pelo WhatsApp". Você recebe um link — ao tocar, o app importa a resposta sozinho. Nenhuma cópia de código necessária.',
+        check: ()=>(state.people||[]).some(p=>(p.localStatuses||[]).length>0||(p.locals||[]).length>0),
+        action: { label:'🤝 Ver Match', fn:()=>{ showView('people'); } }
       },
     ]
   },
@@ -4378,38 +4387,38 @@ const TIMELINES = {
   },
 
   confirmar_participante: {
-    title: '📥 Confirmar participante pelo código',
-    desc: 'O participante respondeu o convite e te enviou um código. Veja como importar.',
+    title: '📥 Receber resposta do convidado',
+    desc: 'O convidado respondeu o convite. O import agora é automático — sem copiar código.',
     isAdmin: false,
     steps: [
       {
-        id: 'receber',
-        title: 'Receber o código da pessoa',
-        desc: 'A pessoa abre o link do convite, marca ✅/🤔/❌ em cada local e toca em "Gerar minha resposta". Ela envia o código gerado para você pelo WhatsApp.',
+        id: 'link_retorno',
+        title: 'Convidado envia link de retorno pelo WhatsApp',
+        desc: 'Após votar e confirmar, a página gera um link especial. O convidado toca "💬 Enviar pelo WhatsApp" — abre o WhatsApp do organizador com o link pronto. Nenhuma cópia manual necessária.',
         check: ()=>false,
         info: true
       },
       {
-        id: 'importar',
-        title: 'Importar o código',
-        desc: 'Em 🤝 Match → botão "📥 Importar resposta" → cole o código → Importar.',
-        check: ()=>(state.people||[]).some(p=>(p.localStatuses||[]).length>0),
-        action: { label:'📥 Importar resposta', fn:()=>{ showView('people'); setTimeout(()=>openImportResponse(),200); } }
+        id: 'auto_import',
+        title: 'Organizador toca o link → import automático',
+        desc: 'Ao tocar o link recebido no WhatsApp, o app abre e importa a resposta automaticamente. Aparece um toast "✅ [Nome] importado!" com o placar de votos.',
+        check: ()=>(state.people||[]).some(p=>(p.localStatuses||[]).length>0||(p.locals||[]).length>0),
+        action: { label:'🤝 Ver Match', fn:()=>{ showView('people'); } }
+      },
+      {
+        id: 'fallback',
+        title: 'Fallback: importar código manualmente (opcional)',
+        desc: 'Se o link automático não funcionar, o convidado pode copiar o código gerado e você cola em Match → 📥 Importar resposta.',
+        check: ()=>false,
+        optional: true,
+        action: { label:'📥 Importar código', fn:()=>{ showView('people'); setTimeout(()=>openImportResponse(),200); } }
       },
       {
         id: 'ver',
         title: 'Ver respostas no roteiro',
-        desc: 'Abra o card de qualquer local no roteiro — aparece "Quem respondeu" com ✅/🤔/❌ de cada pessoa.',
+        desc: 'Abra o card de qualquer local — aparece "Quem respondeu" com ✅/🤔/❌ de cada pessoa. O WhatsApp do convidado fica salvo no card dele em Match.',
         check: ()=>(state.people||[]).some(p=>(p.localStatuses||[]).some(x=>x.status==='sim')),
         action: { label:'🗺️ Ver roteiro', fn:()=>{ showView('roteiro'); } }
-      },
-      {
-        id: 'editar',
-        title: 'Ajustar resposta manualmente (opcional)',
-        desc: 'Se precisar corrigir a resposta de alguém: em Match → ✏️ Editar pessoa → altere o status de cada local.',
-        check: ()=>false,
-        optional: true,
-        action: { label:'🤝 Ir para Match', fn:()=>{ showView('people'); } }
       },
     ]
   },
