@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Roteiro SP</title>
+<title>Rolefy — Roteiro SP v2.5.0</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f4f0;color:#1a1a18;min-height:100vh;-webkit-tap-highlight-color:transparent}
@@ -872,6 +872,7 @@ mark{background:#fff3cd;color:#1a1a18;border-radius:3px;padding:0 2px}
         </div>
       </div>
     </div>
+  <div style="text-align:center;padding:.75rem 0 1.5rem;font-size:11px;color:#ccc;letter-spacing:.03em">Rolefy v2.5.0</div>
   </div>
 
   <!-- MONETIZE -->
@@ -5581,7 +5582,10 @@ function showInvitePage(data){
   };
 
   // Card de local com botões de voto
-  const localCard=(l)=>`
+  const localCard=(l)=>{
+    const cardLinksHtml=(l.links||[]).map(lk=>`<a href="${escHtml(lk.url)}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:10px;background:#e8f0fe;border:.5px solid #aac4f7;font-size:11px;color:#185FA5;text-decoration:none;margin:2px">🔗 ${escHtml(lk.nome||lk.url)}</a>`).join('');
+    const cardNotesHtml=(l.notes||[]).map(n=>`<div style="padding:6px 9px;background:#f5f4f0;border-radius:8px;margin-bottom:4px;font-size:11px;color:#555;line-height:1.5">${n.source?`<span style="font-size:10px;color:#aaa;font-weight:600">${escHtml(n.source)} · </span>`:''}<span>${escHtml(n.text)}</span></div>`).join('');
+    return `
     <div id="inv-card-${l.id}" style="background:#fff;border:1.5px solid #e5e4e0;border-radius:14px;padding:14px;margin-bottom:10px;transition:all .2s">
       <div style="display:flex;gap:10px;align-items:flex-start">
         <span style="font-size:28px;flex-shrink:0">${l.icon||'📍'}</span>
@@ -5589,9 +5593,12 @@ function showInvitePage(data){
           <div style="font-size:15px;font-weight:700;color:#1a1a18;margin-bottom:2px">${escHtml(l.nome)}</div>
           ${l.end?`<div style="font-size:11px;color:#888;margin-bottom:4px">📍 ${escHtml(l.end)}</div>`:''}
           ${l.hora&&l.hora!=='–'?`<div style="font-size:12px;color:#555;margin-bottom:4px">🕐 ${escHtml(l.hora)}</div>`:''}
+          ${l.dur?`<div style="font-size:11px;color:#888;margin-bottom:4px">⏱ ${escHtml(l.dur)}</div>`:''}
           ${l.nota?`<div style="font-size:11px;color:#555;margin-top:5px;padding:7px 9px;background:#f9f9f7;border-radius:8px;line-height:1.5">${escHtml(l.nota)}</div>`:''}
           ${l.aviso?`<div style="font-size:11px;color:#c0392b;margin-top:4px">⚠️ ${escHtml(l.aviso)}</div>`:''}
-          ${l.mapsUrl?`<a href="${l.mapsUrl}" target="_blank" style="display:inline-flex;align-items:center;gap:4px;font-size:11px;color:#185FA5;margin-top:6px;text-decoration:none">🗺️ Ver no Maps</a>`:''}
+          ${cardNotesHtml?`<div style="margin-top:8px"><div style="font-size:10px;color:#aaa;font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px">📝 Anotações</div>${cardNotesHtml}</div>`:''}
+          ${cardLinksHtml?`<div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:3px">${cardLinksHtml}</div>`:''}
+          ${l.mapsUrl?`<a href="${l.mapsUrl}" target="_blank" style="display:inline-flex;align-items:center;gap:4px;font-size:11px;color:#185FA5;margin-top:8px;text-decoration:none">🗺️ Ver no Maps</a>`:''}
           ${quemVaiHtml(l.id)}
         </div>
       </div>
@@ -5604,6 +5611,7 @@ function showInvitePage(data){
         </div>
       </div>
     </div>`;
+  };
 
   const locaisHtml=(data.locais||[]).map(localCard).join('');
   const inviterName=escHtml(data.inviter||'Seu amigo');
@@ -5712,7 +5720,7 @@ function showInvitePage(data){
         <!-- Card do rolê — aparece direto -->
         <div id="inv-event-card" style="margin-top:.5rem"></div>
       </div>
-      <div style="text-align:center;padding:1.5rem 0 .5rem;font-size:10px;color:#ccc">Rolefy v2.1</div>
+      <div style="text-align:center;padding:1.5rem 0 .5rem;font-size:10px;color:#ccc">Rolefy v2.5.0</div>
 
     </div>`;
 
