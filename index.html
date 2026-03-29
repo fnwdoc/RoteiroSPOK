@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Rolefy — Roteiro SP v2.5.0</title>
+<title>Rolefy — Roteiro SP v3.2</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f4f0;color:#1a1a18;min-height:100vh;-webkit-tap-highlight-color:transparent}
@@ -872,7 +872,7 @@ mark{background:#fff3cd;color:#1a1a18;border-radius:3px;padding:0 2px}
         </div>
       </div>
     </div>
-  <div style="text-align:center;padding:.75rem 0 1.5rem;font-size:11px;color:#ccc;letter-spacing:.03em">Rolefy v2.5.0</div>
+  <div style="text-align:center;padding:.75rem 0 1.5rem;font-size:11px;color:#ccc;letter-spacing:.03em">Rolefy v3.2</div>
   </div>
 
   <!-- MONETIZE -->
@@ -2740,11 +2740,26 @@ function renderBank(){
     <div id="bank-parse-status" style="font-size:11px;margin-top:5px;display:none"></div>
   </div>`;
 
-  el.innerHTML=pasteCard+header
+  // Preserva o pasteCard se já existir no DOM (evita apagar textarea preenchido)
+  const existingPaste = document.getElementById('bank-paste-card');
+  const sectionsHtml = header
     +sec('Confirmados','✅',all.filter(d=>d.status==='agendado'),'Nenhum confirmado ainda. Use ✅ para confirmar presença.','#2e7d32')
     +sec('Com data','📅',arquivadosComData,'Nenhum com data.','#555')
     +sec('Data indefinida','🌙',all.filter(d=>d.status==='someday'),'Nenhum.','#854f0b')
     +sec('Sem data','📦',arquivadosSemData,'Nenhum arquivado.');
+
+  if(existingPaste){
+    // Já tem o card — só atualiza as seções abaixo dele
+    let sectionsEl = document.getElementById('bank-sections');
+    if(!sectionsEl){
+      sectionsEl = document.createElement('div');
+      sectionsEl.id = 'bank-sections';
+      el.appendChild(sectionsEl);
+    }
+    sectionsEl.innerHTML = sectionsHtml;
+  } else {
+    el.innerHTML = pasteCard + '<div id="bank-sections">' + sectionsHtml + '</div>';
+  }
 }
 
 
@@ -5834,7 +5849,7 @@ function showInvitePage(data){
         <!-- Card do rolê — aparece direto -->
         <div id="inv-event-card" style="margin-top:.5rem"></div>
       </div>
-      <div style="text-align:center;padding:1.5rem 0 .5rem;font-size:10px;color:#ccc">Rolefy v2.5.0</div>
+      <div style="text-align:center;padding:1.5rem 0 .5rem;font-size:10px;color:#ccc">Rolefy v3.2</div>
 
     </div>`;
 
