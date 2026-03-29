@@ -1537,6 +1537,7 @@ let state = JSON.parse(JSON.stringify(DEFAULT_STATE));
 // ── SUPABASE SYNC ─────────────────────────────────────────────────────────────
 let _supabaseSession = null;
 const SUPABASE_URL = 'https://zjrczxcprbymqzamatza.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpqcmN6eGNwcmJ5bXF6YW1hdHphIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ3NDgzNTEsImV4cCI6MjA5MDMyNDM1MX0.ERK_P44Rn_3_8aAcqrA7CRB0pBcu4nZToPRiweFiWTo';
 
 // Recebe token do Next.js via postMessage
 window.addEventListener('message', (e) => {
@@ -1553,7 +1554,7 @@ async function saveToSupabase() {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'apikey': _supabaseSession.anon_key,
+        'apikey': _supabaseSession.anon_key || SUPABASE_ANON_KEY,
         'Authorization': 'Bearer ' + _supabaseSession.access_token,
         'Prefer': 'resolution=merge-duplicates'
       },
@@ -1571,7 +1572,7 @@ async function loadFromSupabase() {
   try {
     const r = await fetch(SUPABASE_URL + '/rest/v1/roteiros?user_id=eq.' + _supabaseSession.user.id + '&select=data', {
       headers: {
-        'apikey': _supabaseSession.anon_key,
+        'apikey': _supabaseSession.anon_key || SUPABASE_ANON_KEY,
         'Authorization': 'Bearer ' + _supabaseSession.access_token,
       }
     });
