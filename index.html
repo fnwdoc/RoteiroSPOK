@@ -2101,6 +2101,7 @@ function cardHTML(d,i,tab,items) {
         <div class="card-time">${d.hora}</div>${notesBadge(d)}<div class="chevron">▼</div>
       </div>
       <button class="fav-heart${isFav(d.id)?' on':''}" data-id="${d.id}" onclick="toggleFav('${d.id}',event)">${isFav(d.id)?'❤️':'🤍'}</button>
+      <button title="Perguntar ao assistente" onclick="openChatWithLocal('${tab}','${d.id}',event)" style="background:none;border:.5px solid #e0e0dc;border-radius:8px;padding:4px 7px;cursor:pointer;font-size:13px;color:#888;flex-shrink:0;line-height:1">💬</button>
     </div>
     <div class="card-body" id="cb-${d.id}">
       ${d.nota?`<div class="info-row"><span class="info-icon">📝</span><span class="info-text">${d.nota}</span></div>`:''}
@@ -3019,6 +3020,10 @@ function showView(view){
       if(waEl) waEl.value=getWaDefault();
     }
   }
+  // Assistente proativo: atualiza chips se chat estiver aberto
+  if(document.getElementById('chat-drawer')?.classList.contains('open')){
+    setTimeout(()=>chatShowViewChips(view), 150);
+  }
 }
 function updateAffSelect(){
   const sel=document.getElementById('aff-select');if(!sel)return;
@@ -3376,7 +3381,7 @@ function toggleChatDrawer(){
   else openChatDrawer();
 }
 
-function openChatDrawer(){
+function openChatDrawer(contextMsg){
   const d=document.getElementById('chat-drawer');
   d.classList.add('open');
   document.body.classList.add('chat-open');
@@ -3386,12 +3391,95 @@ function openChatDrawer(){
   if(sub) sub.textContent = chatHasKey() ? getProvider()+' conectado' : 'Modo FAQ — configure a IA para mais';
   const nk=document.getElementById('chat-no-key');
   if(nk) nk.style.display = chatHasKey()?'none':'block';
-  // Always fresh init — reflects current state
   const msgs=document.getElementById('chat-messages');
   if(msgs) msgs.innerHTML='';
   chatHistory=[];
-  chatInit();
+  chatInit(contextMsg);
   setTimeout(()=>{ const i=document.getElementById('chat-input'); if(i) i.focus(); },300);
+}
+
+// Abre chat com contexto de um local específico
+function openChatWithLocal(tab, localId, e){
+  if(e) e.stopPropagation();
+  const d=(state[tab]||[]).find(x=>x.id===localId); if(!d) return;
+  const notes=(d.notes||[]).length ? `\n📝 ${d.notes.length} anotaç${d.notes.length>1?'ões':'ão'}` : '';
+  const links=(d.links||[]).length ? `\n🔗 ${d.links.length} link${d.links.length>1?'s':''}` : '';
+  const contextMsg = `Estou vendo o local **${d.icon||'📍'} ${d.nome}**${d.hora&&d.hora!=='–'?' às '+d.hora:''}${d.end?' — '+d.end.split('–')[0].trim():''}${notes}${links}.\n\nComo posso ajudar com este local?`;
+  if(document.getElementById('chat-drawer').classList.contains('open')){
+    chatAddMsg('bot', contextMsg);
+    chatShowContextChips(tab, localId);
+  } else {
+    openChatDrawer(contextMsg);
+    setTimeout(()=>chatShowContextChips(tab, localId), 200);
+  }
+}
+
+// Chips contextuais de um local específico
+function chatShowContextChips(tab, localId){
+  const msgs=document.getElementById('chat-messages'); if(!msgs) return;
+  const d=(state[tab]||[]).find(x=>x.id===localId); if(!d) return;
+  const opts=[
+    {label:`✏️ Editar este local`, fn:()=>openEditLocal(tab,localId)},
+    {label:`📝 Ver anotações`, fn:()=>openNotes(tab,localId)},
+    {label:`📤 Convidar para este local`, fn:()=>openInviteChannel(tab,localId)},
+    {label:`🗺️ Como chegar`, fn:()=>chatSendText(`Como chego em ${d.nome}? Estou saindo de ${state.origin||'São Paulo'}`)},
+    {label:`💡 Dicas sobre ${d.nome}`, fn:()=>chatSendText(`Quais dicas você tem sobre ${d.nome}?`)},
+  ];
+  _chatShowChips(opts);
+}
+
+// Chips proativos por aba/contexto
+function chatShowViewChips(view){
+  const allLocais=[...state.semana,...state.fds].filter((x,i,a)=>a.findIndex(y=>y.id===x.id)===i);
+  const ativos=allLocais.filter(d=>d.status==='ativo');
+  const semCat=ativos.filter(d=>!d.cats||!d.cats.length);
+  const semAff=ativos.filter(d=>!d.affinities||!d.affinities.length);
+  const people=state.people||[];
+  const groups=state.groups||[];
+  let opts=[];
+  if(view==='roteiro'){
+    if(semCat.length) opts.push({label:`🏷️ ${semCat.length} local${semCat.length>1?'is':''} sem categoria`, fn:()=>chatSendText(`Quais categorias sugerir para: ${semCat.map(d=>d.nome).join(', ')}?`)});
+    if(ativos.length>=2) opts.push({label:'✨ Otimizar ordem da rota', fn:()=>chatSendText('Otimize a ordem dos locais no meu roteiro considerando horários e distância')});
+    opts.push({label:'➕ Adicionar local novo', fn:()=>chatSendText('Quero adicionar um novo local ao roteiro')});
+    if(ativos.length) opts.push({label:'📤 Convidar alguém para o rolê', fn:()=>chatSendText('Como convido alguém para o meu roteiro?')});
+  } else if(view==='bank'){
+    const banco=allLocais.filter(d=>d.status==='arquivado');
+    if(banco.length) opts.push({label:`📦 Ativar um local do Banco (${banco.length})`, fn:()=>chatSendText('Me ajuda a escolher quais locais do Banco ativar no roteiro')});
+    opts.push({label:'✨ Adicionar evento por texto', fn:()=>chatSendText('Quero adicionar um evento colando o texto da descrição')});
+  } else if(view==='people'){
+    if(!people.length) opts.push({label:'👤 Adicionar primeira pessoa', fn:()=>chatSendText('Como adiciono uma pessoa no Match?')});
+    else {
+      opts.push({label:`📤 Convidar ${people.length} pessoa${people.length>1?'s':''}`, fn:()=>chatSendText('Como envio convites para as pessoas do Match?')});
+      const semResp=people.filter(p=>!(p.localStatuses||[]).length);
+      if(semResp.length) opts.push({label:`⏳ ${semResp.length} sem resposta ainda`, fn:()=>chatSendText(`${semResp.map(p=>p.nome).join(', ')} ainda não responderam. Como faço para reenviar o convite?`)});
+    }
+  } else if(view==='groups'){
+    if(!groups.length) opts.push({label:'👥 Criar primeiro grupo', fn:()=>openCreateGroup()});
+    else {
+      const semEvento=groups.filter(g=>!(g.locals||[]).length);
+      if(semEvento.length) opts.push({label:`🗓️ ${semEvento.length} grupo${semEvento.length>1?'s':''} sem locais`, fn:()=>chatSendText('Quais grupos precisam ter os locais do evento definidos?')});
+      opts.push({label:'📊 Relatório dos grupos', fn:()=>chatSendText('Me dê um resumo dos grupos e quem confirmou presença')});
+    }
+  } else if(view==='cfg'){
+    if(!chatHasKey()) opts.push({label:'🔑 Configurar IA gratuita (Groq)', fn:()=>chatSendText('Como configuro o Groq gratuitamente?')});
+    opts.push({label:'📸 Extrair local de print', fn:()=>chatSendText('Como faço para extrair um local de um print do Instagram?')});
+  }
+  if(opts.length) _chatShowChips(opts);
+}
+
+// Renderiza chips genéricos
+function _chatShowChips(opts){
+  const msgs=document.getElementById('chat-messages'); if(!msgs) return;
+  const old=document.getElementById('chat-chips'); if(old) old.remove();
+  const wrap=document.createElement('div'); wrap.className='chat-chips'; wrap.id='chat-chips';
+  opts.forEach(o=>{
+    const btn=document.createElement('button'); btn.className='chat-chip-btn';
+    btn.textContent=o.label;
+    btn.onclick=()=>{ wrap.remove(); if(o.fn) o.fn(); };
+    wrap.appendChild(btn);
+  });
+  msgs.appendChild(wrap);
+  msgs.scrollTop=msgs.scrollHeight;
 }
 
 function closeChatDrawer(){
@@ -3401,11 +3489,17 @@ function closeChatDrawer(){
   if(btn) btn.classList.remove('active');
 }
 
-function chatInit(){
+function chatInit(contextMsg){
   chatHistory=[];
   const hasKey=chatHasKey();
   const ativos=[...state.semana,...state.fds].filter(d=>d.status==='ativo');
   const banco=[...state.semana,...state.fds].filter(d=>d.status==='arquivado');
+  // Se veio com contexto (ex: de um card), usa direto
+  if(contextMsg){
+    chatAddMsg('bot', contextMsg);
+    return;
+  }
+  // Mensagem proativa baseada no estado atual e aba visível
   let welcome;
   if(!hasKey){
     welcome = `Olá! 👋 Sou o Assistente Rolefy.\n\nEstou em **modo FAQ** por enquanto — configure o **Groq gratuitamente** para eu virar um assistente completo com IA.\n\nO que você precisa agora?`;
@@ -3414,44 +3508,26 @@ function chatInit(){
   } else if(ativos.length===0){
     welcome = `Olá! 👋 Seu roteiro está vazio ainda.\n\nPosso te ajudar a **adicionar o primeiro local** — descreva um lugar que você quer visitar em SP!`;
   } else {
-    welcome = `Olá! 👋 Você tem **${ativos.length} local${ativos.length>1?'is':''}** no roteiro${banco.length>0?` e **${banco.length}** no Banco`:''}.${state.origin?' Saindo de '+state.origin.split('–')[0].trim()+'.':''}\n\nComo posso ajudar?`;
+    // Proativo: detecta o que precisa de atenção
+    const semCat=ativos.filter(d=>!d.cats||!d.cats.length);
+    const semAff=ativos.filter(d=>!d.affinities||!d.affinities.length);
+    const people=state.people||[];
+    const semResp=people.filter(p=>!(p.localStatuses||[]).length);
+    const insights=[];
+    if(semCat.length) insights.push(`**${semCat.length} local${semCat.length>1?'is':''} sem categoria** — posso sugerir`);
+    if(semResp.length) insights.push(`**${semResp.length} pessoa${semResp.length>1?'s':''} sem resposta** no Match`);
+    if(!state.origin) insights.push(`**origem não definida** — configure para otimizar rotas`);
+    const insightLine = insights.length ? 'Percebi que: '+insights.join(' · ')+'.\n\n' : '';
+    welcome = `Olá! 👋 Você tem **${ativos.length} local${ativos.length>1?'is':''}** no roteiro${banco.length>0?' e **'+banco.length+'** no Banco':''}${state.origin?' · saindo de '+state.origin.split('\u2013')[0].trim():''}.\n\n${insightLine}Como posso ajudar?`;
   }
   chatAddMsg('bot', welcome);
   if(!hasKey) chatShowFaqChips();
-  else chatShowSuggestChips();
+  else chatShowViewChips(currentView);
 }
 
 function chatShowFaqChips(){
-  const msgs=document.getElementById('chat-messages'); if(!msgs) return;
-  const wrap=document.createElement('div'); wrap.className='chat-chips'; wrap.id='chat-chips';
-  CHAT_FAQ.forEach(f=>{
-    const btn=document.createElement('button'); btn.className='chat-chip-btn';
-    btn.textContent=f.q;
-    btn.onclick=()=>{ wrap.remove(); chatAddMsg('user',f.q); chatAddMsg('bot',f.a); };
-    wrap.appendChild(btn);
-  });
-  msgs.appendChild(wrap);
-  msgs.scrollTop=msgs.scrollHeight;
-}
-
-function chatShowSuggestChips(){
-  const msgs=document.getElementById('chat-messages'); if(!msgs) return;
-  const suggestions=[
-    '➕ Adicionar um local',
-    '📋 Ver o que está no roteiro',
-    '🤝 Como funciona o convite',
-    '💰 Como monetizar meu roteiro',
-    '🔍 Filtrar por estilo de rolê',
-  ];
-  const wrap=document.createElement('div'); wrap.className='chat-chips'; wrap.id='chat-chips';
-  suggestions.forEach(s=>{
-    const btn=document.createElement('button'); btn.className='chat-chip-btn';
-    btn.textContent=s;
-    btn.onclick=()=>{ wrap.remove(); chatSendText(s); };
-    wrap.appendChild(btn);
-  });
-  msgs.appendChild(wrap);
-  msgs.scrollTop=msgs.scrollHeight;
+  const opts=CHAT_FAQ.map(f=>({label:f.q, fn:()=>{ chatAddMsg('user',f.q); chatAddMsg('bot',f.a); }}));
+  _chatShowChips(opts);
 }
 
 function chatAddMsg(role, text){
@@ -3776,6 +3852,36 @@ function chatExecuteActions(actions){
   });
 }
 
+// Chips sugerindo próximo passo após ação executada
+function chatShowPostActionChips(actions){
+  if(!actions||!actions.length) return;
+  const types = actions.map(a=>a.type);
+  let opts = [];
+
+  if(types.includes('add_local') || types.includes('activate_local')){
+    opts.push({label:'📤 Convidar alguém para este local', fn:()=>chatSendText('Como convido alguém para este local?')});
+    opts.push({label:'📅 Agendar uma data', fn:()=>chatSendText('Quero agendar uma data para este local')});
+    opts.push({label:'➕ Adicionar outro local', fn:()=>chatSendText('Quero adicionar mais um local ao roteiro')});
+  } else if(types.includes('navigate') && actions.find(a=>a.view==='people')){
+    opts.push({label:'📤 Enviar convite agora', fn:()=>chatSendText('Como envio o convite para as pessoas do Match?')});
+    opts.push({label:'👥 Criar um grupo', fn:()=>chatSendText('Quero criar um grupo para este evento')});
+  } else if(types.includes('navigate') && actions.find(a=>a.view==='groups')){
+    opts.push({label:'🗓️ Definir locais do evento', fn:()=>chatSendText('Quais locais devo incluir neste evento?')});
+    opts.push({label:'📤 Enviar convite do grupo', fn:()=>chatSendText('Como envio o convite do grupo?')});
+  } else if(types.includes('edit_local') || types.includes('set_local_status')){
+    opts.push({label:'📋 Ver roteiro atualizado', fn:()=>showView('roteiro')});
+    opts.push({label:'📤 Convidar para este local', fn:()=>chatSendText('Quero convidar alguém para este local')});
+  } else if(types.includes('set_origin')){
+    opts.push({label:'✨ Otimizar rota agora', fn:()=>chatSendText('Otimize a ordem dos locais considerando minha origem')});
+    opts.push({label:'📋 Ver roteiro', fn:()=>showView('roteiro')});
+  } else {
+    // genérico
+    opts.push({label:'📋 Ver roteiro', fn:()=>showView('roteiro')});
+    opts.push({label:'💬 O que mais posso fazer?', fn:()=>chatSendText('O que mais você pode fazer por mim?')});
+  }
+  if(opts.length) _chatShowChips(opts);
+}
+
 async function chatSendText(text){
   if(chatTyping||!text.trim()) return;
   chatAddMsg('user', text);
@@ -3859,6 +3965,8 @@ async function chatSendText(text){
         // Update chat header after actions
         const sub=document.getElementById('chat-header-sub');
         if(sub) sub.textContent=getProvider()+' conectado';
+        // Chips pós-ação: sugere próximo passo contextual
+        setTimeout(()=>chatShowPostActionChips(responseActions), 400);
       },600);
     }
 
