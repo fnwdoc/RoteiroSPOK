@@ -1,9 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Rolefy — Roteiro SP v3.2</title>
+<title>Rolefy — Roteiro SP v4.0</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f4f0;color:#1a1a18;min-height:100vh;-webkit-tap-highlight-color:transparent}
@@ -1533,8 +1534,67 @@ const DEFAULT_STATE = {
 let state = JSON.parse(JSON.stringify(DEFAULT_STATE));
 
 // ── PERSIST ───────────────────────────────────────────────────────────────────
+// ── SUPABASE SYNC ─────────────────────────────────────────────────────────────
+let _supabaseSession = null;
+const SUPABASE_URL = 'https://zjrczxcprbymqzamatza.supabase.co';
+
+// Recebe token do Next.js via postMessage
+window.addEventListener('message', (e) => {
+  if(e.data && e.data.type === 'SUPABASE_SESSION') {
+    _supabaseSession = e.data.session;
+    loadFromSupabase();
+  }
+});
+
+async function saveToSupabase() {
+  if(!_supabaseSession) return;
+  try {
+    await fetch(SUPABASE_URL + '/rest/v1/roteiros', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': _supabaseSession.anon_key,
+        'Authorization': 'Bearer ' + _supabaseSession.access_token,
+        'Prefer': 'resolution=merge-duplicates'
+      },
+      body: JSON.stringify({
+        user_id: _supabaseSession.user.id,
+        data: state,
+        updated_at: new Date().toISOString()
+      })
+    });
+  } catch(e) { console.warn('saveToSupabase failed', e); }
+}
+
+async function loadFromSupabase() {
+  if(!_supabaseSession) return;
+  try {
+    const r = await fetch(SUPABASE_URL + '/rest/v1/roteiros?user_id=eq.' + _supabaseSession.user.id + '&select=data', {
+      headers: {
+        'apikey': _supabaseSession.anon_key,
+        'Authorization': 'Bearer ' + _supabaseSession.access_token,
+      }
+    });
+    if(!r.ok) return;
+    const rows = await r.json();
+    if(rows && rows.length && rows[0].data) {
+      const loaded = migrateState(rows[0].data);
+      Object.keys(state).forEach(k=>delete state[k]);
+      Object.assign(state, loaded);
+      try { localStorage.setItem('roteirosp_state', JSON.stringify(state)); } catch(e){}
+      render(); renderBank(); renderBottomNav(); renderAffinityBar(); initOriginDisplay();
+      console.log('Roteiro carregado do Supabase');
+    }
+  } catch(e) { console.warn('loadFromSupabase failed', e); }
+}
+
+let _persistTimer = null;
 function persist() {
   try { localStorage.setItem('roteirosp_state', JSON.stringify(state)); } catch(e){ console.warn('persist failed', e); }
+  if(_supabaseSession) {
+    clearTimeout(_persistTimer);
+    _persistTimer = setTimeout(saveToSupabase, 2000);
+  }
 }
 
 function migrateState(s) {
