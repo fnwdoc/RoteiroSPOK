@@ -2662,15 +2662,21 @@ Texto: ${txt}`;
   state.semana.push(newLocal);
   persist();
 
-  if(status){
-    status.style.color='#2e7d32';
-    status.textContent=`✅ "${newLocal.nome}" adicionado ao Banco${parsed.data?' com data '+new Date(parsed.data+'T12:00').toLocaleDateString('pt-BR',{day:'numeric',month:'short'}):''}!`;
-  }
-  if(btn){btn.textContent='＋ Adicionar outro';btn.disabled=false;}
-  // Clear and re-render bank
-  const textarea=document.getElementById('bank-event-text');
-  if(textarea){textarea.value='';btn.style.display='none';}
+  // Renderiza primeiro — reconstrói o DOM do banco
   renderBank();
+
+  // Depois do render, busca os elementos frescos e mostra feedback
+  const statusEl=document.getElementById('bank-parse-status');
+  const btnEl=document.getElementById('bank-parse-btn');
+  const textareaEl=document.getElementById('bank-event-text');
+
+  if(statusEl){
+    statusEl.style.display='block';
+    statusEl.style.color='#2e7d32';
+    statusEl.textContent=`✅ "${newLocal.nome}" adicionado ao Banco${parsed.data?' com data '+new Date(parsed.data+'T12:00').toLocaleDateString('pt-BR',{day:'numeric',month:'short'}):''}!`;
+  }
+  if(btnEl){btnEl.textContent='＋ Adicionar outro';btnEl.disabled=false;btnEl.style.display='block';}
+  if(textareaEl){textareaEl.value='';}
 }
 
 function renderBank(){
