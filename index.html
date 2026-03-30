@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Rolefy — Roteiro SP v4.0</title>
+<title>Rolefy — Roteiro SP v4.1</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f4f0;color:#1a1a18;min-height:100vh;-webkit-tap-highlight-color:transparent}
@@ -873,7 +873,7 @@ mark{background:#fff3cd;color:#1a1a18;border-radius:3px;padding:0 2px}
         </div>
       </div>
     </div>
-  <div style="text-align:center;padding:.75rem 0 1.5rem;font-size:11px;color:#ccc;letter-spacing:.03em">Rolefy v3.2</div>
+  <div style="text-align:center;padding:.75rem 0 1.5rem;font-size:11px;color:#ccc;letter-spacing:.03em">Rolefy v4.1</div>
   </div>
 
   <!-- MONETIZE -->
@@ -1556,7 +1556,7 @@ async function saveToSupabase() {
         'Content-Type': 'application/json',
         'apikey': _supabaseSession.anon_key || SUPABASE_ANON_KEY,
         'Authorization': 'Bearer ' + _supabaseSession.access_token,
-        'Prefer': 'resolution=merge-duplicates'
+        'Prefer': 'resolution=merge-duplicates,return=minimal'
       },
       body: JSON.stringify({
         user_id: _supabaseSession.user.id,
@@ -1564,6 +1564,7 @@ async function saveToSupabase() {
         updated_at: new Date().toISOString()
       })
     });
+    console.log('Roteiro salvo no Supabase');
   } catch(e) { console.warn('saveToSupabase failed', e); }
 }
 
@@ -5910,7 +5911,7 @@ function showInvitePage(data){
         <!-- Card do rolê — aparece direto -->
         <div id="inv-event-card" style="margin-top:.5rem"></div>
       </div>
-      <div style="text-align:center;padding:1.5rem 0 .5rem;font-size:10px;color:#ccc">Rolefy v3.2</div>
+      <div style="text-align:center;padding:1.5rem 0 .5rem;font-size:10px;color:#ccc">Rolefy v4.1</div>
 
     </div>`;
 
