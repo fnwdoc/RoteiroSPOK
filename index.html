@@ -7199,10 +7199,26 @@ async function generateShareLink() {
 
 function copyShareLink() {
   const input = document.getElementById('share-link-input');
-  navigator.clipboard.writeText(input.value).then(() => {
-    const btn = document.querySelector('#share-modal button[onclick="copyShareLink()"]');
+  const btn = document.querySelector('#share-modal button[onclick="copyShareLink()"]');
+  // Tenta clipboard API, com fallback para execCommand
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(input.value).then(() => {
+      btn.textContent = '✅'; setTimeout(() => { btn.textContent = 'Copiar'; }, 2000);
+    }).catch(() => fallbackCopy(input, btn));
+  } else {
+    fallbackCopy(input, btn);
+  }
+}
+function fallbackCopy(input, btn) {
+  input.select();
+  input.setSelectionRange(0, 99999);
+  try {
+    document.execCommand('copy');
     btn.textContent = '✅'; setTimeout(() => { btn.textContent = 'Copiar'; }, 2000);
-  });
+  } catch(e) {
+    btn.textContent = '❌'; setTimeout(() => { btn.textContent = 'Copiar'; }, 2000);
+  }
+  window.getSelection()?.removeAllRanges();
 }
 
 async function checkShareParam() {
