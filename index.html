@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Rolefy — Roteiro SP v4.4.3</title>
+<title>ROLEFY v5.0 — U Know Ur Role</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f4f0;color:#1a1a18;min-height:100vh;-webkit-tap-highlight-color:transparent}
@@ -639,9 +639,79 @@ mark{background:#fff3cd;color:#1a1a18;border-radius:3px;padding:0 2px}
 .fav-remove:hover{color:#c0392b}
 .fav-heart{font-size:15px;cursor:pointer;color:#ddd;flex-shrink:0;background:none;border:none;padding:2px;transition:color .15s}
 .fav-heart.on{color:#e74c3c}
+/* ── ROLEFY v5.0 ONBOARDING ─────────────────────────────────────────────── */
+#rfy-onboard{position:fixed;inset:0;z-index:99999;background:#F7F6F2;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;font-family:system-ui,sans-serif;overflow-y:auto;}
+#rfy-onboard.hidden{display:none;}
+#rfy-onboard.dark{background:#0E0E0F;}
+.rfy-ob-inner{width:100%;max-width:400px;}
+.rfy-logo-ob{text-align:center;margin-bottom:28px;}
+.rfy-logo-ob h1{font-size:26px;font-weight:800;letter-spacing:0.18em;text-transform:uppercase;color:#111;margin:0 0 4px;}
+.rfy-logo-ob .rfy-slogan{font-size:12px;color:#6B6B65;letter-spacing:0.04em;}
+#rfy-onboard.dark .rfy-logo-ob h1{color:#F0EFE8;}
+#rfy-onboard.dark .rfy-logo-ob .rfy-slogan{color:#A8A7A0;}
+.rfy-ob-label{font-size:9px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:#A8A7A2;margin:0 0 8px;}
+.rfy-ob-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px;}
+.rfy-ob-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
+.rfy-ob-card{border:0.5px solid rgba(0,0,0,0.12);border-radius:12px;padding:12px 10px;cursor:pointer;transition:all 0.15s;background:#fff;-webkit-tap-highlight-color:transparent;}
+.rfy-ob-card:hover{border-color:rgba(0,0,0,0.22);background:#F0EFF9;}
+.rfy-ob-card.sel{border:1.5px solid #5B4FD9;background:#EEEDFE;}
+.rfy-ob-card.sel .rfy-ob-ctitle{color:#3C3489;}
+.rfy-ob-card.sel .rfy-ob-sub{color:#7B70D4;}
+#rfy-onboard.dark .rfy-ob-card{background:#1A1A1C;border-color:rgba(255,255,255,0.1);}
+#rfy-onboard.dark .rfy-ob-card:hover{background:#222225;}
+#rfy-onboard.dark .rfy-ob-card.sel{border-color:#7C6FFF;background:rgba(124,111,255,0.14);}
+#rfy-onboard.dark .rfy-ob-card.sel .rfy-ob-ctitle{color:#C4BEFF;}
+#rfy-onboard.dark .rfy-ob-card.sel .rfy-ob-sub{color:#9A90F0;}
+.rfy-ob-icon{font-size:20px;margin-bottom:6px;}
+.rfy-ob-ctitle{font-size:12px;font-weight:600;color:#111110;margin:0 0 2px;}
+.rfy-ob-sub{font-size:10px;color:#6B6B65;margin:0;line-height:1.3;}
+#rfy-onboard.dark .rfy-ob-ctitle{color:#F0EFE8;}
+#rfy-onboard.dark .rfy-ob-sub{color:#A8A7A0;}
+.rfy-ob-btn{width:100%;padding:13px;border-radius:10px;border:none;background:#5B4FD9;color:#fff;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.2s;margin-top:6px;}
+.rfy-ob-btn:disabled{opacity:0.3;cursor:default;}
+.rfy-ob-btn:not(:disabled):hover{background:#4338CA;}
+.rfy-ob-theme{position:absolute;top:16px;right:16px;background:transparent;border:0.5px solid rgba(0,0,0,0.15);border-radius:20px;padding:6px 12px;font-size:11px;cursor:pointer;color:#6B6B65;font-family:system-ui,sans-serif;}
+#rfy-onboard.dark .rfy-ob-theme{border-color:rgba(255,255,255,0.18);color:#A8A7A0;}
 </style>
 </head>
 <body>
+
+<!-- ── ROLEFY v5.0 ONBOARDING OVERLAY ──────────────────────────────────── -->
+<div id="rfy-onboard">
+  <button class="rfy-ob-theme" onclick="rfyToggleTheme()" id="rfy-theme-btn">☾ Escuro</button>
+  <div class="rfy-ob-inner">
+    <div class="rfy-logo-ob">
+      <h1>ROLEFY</h1>
+      <div class="rfy-slogan">U Know Ur Role</div>
+    </div>
+
+    <div class="rfy-ob-label">Contexto</div>
+    <div class="rfy-ob-grid-3" style="margin-bottom:14px;">
+      <div class="rfy-ob-card" data-g="ctx" data-v="lazer" onclick="rfyPick(this)"><div class="rfy-ob-icon">🎉</div><p class="rfy-ob-ctitle">Lazer</p><p class="rfy-ob-sub">Amigos, saídas, cidade</p></div>
+      <div class="rfy-ob-card" data-g="ctx" data-v="trabalho" onclick="rfyPick(this)"><div class="rfy-ob-icon">💼</div><p class="rfy-ob-ctitle">Trabalho</p><p class="rfy-ob-sub">Equipes, empresas</p></div>
+      <div class="rfy-ob-card" data-g="ctx" data-v="happyhour" onclick="rfyPick(this)"><div class="rfy-ob-icon">🍻</div><p class="rfy-ob-ctitle">Happy Hour</p><p class="rfy-ob-sub">Entre o trabalho e o rolê</p></div>
+    </div>
+
+    <div class="rfy-ob-label">Formato</div>
+    <div class="rfy-ob-grid-3" style="margin-bottom:14px;">
+      <div class="rfy-ob-card" data-g="fmt" data-v="presencial" onclick="rfyPick(this)"><div class="rfy-ob-icon">📍</div><p class="rfy-ob-ctitle">Presencial</p><p class="rfy-ob-sub">Locais físicos, check-in</p></div>
+      <div class="rfy-ob-card" data-g="fmt" data-v="online" onclick="rfyPick(this)"><div class="rfy-ob-icon">💻</div><p class="rfy-ob-ctitle">Online</p><p class="rfy-ob-sub">Links, salas, plataformas</p></div>
+      <div class="rfy-ob-card" data-g="fmt" data-v="hibrido" onclick="rfyPick(this)"><div class="rfy-ob-icon">🔀</div><p class="rfy-ob-ctitle">Híbrido</p><p class="rfy-ob-sub">Remote, Room</p></div>
+    </div>
+
+    <div class="rfy-ob-label">Seu papel</div>
+    <div class="rfy-ob-grid-2" style="margin-bottom:14px;">
+      <div class="rfy-ob-card" data-g="role" data-v="participante" onclick="rfyPick(this)"><div class="rfy-ob-icon">👤</div><p class="rfy-ob-ctitle">Participante</p><p class="rfy-ob-sub">Recebeu um convite</p></div>
+      <div class="rfy-ob-card" data-g="role" data-v="proponente" onclick="rfyPick(this)"><div class="rfy-ob-icon">💡</div><p class="rfy-ob-ctitle">Proponente</p><p class="rfy-ob-sub">Tem uma ideia, quem topa?</p></div>
+      <div class="rfy-ob-card" data-g="role" data-v="organizador" onclick="rfyPick(this)"><div class="rfy-ob-icon">🎯</div><p class="rfy-ob-ctitle">Organizador</p><p class="rfy-ob-sub">Coordena tudo</p></div>
+      <div class="rfy-ob-card" data-g="role" data-v="comunidade" onclick="rfyPick(this)"><div class="rfy-ob-icon">🌐</div><p class="rfy-ob-ctitle">Comunidade</p><p class="rfy-ob-sub">Curadoria e gestão</p></div>
+    </div>
+
+    <button class="rfy-ob-btn" id="rfy-ob-cta" disabled onclick="rfyEnter()">Entrar no Rolefy</button>
+  </div>
+</div>
+<!-- ── FIM ONBOARDING ────────────────────────────────────────────────────── -->
+
 <div id="invite-page" style="display:none;min-height:100vh;background:#f5f4f0"></div>
 
 <!-- SHARE MODAL -->
@@ -732,6 +802,40 @@ mark{background:#fff3cd;color:#1a1a18;border-radius:3px;padding:0 2px}
 
   <!-- SETTINGS -->
   <div id="panel-cfg" class="cfg-panel">
+
+    <!-- ── CENTRIC MODE ─────────────────────────────────────────────────── -->
+    <div class="cfg-section" id="cfg-centric-section">
+      <div class="cfg-title">🌐 Centric Mode</div>
+      <div class="cfg-card">
+        <h4>Central de Operações</h4>
+        <p>Escolha o modo de operação. Cada modo roda de forma independente e pode ser integrado ao barramento conforme necessário.</p>
+        <div id="centric-modes-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px"></div>
+        <button onclick="openAddCentricMode()" style="width:100%;padding:8px;border-radius:8px;border:.5px dashed #ccc;background:transparent;font-size:12px;color:#888;cursor:pointer;font-family:inherit;">＋ Adicionar modo</button>
+      </div>
+
+      <!-- ADD MODE FORM (hidden by default) -->
+      <div id="centric-add-form" style="display:none;" class="cfg-card">
+        <h4>Novo modo</h4>
+        <input id="centric-new-icon" placeholder="Ícone (emoji)" style="width:60px;margin-bottom:8px;font-size:18px;text-align:center">
+        <input id="centric-new-name" placeholder="Nome do modo" style="margin-bottom:8px">
+        <input id="centric-new-url" placeholder="URL (https://...)" style="margin-bottom:8px">
+        <div style="display:flex;gap:8px">
+          <button onclick="saveCentricMode()" style="flex:1;padding:8px;border-radius:8px;border:none;background:#1a1a18;color:#fff;font-size:12px;cursor:pointer;font-family:inherit;">Salvar</button>
+          <button onclick="document.getElementById('centric-add-form').style.display='none'" style="flex:1;padding:8px;border-radius:8px;border:.5px solid #ccc;background:transparent;font-size:12px;cursor:pointer;font-family:inherit;">Cancelar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── CENTRIC IFRAME ────────────────────────────────────────────────── -->
+    <div id="centric-iframe-wrap" style="display:none;position:fixed;inset:0;z-index:9000;background:#fff;flex-direction:column;">
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:.5px solid #e5e4e0;background:#fff;flex-shrink:0;">
+        <button onclick="closeCentricMode()" style="background:none;border:none;font-size:18px;cursor:pointer;padding:0;line-height:1;">←</button>
+        <span id="centric-iframe-label" style="font-size:13px;font-weight:600;color:#1a1a18;flex:1"></span>
+        <span style="font-size:10px;color:#aaa" id="centric-iframe-url-label"></span>
+      </div>
+      <iframe id="centric-iframe" src="" style="flex:1;border:none;width:100%;height:100%;" allow="camera;microphone"></iframe>
+    </div>
+
     <div class="cfg-section">
       <div class="cfg-title">🤖 Inteligência Artificial</div>
       <div class="cfg-card">
@@ -898,7 +1002,7 @@ mark{background:#fff3cd;color:#1a1a18;border-radius:3px;padding:0 2px}
         </div>
       </div>
     </div>
-  <div style="text-align:center;padding:.75rem 0 1.5rem;font-size:11px;color:#ccc;letter-spacing:.03em">Rolefy v4.4.3</div>
+  <div style="text-align:center;padding:.75rem 0 1.5rem;font-size:11px;color:#ccc;letter-spacing:.03em">ROLEFY v5.0</div>
   </div>
 
   <!-- MONETIZE -->
@@ -1539,6 +1643,7 @@ let formSelectedCats={}, currentImageB64=null, extractedData=null, extractedTab=
 
 const DEFAULT_STATE = {
   origin:'',
+  rfy_context:'lazer', rfy_format:'presencial', rfy_role:'organizador',
   sponsored:null, affiliates:{}, influencers:[], favs:[], groups:[], people:[],
   menuItems:['roteiro','favs','cfg'],
   semana:[
@@ -1657,6 +1762,10 @@ function migrateState(s) {
   if(!s.affiliates)           s.affiliates={};
   if(s.sponsored===undefined) s.sponsored=null;
   if(s.origin===undefined)    s.origin='';
+  // v5.0 — perfil de onboarding
+  if(!s.rfy_context) s.rfy_context = localStorage.getItem('rfy_context')||'lazer';
+  if(!s.rfy_format)  s.rfy_format  = localStorage.getItem('rfy_format')||'presencial';
+  if(!s.rfy_role)    s.rfy_role    = localStorage.getItem('rfy_role')||'organizador';
   // migrate people
   (s.people||[]).forEach(p=>{
     if(!p.localStatuses) p.localStatuses=(p.locals||[]).map(id=>({id,status:'sim'}));
@@ -5994,7 +6103,7 @@ function showInvitePage(data){
         <!-- Card do rolê — aparece direto -->
         <div id="inv-event-card" style="margin-top:.5rem"></div>
       </div>
-      <div style="text-align:center;padding:1.5rem 0 .5rem;font-size:10px;color:#ccc">Rolefy v4.4.3</div>
+      <div style="text-align:center;padding:1.5rem 0 .5rem;font-size:10px;color:#ccc">ROLEFY v5.0</div>
 
     </div>`;
 
@@ -7173,6 +7282,205 @@ function inflMiniHTML(localId){
   }).join('');
 }
 
+const CENTRIC_STORAGE_KEY = 'rfy_centric_modes';
+const CENTRIC_ACTIVE_KEY  = 'rfy_centric_active';
+
+const CENTRIC_DEFAULTS = [
+  { id:'mode_1', num:1, icon:'📍', name:'Local',    url:'',                              locked:true,  desc:'App atual — local-centric' },
+  { id:'mode_2', num:2, icon:'🎯', name:'Role',     url:'',                              locked:true,  desc:'⚠️ Em construção — nova interface role-centric sendo desenvolvida' },
+  { id:'mode_3', num:3, icon:'📁', name:'Projects', url:'https://geriah-suite.vercel.app/', locked:false, desc:'Geriah Suite — independente' },
+];
+
+function getCentricModes(){
+  try {
+    const saved = JSON.parse(localStorage.getItem(CENTRIC_STORAGE_KEY));
+    if(!saved) return CENTRIC_DEFAULTS;
+    // Always restore locked modes from CENTRIC_DEFAULTS to prevent stale URLs
+    return saved.map(m => {
+      const def = CENTRIC_DEFAULTS.find(d => d.id === m.id);
+      return (def && def.locked) ? def : m;
+    });
+  } catch(e){ return CENTRIC_DEFAULTS; }
+}
+
+function saveCentricModes(modes){
+  localStorage.setItem(CENTRIC_STORAGE_KEY, JSON.stringify(modes));
+}
+
+function getActiveCentricId(){
+  return localStorage.getItem(CENTRIC_ACTIVE_KEY) || 'mode_1';
+}
+
+function setActiveCentricId(id){
+  localStorage.setItem(CENTRIC_ACTIVE_KEY, id);
+}
+
+function renderCentricModes(){
+  const modes   = getCentricModes();
+  const activeId = getActiveCentricId();
+  const list = document.getElementById('centric-modes-list');
+  if(!list) return;
+  list.innerHTML = modes.map(m => {
+    const isActive = m.id === activeId;
+    const isLocal  = m.id === 'mode_1';
+    return `
+    <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;border:${isActive?'1.5px solid #534AB7':'0.5px solid #e5e4e0'};background:${isActive?'#EEEDFE':'#fff'};cursor:pointer;transition:all .15s;" onclick="activateCentricMode('${m.id}')">
+      <span style="font-size:20px;width:28px;text-align:center;">${m.icon}</span>
+      <div style="flex:1;">
+        <div style="font-size:12px;font-weight:600;color:${isActive?'#3C3489':'#1a1a18'};margin-bottom:1px;">
+          <span style="font-size:9px;color:${isActive?'#534AB7':'#aaa'};font-weight:500;margin-right:6px;letter-spacing:.06em;">MODE ${m.num}</span>${m.name}
+          ${isActive?'<span style="font-size:9px;background:#534AB7;color:#fff;padding:1px 6px;border-radius:8px;margin-left:6px;">ativo</span>':''}
+        </div>
+        <div style="font-size:10px;color:#888;">${m.desc}</div>
+      </div>
+      ${!m.locked?`<button onclick="deleteCentricMode(event,'${m.id}')" style="background:none;border:none;color:#ccc;cursor:pointer;font-size:14px;padding:4px;" title="Remover">✕</button>`:''}
+      ${!isLocal&&m.url?`<button onclick="openCentricMode(event,'${m.id}')" style="background:#1a1a18;border:none;color:#fff;cursor:pointer;font-size:11px;padding:5px 10px;border-radius:7px;font-family:inherit;" title="Abrir">Abrir →</button>`:''}
+    </div>`;
+  }).join('');
+}
+
+function activateCentricMode(id){
+  setActiveCentricId(id);
+  renderCentricModes();
+  const modes = getCentricModes();
+  const mode  = modes.find(m => m.id === id);
+  if(!mode) return;
+  if(id === 'mode_1'){
+    closeCentricIframe();
+  } else if(mode.url && mode.url.trim() !== ''){
+    launchCentricIframe(mode);
+  } else {
+    closeCentricIframe();
+    if(id === 'mode_2'){
+      alert('🎯 Mode 2 — Role\n\nEm construção. A nova interface role-centric está sendo desenvolvida.');
+    }
+  }
+}
+
+function openCentricMode(e, id){
+  e.stopPropagation();
+  const modes = getCentricModes();
+  const mode  = modes.find(m => m.id === id);
+  if(mode && mode.url) launchCentricIframe(mode);
+}
+
+function launchCentricIframe(mode){
+  const wrap  = document.getElementById('centric-iframe-wrap');
+  const frame = document.getElementById('centric-iframe');
+  const label = document.getElementById('centric-iframe-label');
+  const urlLbl= document.getElementById('centric-iframe-url-label');
+  if(!wrap||!frame) return;
+  label.textContent  = `${mode.icon}  ${mode.name}`;
+  urlLbl.textContent = mode.url;
+  frame.src = mode.url;
+  wrap.style.display = 'flex';
+  // postMessage sessão — opcional, o sistema receptor decide se usa
+  frame.onload = () => {
+    try {
+      const session = {
+        type:    'RFY_SESSION',
+        user:    _supabaseSession?.user?.email || null,
+        userId:  _supabaseSession?.user?.id    || null,
+        role:    localStorage.getItem('rfy_role')    || null,
+        context: localStorage.getItem('rfy_context') || null,
+        format:  localStorage.getItem('rfy_format')  || null,
+        mode:    mode.id,
+      };
+      frame.contentWindow.postMessage(session, '*');
+    } catch(e){}
+  };
+}
+
+function closeCentricIframe(){
+  const wrap  = document.getElementById('centric-iframe-wrap');
+  const frame = document.getElementById('centric-iframe');
+  if(wrap)  wrap.style.display = 'none';
+  if(frame){ frame.src = 'about:blank'; setTimeout(()=>{ frame.src=''; },50); }
+}
+
+function closeCentricMode(){
+  closeCentricIframe();
+  setActiveCentricId('mode_1');
+  renderCentricModes();
+}
+
+function openAddCentricMode(){
+  document.getElementById('centric-add-form').style.display = 'block';
+  document.getElementById('centric-new-icon').value = '';
+  document.getElementById('centric-new-name').value = '';
+  document.getElementById('centric-new-url').value  = '';
+}
+
+function saveCentricMode(){
+  const icon = document.getElementById('centric-new-icon').value.trim() || '🔧';
+  const name = document.getElementById('centric-new-name').value.trim();
+  const url  = document.getElementById('centric-new-url').value.trim();
+  if(!name){ alert('Nome obrigatório.'); return; }
+  const modes = getCentricModes();
+  const num   = Math.max(...modes.map(m=>m.num)) + 1;
+  modes.push({ id:'mode_'+Date.now(), num, icon, name, url, locked:false, desc: url||'Sem URL definida' });
+  saveCentricModes(modes);
+  document.getElementById('centric-add-form').style.display = 'none';
+  renderCentricModes();
+}
+
+function deleteCentricMode(e, id){
+  e.stopPropagation();
+  if(!confirm('Remover este modo?')) return;
+  const modes = getCentricModes().filter(m => m.id !== id);
+  saveCentricModes(modes);
+  if(getActiveCentricId() === id) setActiveCentricId('mode_1');
+  renderCentricModes();
+}
+
+// ── ROLEFY v5.0 ONBOARDING ────────────────────────────────────────────────────
+(function(){
+  const ob = { ctx: null, fmt: null, role: null };
+  const LABELS = { lazer:'Lazer', trabalho:'Trabalho', happyhour:'Happy Hour', presencial:'Presencial', online:'Online', hibrido:'Híbrido', participante:'Participante', proponente:'Proponente', organizador:'Organizador', comunidade:'Comunidade' };
+  const ROLE_TO_LEVEL = { participante:'iniciante', proponente:'iniciante', organizador:'intermediario', comunidade:'avancado' };
+
+  // Já passou pelo onboarding antes? Pula.
+  if(localStorage.getItem('rfy_ob_done')==='1'){
+    document.getElementById('rfy-onboard').classList.add('hidden');
+    return;
+  }
+
+  window.rfyPick = function(el){
+    const g = el.dataset.g;
+    document.querySelectorAll('[data-g="'+g+'"]').forEach(c=>c.classList.remove('sel'));
+    el.classList.add('sel');
+    ob[g==='ctx'?'ctx':g==='fmt'?'fmt':'role'] = el.dataset.v;
+    const ready = ob.ctx && ob.fmt && ob.role;
+    const btn = document.getElementById('rfy-ob-cta');
+    btn.disabled = !ready;
+    if(ready) btn.textContent = 'Entrar · '+LABELS[ob.ctx]+' · '+LABELS[ob.fmt]+' · '+LABELS[ob.role];
+  };
+
+  window.rfyEnter = function(){
+    // Salva perfil
+    localStorage.setItem('rfy_context', ob.ctx);
+    localStorage.setItem('rfy_format',  ob.fmt);
+    localStorage.setItem('rfy_role',    ob.role);
+    localStorage.setItem('rfy_ob_done', '1');
+    // Mapeia papel → nível do app existente
+    const lvl = ROLE_TO_LEVEL[ob.role] || 'intermediario';
+    if(!getUserLevel()) setUserLevel(lvl);
+    // Esconde overlay
+    document.getElementById('rfy-onboard').classList.add('hidden');
+    // Atualiza state
+    state.rfy_context = ob.ctx;
+    state.rfy_format  = ob.fmt;
+    state.rfy_role    = ob.role;
+    persist();
+  };
+
+  window.rfyToggleTheme = function(){
+    const el = document.getElementById('rfy-onboard');
+    const dark = el.classList.toggle('dark');
+    document.getElementById('rfy-theme-btn').textContent = dark ? '☀ Claro' : '☾ Escuro';
+  };
+})();
+
 // ── INIT ──────────────────────────────────────────────────────────────────────
 loadPersisted(); // sempre primeiro — state precisa existir
 // Init cal drawer side
@@ -7188,8 +7496,10 @@ if(checkResponseMode()){
   loadApiKeys();
   loadPublicUrl();
   applyAdminState(); // sets menuItems correctly (with or without infl/mono)
+  renderCentricModes(); // v5.0 — Centric Mode
   renderAffinityBar();
   initOriginDisplay();
+  renderCentricModes();
   if(!getUserLevel()){
     // primeira vez — abre o guia como drawer
     qsAnswers={}; qsHistory=[]; qsStep=0;
