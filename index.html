@@ -7381,6 +7381,7 @@ function launchCentricIframe(mode){
         type:    'RFY_SESSION',
         user:    _supabaseSession?.user?.email || null,
         userId:  _supabaseSession?.user?.id    || null,
+        token:   _supabaseSession?.access_token || null,
         role:    localStorage.getItem('rfy_role')    || null,
         context: localStorage.getItem('rfy_context') || null,
         format:  localStorage.getItem('rfy_format')  || null,
