@@ -1580,20 +1580,37 @@ window.addEventListener('message', (e) => {
 async function saveToSupabase() {
   if(!_supabaseSession) return;
   try {
-    await fetch(SUPABASE_URL + '/rest/v1/roteiros', {
-      method: 'POST',
+    // PATCH faz update direto no registro existente (sem conflito 409)
+    const r = await fetch(SUPABASE_URL + '/rest/v1/roteiros?user_id=eq.' + _supabaseSession.user.id, {
+      method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
         'apikey': _supabaseSession.anon_key || SUPABASE_ANON_KEY,
         'Authorization': 'Bearer ' + _supabaseSession.access_token,
-        'Prefer': 'resolution=merge-duplicates,return=minimal'
+        'Prefer': 'return=minimal'
       },
       body: JSON.stringify({
-        user_id: _supabaseSession.user.id,
         data: state,
         updated_at: new Date().toISOString()
       })
     });
+    // Se não existe ainda (0 rows afetadas), faz POST para criar
+    if(r.status === 404 || r.headers.get('content-range') === '*/0') {
+      await fetch(SUPABASE_URL + '/rest/v1/roteiros', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': _supabaseSession.anon_key || SUPABASE_ANON_KEY,
+          'Authorization': 'Bearer ' + _supabaseSession.access_token,
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify({
+          user_id: _supabaseSession.user.id,
+          data: state,
+          updated_at: new Date().toISOString()
+        })
+      });
+    }
     console.log('Roteiro salvo no Supabase');
   } catch(e) { console.warn('saveToSupabase failed', e); }
 }
