@@ -4070,7 +4070,7 @@ async function chatSendText(text){
         headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},
         body:JSON.stringify({
           model:getGroqModel(),
-          max_tokens:500,
+          max_tokens:1000,
           response_format:{type:'json_object'},
           messages:[{role:'system',content:systemPrompt},...msgs]
         })
@@ -4084,7 +4084,7 @@ async function chatSendText(text){
         headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
         body:JSON.stringify({
           model:'claude-sonnet-4-20250514',
-          max_tokens:500,
+          max_tokens:1000,
           system:systemPrompt,
           messages:msgs
         })
