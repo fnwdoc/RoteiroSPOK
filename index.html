@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Rolefy — Roteiro SP v4.1</title>
+<title>Rolefy — Roteiro SP v4.2</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f4f0;color:#1a1a18;min-height:100vh;-webkit-tap-highlight-color:transparent}
@@ -643,6 +643,30 @@ mark{background:#fff3cd;color:#1a1a18;border-radius:3px;padding:0 2px}
 </head>
 <body>
 <div id="invite-page" style="display:none;min-height:100vh;background:#f5f4f0"></div>
+
+<!-- SHARE MODAL -->
+<div id="share-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;align-items:center;justify-content:center">
+  <div style="background:#fff;border-radius:16px;padding:24px;width:90%;max-width:360px;box-shadow:0 8px 32px rgba(0,0,0,0.2)">
+    <div style="font-size:16px;font-weight:700;margin-bottom:16px">🔗 Compartilhar roteiro</div>
+    <div style="font-size:13px;color:#555;margin-bottom:12px">Escolha o que incluir no link:</div>
+    <label style="display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:13px"><input type="checkbox" id="share-semana" checked> Roteiro da semana</label>
+    <label style="display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:13px"><input type="checkbox" id="share-fds" checked> Roteiro do fim de semana</label>
+    <label style="display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:13px"><input type="checkbox" id="share-people"> Pessoas (Match)</label>
+    <label style="display:flex;align-items:center;gap:8px;margin-bottom:16px;font-size:13px"><input type="checkbox" id="share-groups"> Grupos</label>
+    <div id="share-link-box" style="display:none;margin-bottom:12px">
+      <div style="font-size:11px;color:#888;margin-bottom:4px">Link gerado:</div>
+      <div style="display:flex;gap:6px">
+        <input id="share-link-input" readonly style="flex:1;font-size:11px;padding:8px;border-radius:8px;border:.5px solid #ddd;background:#f5f4f0;color:#333">
+        <button onclick="copyShareLink()" style="padding:8px 12px;border-radius:8px;background:#1a1a18;color:#fff;border:none;font-size:12px;cursor:pointer">Copiar</button>
+      </div>
+    </div>
+    <div id="share-status" style="font-size:12px;color:#185FA5;margin-bottom:10px;display:none"></div>
+    <div style="display:flex;gap:8px">
+      <button onclick="closeShareModal()" style="flex:1;padding:10px;border-radius:10px;border:.5px solid #ddd;background:#f5f4f0;font-size:13px;cursor:pointer">Cancelar</button>
+      <button onclick="generateShareLink()" style="flex:1;padding:10px;border-radius:10px;border:none;background:#185FA5;color:#fff;font-size:13px;font-weight:600;cursor:pointer">Gerar link</button>
+    </div>
+  </div>
+</div>
 <div class="app">
   <div class="top-bar">
     <div class="app-title">
@@ -841,6 +865,7 @@ mark{background:#fff3cd;color:#1a1a18;border-radius:3px;padding:0 2px}
         <button class="action-btn" onclick="document.getElementById('import-input').click()">📂 Importar roteiro (.json)</button>
         <input type="file" id="import-input" accept=".json" style="display:none" onchange="importFromFile(event)"/>
         <button class="action-btn danger" onclick="clearSavedData()">🗑 Apagar dados salvos</button>
+        <button class="action-btn" onclick="openShareModal()" style="background:#185FA5;color:#fff;border-color:#185FA5">🔗 Compartilhar roteiro</button>
       </div>
     </div>
 
@@ -873,7 +898,7 @@ mark{background:#fff3cd;color:#1a1a18;border-radius:3px;padding:0 2px}
         </div>
       </div>
     </div>
-  <div style="text-align:center;padding:.75rem 0 1.5rem;font-size:11px;color:#ccc;letter-spacing:.03em">Rolefy v4.1</div>
+  <div style="text-align:center;padding:.75rem 0 1.5rem;font-size:11px;color:#ccc;letter-spacing:.03em">Rolefy v4.2</div>
   </div>
 
   <!-- MONETIZE -->
@@ -1544,6 +1569,9 @@ window.addEventListener('message', (e) => {
   if(e.data && e.data.type === 'SUPABASE_SESSION') {
     _supabaseSession = e.data.session;
     loadFromSupabase();
+    // Verifica share pendente (quando sessão chega depois do link ser aberto)
+    const pendingShare = sessionStorage.getItem('pending_share');
+    if(pendingShare) { sessionStorage.removeItem('pending_share'); loadSharedRoteiro(pendingShare); }
   }
 });
 
@@ -5911,7 +5939,7 @@ function showInvitePage(data){
         <!-- Card do rolê — aparece direto -->
         <div id="inv-event-card" style="margin-top:.5rem"></div>
       </div>
-      <div style="text-align:center;padding:1.5rem 0 .5rem;font-size:10px;color:#ccc">Rolefy v4.1</div>
+      <div style="text-align:center;padding:1.5rem 0 .5rem;font-size:10px;color:#ccc">Rolefy v4.2</div>
 
     </div>`;
 
@@ -7101,6 +7129,7 @@ if(checkResponseMode()){
 } else {
   // modo normal
   render();
+  checkShareParam();
   loadApiKeys();
   loadPublicUrl();
   applyAdminState(); // sets menuItems correctly (with or without infl/mono)
@@ -7118,6 +7147,102 @@ if(checkResponseMode()){
       if(badge) badge.classList.add('show');
     }
   }
+}
+
+// ── SHARE ROTEIRO ─────────────────────────────────────────────────────────────
+function openShareModal() {
+  if(!_supabaseSession) { alert('Você precisa estar logado para compartilhar.'); return; }
+  document.getElementById('share-modal').style.display = 'flex';
+  document.getElementById('share-link-box').style.display = 'none';
+  document.getElementById('share-status').style.display = 'none';
+  document.getElementById('share-link-input').value = '';
+}
+
+function closeShareModal() {
+  document.getElementById('share-modal').style.display = 'none';
+}
+
+async function generateShareLink() {
+  if(!_supabaseSession) return;
+  const btn = document.querySelector('#share-modal button[onclick="generateShareLink()"]');
+  btn.textContent = 'Gerando...'; btn.disabled = true;
+  const payload = {};
+  if(document.getElementById('share-semana').checked) payload.semana = state.semana;
+  if(document.getElementById('share-fds').checked) payload.fds = state.fds;
+  if(document.getElementById('share-people').checked) payload.people = state.people;
+  if(document.getElementById('share-groups').checked) payload.groups = state.groups;
+  try {
+    const r = await fetch(SUPABASE_URL + '/rest/v1/shared_roteiros', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': _supabaseSession.anon_key || SUPABASE_ANON_KEY,
+        'Authorization': 'Bearer ' + _supabaseSession.access_token,
+        'Prefer': 'return=representation'
+      },
+      body: JSON.stringify({ owner_id: _supabaseSession.user.id, data: payload })
+    });
+    if(!r.ok) throw new Error('Erro ao gerar link');
+    const rows = await r.json();
+    const id = rows[0].id;
+    const link = window.location.origin + window.location.pathname + '?share=' + id;
+    document.getElementById('share-link-input').value = link;
+    document.getElementById('share-link-box').style.display = 'block';
+    const st = document.getElementById('share-status');
+    st.style.display = 'block'; st.textContent = '✅ Link válido por 30 dias';
+  } catch(e) {
+    const st = document.getElementById('share-status');
+    st.style.display = 'block'; st.style.color = '#c0392b'; st.textContent = '❌ Erro ao gerar link. Tente novamente.';
+  }
+  btn.textContent = 'Gerar link'; btn.disabled = false;
+}
+
+function copyShareLink() {
+  const input = document.getElementById('share-link-input');
+  navigator.clipboard.writeText(input.value).then(() => {
+    const btn = document.querySelector('#share-modal button[onclick="copyShareLink()"]');
+    btn.textContent = '✅'; setTimeout(() => { btn.textContent = 'Copiar'; }, 2000);
+  });
+}
+
+async function checkShareParam() {
+  const params = new URLSearchParams(window.location.search);
+  const shareId = params.get('share');
+  if(!shareId) return;
+  if(!_supabaseSession) {
+    sessionStorage.setItem('pending_share', shareId);
+    return;
+  }
+  loadSharedRoteiro(shareId);
+}
+
+async function loadSharedRoteiro(shareId) {
+  try {
+    const r = await fetch(SUPABASE_URL + '/rest/v1/shared_roteiros?id=eq.' + shareId + '&select=data', {
+      headers: {
+        'apikey': _supabaseSession.anon_key || SUPABASE_ANON_KEY,
+        'Authorization': 'Bearer ' + _supabaseSession.access_token,
+      }
+    });
+    if(!r.ok) throw new Error();
+    const rows = await r.json();
+    if(!rows || !rows.length) { alert('Link inválido ou expirado.'); return; }
+    const shared = rows[0].data;
+    const parts = [];
+    if(shared.semana) parts.push('roteiro da semana');
+    if(shared.fds) parts.push('fim de semana');
+    if(shared.people) parts.push('pessoas');
+    if(shared.groups) parts.push('grupos');
+    const msg = 'Alguém compartilhou com você: ' + parts.join(', ') + '.\n\nDeseja importar para o seu roteiro?\n⚠️ Os dados existentes serão mesclados.';
+    if(!confirm(msg)) return;
+    if(shared.semana) state.semana = [...(state.semana||[]), ...shared.semana];
+    if(shared.fds) state.fds = [...(state.fds||[]), ...shared.fds];
+    if(shared.people) state.people = [...(state.people||[]), ...shared.people];
+    if(shared.groups) state.groups = [...(state.groups||[]), ...shared.groups];
+    persist(); render(); renderBottomNav();
+    window.history.replaceState(null, '', window.location.pathname);
+    alert('✅ Roteiro importado com sucesso!');
+  } catch(e) { alert('Erro ao carregar roteiro compartilhado.'); }
 }
 </script>
 </body>
