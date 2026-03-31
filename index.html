@@ -1,10 +1,9 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ROLEFY v5.0 — U Know Ur Role</title>
+<title>ROLEFY v5.1 — U Know Ur Role</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f4f0;color:#1a1a18;min-height:100vh;-webkit-tap-highlight-color:transparent}
@@ -639,7 +638,14 @@ mark{background:#fff3cd;color:#1a1a18;border-radius:3px;padding:0 2px}
 .fav-remove:hover{color:#c0392b}
 .fav-heart{font-size:15px;cursor:pointer;color:#ddd;flex-shrink:0;background:none;border:none;padding:2px;transition:color .15s}
 .fav-heart.on{color:#e74c3c}
-/* ── ROLEFY v5.0 ONBOARDING ─────────────────────────────────────────────── */
+/* ── MODE 2 CARDS ───────────────────────────────────────────────────────── */
+.m2-card{border:.5px solid #e5e4e0;border-radius:10px;padding:10px 8px;cursor:pointer;transition:all .15s;background:#fff;text-align:center;}
+.m2-card:hover{border-color:#aaa;background:#F7F6F2;}
+.m2-card.m2-sel{border:1.5px solid #5B4FD9;background:#EEEDFE;}
+.m2-card.m2-sel div{color:#3C3489!important;}
+.m2-panel-btn{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:9px;border:.5px solid #e5e4e0;background:#F7F6F2;font-size:12px;font-family:inherit;cursor:pointer;width:100%;text-align:left;transition:background .15s;}
+.m2-panel-btn:hover{background:#EEEDFE;border-color:#AFA9EC;}
+/* ── ROLEFY v5.1 ONBOARDING ─────────────────────────────────────────────── */
 #rfy-onboard{position:fixed;inset:0;z-index:99999;background:#F7F6F2;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;font-family:system-ui,sans-serif;overflow-y:auto;}
 #rfy-onboard.hidden{display:none;}
 #rfy-onboard.dark{background:#0E0E0F;}
@@ -676,7 +682,7 @@ mark{background:#fff3cd;color:#1a1a18;border-radius:3px;padding:0 2px}
 </head>
 <body>
 
-<!-- ── ROLEFY v5.0 ONBOARDING OVERLAY ──────────────────────────────────── -->
+<!-- ── ROLEFY v5.1 ONBOARDING OVERLAY ──────────────────────────────────── -->
 <div id="rfy-onboard">
   <button class="rfy-ob-theme" onclick="rfyToggleTheme()" id="rfy-theme-btn">☾ Escuro</button>
   <div class="rfy-ob-inner">
@@ -836,6 +842,99 @@ mark{background:#fff3cd;color:#1a1a18;border-radius:3px;padding:0 2px}
       <iframe id="centric-iframe" src="" style="flex:1;border:none;width:100%;height:100%;" allow="camera;microphone"></iframe>
     </div>
 
+    <!-- ── MODE 2 — ROLE-CENTRIC GUI v5.1 ──────────────────────────────────── -->
+    <!-- ── MODE 2 — ROLE-CENTRIC v5.1 ────────────────────────────────────────── -->
+
+    <!-- SHELL do Mode 2 — container principal -->
+    <div id="rfy-mode2" style="display:none;position:fixed;inset:0;z-index:9000;background:#F7F6F2;font-family:system-ui,sans-serif;">
+
+      <!-- HEADER fixo -->
+      <div id="m2-header" style="position:absolute;top:0;left:0;right:0;height:48px;display:flex;align-items:center;gap:10px;padding:0 14px;border-bottom:.5px solid #e5e4e0;background:#fff;z-index:10;">
+        <button onclick="closeMode2()" style="background:none;border:none;font-size:18px;cursor:pointer;padding:0;line-height:1;">←</button>
+        <span style="font-size:13px;font-weight:700;letter-spacing:.08em;color:#1a1a18;flex:1;">ROLEFY <span style="font-size:10px;font-weight:400;color:#aaa;letter-spacing:.04em;">MODE 2 · ROLE</span></span>
+        <span id="m2-role-badge" style="font-size:10px;padding:3px 8px;border-radius:10px;background:#EEEDFE;color:#534AB7;font-weight:500;display:none;"></span>
+      </div>
+
+      <!-- MODAL de entrada — aparece ao abrir Mode 2 -->
+      <div id="m2-modal-wrap" style="position:absolute;inset:0;top:48px;display:flex;align-items:center;justify-content:center;background:rgba(247,246,242,0.96);z-index:8;padding:16px;">
+        <div style="background:#fff;border:.5px solid #e5e4e0;border-radius:18px;padding:22px 20px;width:100%;max-width:360px;max-height:calc(100vh - 120px);overflow-y:auto;">
+          <div style="text-align:center;margin-bottom:20px;">
+            <div style="font-size:22px;font-weight:800;letter-spacing:.14em;color:#1a1a18;">ROLEFY</div>
+            <div style="font-size:11px;color:#888;letter-spacing:.04em;margin-top:2px;">U Know Ur Role</div>
+          </div>
+
+          <!-- Contexto -->
+          <div style="font-size:9px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:#bbb;margin-bottom:8px;">Contexto</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-bottom:14px;">
+            <div class="m2-card" data-g="ctx" data-v="lazer" onclick="m2Pick(this)"><div style="font-size:18px;margin-bottom:4px;">🎉</div><div style="font-size:11px;font-weight:600;">Lazer</div><div style="font-size:9px;color:#888;">Amigos, cidade</div></div>
+            <div class="m2-card" data-g="ctx" data-v="trabalho" onclick="m2Pick(this)"><div style="font-size:18px;margin-bottom:4px;">💼</div><div style="font-size:11px;font-weight:600;">Trabalho</div><div style="font-size:9px;color:#888;">Equipes, clientes</div></div>
+            <div class="m2-card" data-g="ctx" data-v="happyhour" onclick="m2Pick(this)"><div style="font-size:18px;margin-bottom:4px;">🍻</div><div style="font-size:11px;font-weight:600;">Happy Hour</div><div style="font-size:9px;color:#888;">Entre os dois</div></div>
+          </div>
+
+          <!-- Formato -->
+          <div style="font-size:9px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:#bbb;margin-bottom:8px;">Formato</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-bottom:14px;">
+            <div class="m2-card" data-g="fmt" data-v="presencial" onclick="m2Pick(this)"><div style="font-size:18px;margin-bottom:4px;">📍</div><div style="font-size:11px;font-weight:600;">Presencial</div><div style="font-size:9px;color:#888;">Locais físicos</div></div>
+            <div class="m2-card" data-g="fmt" data-v="online" onclick="m2Pick(this)"><div style="font-size:18px;margin-bottom:4px;">💻</div><div style="font-size:11px;font-weight:600;">Online</div><div style="font-size:9px;color:#888;">Links, salas</div></div>
+            <div class="m2-card" data-g="fmt" data-v="hibrido" onclick="m2Pick(this)"><div style="font-size:18px;margin-bottom:4px;">🔀</div><div style="font-size:11px;font-weight:600;">Híbrido</div><div style="font-size:9px;color:#888;">Remote, Room</div></div>
+          </div>
+
+          <!-- Papel -->
+          <div style="font-size:9px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:#bbb;margin-bottom:8px;">Seu papel</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:18px;">
+            <div class="m2-card" data-g="role" data-v="participante" onclick="m2Pick(this)"><div style="font-size:18px;margin-bottom:4px;">👤</div><div style="font-size:11px;font-weight:600;">Participante</div><div style="font-size:9px;color:#888;">Recebeu convite</div></div>
+            <div class="m2-card" data-g="role" data-v="proponente" onclick="m2Pick(this)"><div style="font-size:18px;margin-bottom:4px;">💡</div><div style="font-size:11px;font-weight:600;">Proponente</div><div style="font-size:9px;color:#888;">Tem uma ideia</div></div>
+            <div class="m2-card" data-g="role" data-v="organizador" onclick="m2Pick(this)"><div style="font-size:18px;margin-bottom:4px;">🎯</div><div style="font-size:11px;font-weight:600;">Organizador</div><div style="font-size:9px;color:#888;">Coordena tudo</div></div>
+            <div class="m2-card" data-g="role" data-v="comunidade" onclick="m2Pick(this)"><div style="font-size:18px;margin-bottom:4px;">🌐</div><div style="font-size:11px;font-weight:600;">Comunidade</div><div style="font-size:9px;color:#888;">Curadoria e gestão</div></div>
+          </div>
+
+          <button id="m2-enter-btn" onclick="m2Enter()" disabled style="width:100%;padding:13px;border-radius:10px;border:none;background:#5B4FD9;color:#fff;font-size:14px;font-weight:600;cursor:pointer;opacity:.3;transition:opacity .2s;">Entrar</button>
+        </div>
+      </div>
+
+      <!-- PAINEL ESQUERDO — aparece após confirmar -->
+      <div id="m2-panel" style="display:none;position:absolute;top:48px;left:0;bottom:0;width:220px;background:#fff;border-right:.5px solid #e5e4e0;overflow-y:auto;z-index:5;">
+        <div style="padding:14px 12px 8px;">
+          <div style="font-size:9px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:#bbb;margin-bottom:12px;">Seu perfil</div>
+
+          <!-- Perfil atual -->
+          <div id="m2-panel-profile" style="margin-bottom:14px;"></div>
+
+          <div style="font-size:9px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:#bbb;margin-bottom:8px;">Navegar</div>
+          <div id="m2-panel-actions" style="display:flex;flex-direction:column;gap:5px;margin-bottom:14px;"></div>
+
+          <div style="border-top:.5px solid #f0efe8;padding-top:12px;">
+            <button onclick="m2ChangeProfile()" style="width:100%;padding:8px;border-radius:8px;border:.5px solid #e5e4e0;background:transparent;font-size:11px;color:#888;cursor:pointer;font-family:inherit;">↺ Mudar perfil</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- CENTRO — conteúdo principal após confirmar -->
+      <div id="m2-center" style="display:none;position:absolute;top:48px;left:220px;right:0;bottom:0;overflow-y:auto;padding:20px 16px;">
+        <!-- Welcome -->
+        <div id="m2-welcome" style="background:#fff;border:.5px solid #e5e4e0;border-radius:14px;padding:18px;margin-bottom:14px;">
+          <div id="m2-welcome-icon" style="font-size:32px;margin-bottom:8px;"></div>
+          <div id="m2-welcome-title" style="font-size:17px;font-weight:700;color:#1a1a18;margin-bottom:4px;"></div>
+          <div id="m2-welcome-sub" style="font-size:12px;color:#888;margin-bottom:0;"></div>
+        </div>
+        <!-- Assistente -->
+        <div style="background:#fff;border:.5px solid #e5e4e0;border-radius:14px;overflow:hidden;">
+          <div style="padding:12px 14px;border-bottom:.5px solid #f0efe8;display:flex;align-items:center;gap:8px;">
+            <span style="font-size:14px;">✦</span>
+            <span style="font-size:12px;font-weight:600;color:#1a1a18;">Assistente Rolefy</span>
+          </div>
+          <div id="m2-chat-messages" style="padding:12px 14px;min-height:80px;max-height:320px;overflow-y:auto;font-size:13px;color:#444;line-height:1.6;"></div>
+          <div style="padding:8px;border-top:.5px solid #f0efe8;display:flex;gap:8px;">
+            <input id="m2-chat-input" type="text" placeholder="Pergunte ou peça algo..." style="flex:1;padding:9px 12px;border-radius:10px;border:.5px solid #e5e4e0;font-size:13px;font-family:inherit;background:#F7F6F2;outline:none;" onkeydown="if(event.key==='Enter')sendMode2Chat()">
+            <button onclick="sendMode2Chat()" style="padding:9px 14px;border-radius:10px;border:none;background:#1a1a18;color:#fff;font-size:13px;cursor:pointer;">→</button>
+          </div>
+        </div>
+        <div style="height:24px;"></div>
+      </div>
+
+    </div>
+    <!-- ── FIM MODE 2 ────────────────────────────────────────────────────────── -->
+
     <div class="cfg-section">
       <div class="cfg-title">🤖 Inteligência Artificial</div>
       <div class="cfg-card">
@@ -986,6 +1085,9 @@ mark{background:#fff3cd;color:#1a1a18;border-radius:3px;padding:0 2px}
           <div id="cfg-admin-err" style="font-size:11px;color:#c0392b;margin-top:5px;display:none">Senha incorreta.</div>
         </div>
         <div id="cfg-admin-unlocked" style="display:none">
+          <div style="margin-bottom:10px;">
+            <button onclick="labToggleOn()" style="width:100%;padding:8px;border-radius:8px;border:.5px solid #534AB7;background:#EEEDFE;color:#534AB7;font-size:12px;cursor:pointer;font-family:inherit;font-weight:600;">🔬 Ativar modo Lab</button>
+          </div>
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
             <span style="font-size:16px">✅</span>
             <span style="font-size:13px;font-weight:600;color:#2e7d32">Modo admin ativo</span>
@@ -1002,7 +1104,53 @@ mark{background:#fff3cd;color:#1a1a18;border-radius:3px;padding:0 2px}
         </div>
       </div>
     </div>
-  <div style="text-align:center;padding:.75rem 0 1.5rem;font-size:11px;color:#ccc;letter-spacing:.03em">ROLEFY v5.0</div>
+  <!-- ── 🔬 LAB — PAINEL DE DESENVOLVIMENTO ──────────────────────────────── -->
+  <div class="cfg-section" id="cfg-lab-section" style="display:none;">
+    <div class="cfg-title">🔬 Lab — Interações</div>
+    <div class="cfg-card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <span style="font-size:12px;color:#888;">Registro de uso do Mode 2</span>
+        <button onclick="labLoad()" style="padding:5px 10px;border-radius:8px;border:.5px solid #ddd;background:transparent;font-size:11px;cursor:pointer;font-family:inherit;">↺ Atualizar</button>
+      </div>
+      <div id="lab-list" style="display:flex;flex-direction:column;gap:8px;max-height:400px;overflow-y:auto;"></div>
+      <div id="lab-empty" style="font-size:12px;color:#bbb;text-align:center;padding:20px 0;display:none;">Nenhuma interação ainda.</div>
+    </div>
+    <div class="cfg-card" style="margin-top:8px;">
+      <h4 style="margin-bottom:8px;">Desligar modo Lab</h4>
+      <button onclick="labToggleOff()" style="width:100%;padding:8px;border-radius:8px;border:.5px solid #e5e4e0;background:transparent;font-size:12px;color:#888;cursor:pointer;font-family:inherit;">⏸ Suspender Lab</button>
+    </div>
+  </div>
+
+  <!-- MODAL de edição de interação -->
+  <div id="lab-edit-modal" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;padding:16px;">
+    <div style="background:#fff;border-radius:14px;padding:20px;width:100%;max-width:360px;">
+      <div style="font-size:13px;font-weight:600;color:#1a1a18;margin-bottom:14px;">✏️ Avaliar interação</div>
+      <input type="hidden" id="lab-edit-id">
+      <div style="font-size:11px;color:#888;margin-bottom:4px;">Comentário / Insight</div>
+      <textarea id="lab-edit-comment" rows="3" style="width:100%;padding:8px;border-radius:8px;border:.5px solid #ddd;font-size:12px;font-family:inherit;resize:none;margin-bottom:10px;" placeholder="O que essa interação sugere?"></textarea>
+      <div style="font-size:11px;color:#888;margin-bottom:4px;">Task</div>
+      <input type="text" id="lab-edit-task" placeholder="Ex: Adicionar tela de grupos no Mode 2" style="width:100%;padding:8px;border-radius:8px;border:.5px solid #ddd;font-size:12px;font-family:inherit;margin-bottom:10px;">
+      <div style="font-size:11px;color:#888;margin-bottom:6px;">Prioridade</div>
+      <div style="display:flex;gap:6px;margin-bottom:10px;">
+        <button class="lab-pri-btn" data-v="baixa"  onclick="labSetPri(this)" style="flex:1;padding:7px;border-radius:8px;border:.5px solid #ddd;background:transparent;font-size:11px;cursor:pointer;font-family:inherit;">🟢 Baixa</button>
+        <button class="lab-pri-btn" data-v="media"  onclick="labSetPri(this)" style="flex:1;padding:7px;border-radius:8px;border:.5px solid #ddd;background:transparent;font-size:11px;cursor:pointer;font-family:inherit;">🟡 Média</button>
+        <button class="lab-pri-btn" data-v="alta"   onclick="labSetPri(this)" style="flex:1;padding:7px;border-radius:8px;border:.5px solid #ddd;background:transparent;font-size:11px;cursor:pointer;font-family:inherit;">🔴 Alta</button>
+      </div>
+      <div style="font-size:11px;color:#888;margin-bottom:6px;">Status</div>
+      <select id="lab-edit-status" style="width:100%;padding:8px;border-radius:8px;border:.5px solid #ddd;font-size:12px;font-family:inherit;margin-bottom:14px;">
+        <option value="novo">🆕 Novo</option>
+        <option value="avaliando">🔍 Avaliando</option>
+        <option value="implementar">✅ Implementar</option>
+        <option value="descartado">❌ Descartado</option>
+      </select>
+      <div style="display:flex;gap:8px;">
+        <button onclick="labSaveEdit()" style="flex:1;padding:10px;border-radius:8px;border:none;background:#1a1a18;color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">Salvar</button>
+        <button onclick="document.getElementById('lab-edit-modal').style.display='none'" style="flex:1;padding:10px;border-radius:8px;border:.5px solid #ddd;background:transparent;font-size:13px;cursor:pointer;font-family:inherit;">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <div style="text-align:center;padding:.75rem 0 1.5rem;font-size:11px;color:#ccc;letter-spacing:.03em">ROLEFY v5.1</div>
   </div>
 
   <!-- MONETIZE -->
@@ -5863,6 +6011,7 @@ function checkResponseMode(){
     // Load app normally first, then auto-import
     render(); loadApiKeys(); loadPublicUrl(); applyAdminState(); renderAffinityBar(); initOriginDisplay();
     if(!getUserLevel()) setUserLevel('intermediario');
+  labInitSection();
 
     const data = decodeInviteStr(resp);
     if(!data||!data.nome) return false;
@@ -6103,7 +6252,7 @@ function showInvitePage(data){
         <!-- Card do rolê — aparece direto -->
         <div id="inv-event-card" style="margin-top:.5rem"></div>
       </div>
-      <div style="text-align:center;padding:1.5rem 0 .5rem;font-size:10px;color:#ccc">ROLEFY v5.0</div>
+      <div style="text-align:center;padding:1.5rem 0 .5rem;font-size:10px;color:#ccc">ROLEFY v5.1</div>
 
     </div>`;
 
@@ -7347,13 +7496,390 @@ function activateCentricMode(id){
   if(!mode) return;
   if(id === 'mode_1'){
     closeCentricIframe();
-  } else if(mode.url && mode.url.trim() !== ''){
-    launchCentricIframe(mode);
-  } else {
+    closeMode2();
+  } else if(id === 'mode_2'){
     closeCentricIframe();
-    if(id === 'mode_2'){
-      alert('🎯 Mode 2 — Role\n\nEm construção. A nova interface role-centric está sendo desenvolvida.');
+    openMode2();
+  } else if(mode.url && mode.url.trim() !== ''){
+    closeMode2();
+    launchCentricIframe(mode);
+  }
+}
+
+// ── MODE 2 — ROLE-CENTRIC ────────────────────────────────────────────────────
+// ── LAB — SISTEMA DE INTERAÇÕES v5.1 ────────────────────────────────────────
+const RFY_OWNER_ID = '90331352-f1fe-4b48-94ec-cffbfd0f8da1';
+const LAB_DEV_KEY  = 'sp_dev_mode';
+
+function labIsDevMode(){ return localStorage.getItem(LAB_DEV_KEY) === '1'; }
+
+function labToggleOn(){
+  localStorage.setItem(LAB_DEV_KEY, '1');
+  const s = document.getElementById('cfg-lab-section');
+  if(s){ s.style.display = 'block'; labLoad(); }
+}
+
+function labToggleOff(){
+  localStorage.removeItem(LAB_DEV_KEY);
+  const s = document.getElementById('cfg-lab-section');
+  if(s) s.style.display = 'none';
+}
+
+function labInitSection(){
+  const s = document.getElementById('cfg-lab-section');
+  if(!s) return;
+  if(labIsDevMode()){ s.style.display = 'block'; labLoad(); }
+  else s.style.display = 'none';
+}
+
+async function labTrack(role, ctx, fmt, mode){
+  const userId = _supabaseSession?.user?.id || null;
+  if(!userId) return;
+  const isOwner = userId === RFY_OWNER_ID;
+  try {
+    await fetch(`${SUPABASE_URL}/rest/v1/rfy_interactions`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': `Bearer ${_supabaseSession?.access_token || SUPABASE_ANON_KEY}`,
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify({
+        user_id:  userId,
+        email:    _supabaseSession?.user?.email || null,
+        role, context: ctx, format: fmt, mode,
+        is_owner: isOwner
+      })
+    });
+    console.log('[Lab] Interação registrada:', role, ctx, fmt);
+    // Notifica badge no Config se for dev mode
+    if(labIsDevMode()) labUpdateBadge();
+  } catch(e){ console.warn('[Lab] Erro ao registrar:', e); }
+}
+
+function labUpdateBadge(){
+  const title = document.querySelector('#cfg-lab-section .cfg-title');
+  if(title && !title.dataset.badged){
+    title.dataset.badged = '1';
+    title.innerHTML = '🔬 Lab — Interações <span style="font-size:10px;background:#534AB7;color:#fff;padding:2px 6px;border-radius:8px;margin-left:6px;">novo</span>';
+  }
+}
+
+async function labLoad(){
+  const list  = document.getElementById('lab-list');
+  const empty = document.getElementById('lab-empty');
+  if(!list) return;
+  list.innerHTML = '<div style="font-size:12px;color:#bbb;text-align:center;padding:12px;">Carregando...</div>';
+  try {
+    const res  = await fetch(`${SUPABASE_URL}/rest/v1/rfy_interactions?order=created_at.desc&limit=50`, {
+      headers: {
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': `Bearer ${_supabaseSession?.access_token || SUPABASE_ANON_KEY}`
+      }
+    });
+    const rows = await res.json();
+    if(!rows || rows.length === 0){
+      list.innerHTML = '';
+      if(empty) empty.style.display = 'block';
+      return;
     }
+    if(empty) empty.style.display = 'none';
+    const STATUS_COLORS = { novo:'#E6F1FB', avaliando:'#FAEEDA', implementar:'#E1F5EE', descartado:'#F1EFE8' };
+    const STATUS_LABELS = { novo:'🆕 Novo', avaliando:'🔍 Avaliando', implementar:'✅ Implementar', descartado:'❌ Descartado' };
+    const PRI_LABELS    = { baixa:'🟢', media:'🟡', alta:'🔴', nova:'⚪' };
+    list.innerHTML = rows.map(r => `
+      <div style="border:.5px solid #e5e4e0;border-radius:10px;padding:12px;background:${r.is_owner?'#F7F6F2':'#FFFBF0'};">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
+          <span style="font-size:11px;font-weight:600;color:#1a1a18;">${r.is_owner?'👤 Você':'👥 Outro usuário'}</span>
+          <span style="font-size:10px;color:#888;">${new Date(r.created_at).toLocaleString('pt-BR')}</span>
+          <span style="margin-left:auto;font-size:10px;background:${STATUS_COLORS[r.status]||'#F1EFE8'};padding:2px 7px;border-radius:8px;color:#444;">${STATUS_LABELS[r.status]||r.status}</span>
+        </div>
+        <div style="font-size:11px;color:#555;margin-bottom:6px;">
+          ${PRI_LABELS[r.priority]||'⚪'} <strong>${r.role||'—'}</strong> · ${r.context||'—'} · ${r.format||'—'} · ${r.email||'anônimo'}
+        </div>
+        ${r.comment?`<div style="font-size:11px;color:#888;font-style:italic;margin-bottom:4px;">"${r.comment}"</div>`:''}
+        ${r.task?`<div style="font-size:11px;color:#534AB7;margin-bottom:4px;">📌 ${r.task}</div>`:''}
+        <button onclick="labOpenEdit('${r.id}','${(r.comment||'').replace(/'/g,"\'")}','${(r.task||'').replace(/'/g,"\'")}','${r.priority||'nova'}','${r.status||'novo'}')" style="margin-top:4px;padding:5px 10px;border-radius:7px;border:.5px solid #ddd;background:transparent;font-size:11px;cursor:pointer;font-family:inherit;">✏️ Avaliar</button>
+      </div>`).join('');
+  } catch(e){
+    list.innerHTML = '<div style="font-size:12px;color:#c0392b;text-align:center;padding:12px;">Erro ao carregar.</div>';
+  }
+}
+
+let _labPri = 'nova';
+function labOpenEdit(id, comment, task, priority, status){
+  document.getElementById('lab-edit-id').value      = id;
+  document.getElementById('lab-edit-comment').value = comment;
+  document.getElementById('lab-edit-task').value    = task;
+  document.getElementById('lab-edit-status').value  = status;
+  _labPri = priority;
+  document.querySelectorAll('.lab-pri-btn').forEach(b => {
+    b.style.background = b.dataset.v === priority ? '#1a1a18' : 'transparent';
+    b.style.color      = b.dataset.v === priority ? '#fff' : '#444';
+  });
+  document.getElementById('lab-edit-modal').style.display = 'flex';
+}
+
+function labSetPri(btn){
+  _labPri = btn.dataset.v;
+  document.querySelectorAll('.lab-pri-btn').forEach(b => {
+    b.style.background = b.dataset.v === _labPri ? '#1a1a18' : 'transparent';
+    b.style.color      = b.dataset.v === _labPri ? '#fff' : '#444';
+  });
+}
+
+async function labSaveEdit(){
+  const id      = document.getElementById('lab-edit-id').value;
+  const comment = document.getElementById('lab-edit-comment').value;
+  const task    = document.getElementById('lab-edit-task').value;
+  const status  = document.getElementById('lab-edit-status').value;
+  try {
+    await fetch(`${SUPABASE_URL}/rest/v1/rfy_interactions?id=eq.${id}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': `Bearer ${_supabaseSession?.access_token || SUPABASE_ANON_KEY}`,
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify({ comment, task, priority: _labPri, status })
+    });
+    document.getElementById('lab-edit-modal').style.display = 'none';
+    labLoad();
+  } catch(e){ alert('Erro ao salvar.'); }
+}
+
+// ── MODE 2 — ROLE-CENTRIC v5.1 ──────────────────────────────────────────────
+const M2_ROLES = {
+  participante: {
+    icon:'👤', label:'Participante', plan:'Free',
+    welcome:'Bem-vindo ao seu rolê.',
+    sub:'Você foi convidado. Veja o roteiro e confirme sua presença.',
+    actions:[
+      {icon:'🗓️', label:'Ver roteiro',     fn:"showView('roteiro')"},
+      {icon:'✅',  label:'Responder convite', fn:"showView('roteiro')"},
+      {icon:'❤️',  label:'Meus favoritos',   fn:"showView('favs')"},
+      {icon:'📅',  label:'Calendário',        fn:"showView('cal')"},
+    ],
+    suggestion:'Você tem convites esperando. Quer ver o roteiro agora ou prefere explorar o calendário?'
+  },
+  proponente: {
+    icon:'💡', label:'Proponente', plan:'Free+',
+    welcome:'Qual é a sua ideia?',
+    sub:'Proponha um rolê e veja quem topa antes de se comprometer.',
+    actions:[
+      {icon:'📦', label:'Explorar locais',  fn:"showView('bank')"},
+      {icon:'❤️', label:'Meus favoritos',   fn:"showView('favs')"},
+      {icon:'👥', label:'Meus grupos',      fn:"showView('groups')"},
+      {icon:'📅', label:'Calendário',        fn:"showView('cal')"},
+    ],
+    suggestion:'Que tipo de rolê você tem em mente? Posso te ajudar a encontrar o local certo ou ver quem do seu grupo topa a ideia.'
+  },
+  organizador: {
+    icon:'🎯', label:'Organizador', plan:'Pro',
+    welcome:'Você faz acontecer.',
+    sub:'Crie eventos, convide pessoas e acompanhe o match em tempo real.',
+    actions:[
+      {icon:'➕',  label:'Criar evento',     fn:"openAddForm()"},
+      {icon:'🤝',  label:'Ver match',        fn:"showView('people')"},
+      {icon:'👥',  label:'Meus grupos',      fn:"showView('groups')"},
+      {icon:'🗓️', label:'Roteiro ativo',    fn:"showView('roteiro')"},
+    ],
+    suggestion:'Pronto para organizar. Quer criar um novo evento, ver quem confirmou presença ou revisar o roteiro ativo?'
+  },
+  comunidade: {
+    icon:'🌐', label:'Comunidade', plan:'Business',
+    welcome:'Você mantém a intenção.',
+    sub:'Curadoria, gestão e o ecossistema que mantém tudo vivo.',
+    actions:[
+      {icon:'👥',  label:'Comunidade',       fn:"showView('groups')"},
+      {icon:'👤',  label:'Influencers',      fn:"showView('infl')"},
+      {icon:'🤝',  label:'Match',            fn:"showView('people')"},
+      {icon:'📦',  label:'Banco de locais',  fn:"showView('bank')"},
+    ],
+    suggestion:'Sua comunidade está ativa. Quer ver o engajamento, gerenciar influencers ou criar um evento para o grupo?'
+  }
+};
+
+const M2_CTX  = {lazer:'Lazer', trabalho:'Trabalho', happyhour:'Happy Hour'};
+const M2_FMT  = {presencial:'Presencial', online:'Online', hibrido:'Híbrido'};
+let   m2State = {ctx:null, fmt:null, role:null};
+
+function openMode2(){
+  const el = document.getElementById('rfy-mode2');
+  if(!el) return;
+  el.style.display = 'block';
+  // Pré-seleciona perfil salvo
+  m2State = {
+    ctx:  localStorage.getItem('rfy_context') || null,
+    fmt:  localStorage.getItem('rfy_format')  || null,
+    role: localStorage.getItem('rfy_role')    || null,
+  };
+  // Mostra modal de entrada
+  m2ShowModal();
+}
+
+function closeMode2(){
+  const el = document.getElementById('rfy-mode2');
+  if(el) el.style.display = 'none';
+}
+
+function m2ShowModal(){
+  document.getElementById('m2-modal-wrap').style.display = 'flex';
+  document.getElementById('m2-panel').style.display = 'none';
+  document.getElementById('m2-center').style.display = 'none';
+  document.getElementById('m2-role-badge').style.display = 'none';
+  // Pré-seleciona cards se já tem perfil
+  ['ctx','fmt','role'].forEach(g => {
+    document.querySelectorAll(`.m2-card[data-g="${g}"]`).forEach(c => {
+      c.classList.toggle('m2-sel', c.dataset.v === m2State[g]);
+    });
+  });
+  m2CheckReady();
+}
+
+function m2Pick(el){
+  const g = el.dataset.g;
+  document.querySelectorAll(`.m2-card[data-g="${g}"]`).forEach(c => c.classList.remove('m2-sel'));
+  el.classList.add('m2-sel');
+  m2State[g] = el.dataset.v;
+  m2CheckReady();
+}
+
+function m2CheckReady(){
+  const ready = m2State.ctx && m2State.fmt && m2State.role;
+  const btn = document.getElementById('m2-enter-btn');
+  if(!btn) return;
+  btn.disabled = !ready;
+  btn.style.opacity = ready ? '1' : '.3';
+  btn.style.cursor  = ready ? 'pointer' : 'default';
+  if(ready){
+    const cfg = M2_ROLES[m2State.role] || M2_ROLES.organizador;
+    btn.textContent = `Entrar como ${cfg.label}`;
+  } else {
+    btn.textContent = 'Entrar';
+  }
+}
+
+function m2Enter(){
+  if(!m2State.ctx || !m2State.fmt || !m2State.role) return;
+  // Salva perfil
+  localStorage.setItem('rfy_context', m2State.ctx);
+  localStorage.setItem('rfy_format',  m2State.fmt);
+  localStorage.setItem('rfy_role',    m2State.role);
+  localStorage.setItem('rfy_ob_done', '1');
+  // Atualiza state do app
+  state.rfy_context = m2State.ctx;
+  state.rfy_format  = m2State.fmt;
+  state.rfy_role    = m2State.role;
+  persist();
+  // Registra interação no Lab
+  labTrack(m2State.role, m2State.ctx, m2State.fmt, 'mode_2');
+  // Esconde modal, mostra painel + centro
+  document.getElementById('m2-modal-wrap').style.display = 'none';
+  document.getElementById('m2-panel').style.display = 'block';
+  document.getElementById('m2-center').style.display = 'block';
+  // Badge
+  const cfg = M2_ROLES[m2State.role] || M2_ROLES.organizador;
+  const badge = document.getElementById('m2-role-badge');
+  if(badge){ badge.textContent = `${cfg.label} · ${M2_CTX[m2State.ctx]} · ${M2_FMT[m2State.fmt]}`; badge.style.display='inline-block'; }
+  // Renderiza painel e centro
+  m2RenderPanel();
+  m2RenderCenter();
+}
+
+function m2ChangeProfile(){
+  // Volta para o modal mantendo seleções atuais
+  m2ShowModal();
+}
+
+function m2RenderPanel(){
+  const cfg  = M2_ROLES[m2State.role] || M2_ROLES.organizador;
+  // Perfil
+  const prof = document.getElementById('m2-panel-profile');
+  if(prof) prof.innerHTML = `
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+      <span style="font-size:22px;">${cfg.icon}</span>
+      <div>
+        <div style="font-size:13px;font-weight:700;color:#1a1a18;">${cfg.label}</div>
+        <div style="font-size:10px;color:#888;">${M2_CTX[m2State.ctx]} · ${M2_FMT[m2State.fmt]}</div>
+      </div>
+    </div>
+    <div style="font-size:10px;padding:3px 8px;border-radius:8px;display:inline-block;background:#EEEDFE;color:#534AB7;">${cfg.plan}</div>`;
+  // Ações no painel
+  const acts = document.getElementById('m2-panel-actions');
+  if(acts) acts.innerHTML = cfg.actions.map(a =>
+    `<button class="m2-panel-btn" onclick="m2Action('${a.fn}')">
+      <span style="font-size:14px;">${a.icon}</span>
+      <span style="color:#1a1a18;font-weight:500;font-size:12px;">${a.label}</span>
+      <span style="margin-left:auto;color:#ccc;font-size:11px;">→</span>
+    </button>`
+  ).join('');
+}
+
+function m2RenderCenter(){
+  const cfg = M2_ROLES[m2State.role] || M2_ROLES.organizador;
+  const icon  = document.getElementById('m2-welcome-icon');
+  const title = document.getElementById('m2-welcome-title');
+  const sub   = document.getElementById('m2-welcome-sub');
+  if(icon)  icon.textContent  = cfg.icon;
+  if(title) title.textContent = cfg.welcome;
+  if(sub)   sub.textContent   = cfg.sub;
+  // Assistente — mensagem inicial
+  const msgs = document.getElementById('m2-chat-messages');
+  if(msgs){ msgs.innerHTML = ''; addMode2Message('assistant', cfg.suggestion); }
+}
+
+function m2Action(fn){
+  closeMode2();
+  setActiveCentricId('mode_1');
+  renderCentricModes();
+  try { eval(fn); } catch(e){}
+}
+
+function addMode2Message(role, text){
+  const msgs = document.getElementById('m2-chat-messages');
+  if(!msgs) return;
+  const div = document.createElement('div');
+  div.style.cssText = 'margin-bottom:10px;';
+  if(role === 'assistant'){
+    div.innerHTML = `<div style="display:flex;gap:8px;align-items:flex-start;">
+      <span style="font-size:13px;flex-shrink:0;margin-top:1px;">✦</span>
+      <div style="background:#F7F6F2;border-radius:10px;padding:10px 12px;font-size:13px;color:#333;line-height:1.6;flex:1;">${text}</div>
+    </div>`;
+  } else {
+    div.innerHTML = `<div style="display:flex;justify-content:flex-end;">
+      <div style="background:#1a1a18;border-radius:10px;padding:10px 12px;font-size:13px;color:#fff;line-height:1.6;max-width:85%;">${text}</div>
+    </div>`;
+  }
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+async function sendMode2Chat(){
+  const input = document.getElementById('m2-chat-input');
+  if(!input || !input.value.trim()) return;
+  const msg = input.value.trim();
+  input.value = '';
+  addMode2Message('user', msg);
+  const loadingDiv = document.createElement('div');
+  loadingDiv.style.cssText = 'margin-bottom:10px;';
+  loadingDiv.innerHTML = `<div style="display:flex;gap:8px;align-items:flex-start;">
+    <span style="font-size:13px;flex-shrink:0;">✦</span>
+    <div style="background:#F7F6F2;border-radius:10px;padding:10px 12px;font-size:13px;color:#aaa;">...</div>
+  </div>`;
+  const msgs = document.getElementById('m2-chat-messages');
+  msgs.appendChild(loadingDiv);
+  msgs.scrollTop = msgs.scrollHeight;
+  try {
+    const resp = await callAI(msg);
+    msgs.removeChild(loadingDiv);
+    const text = typeof resp === 'string' ? resp : (resp?.text || JSON.stringify(resp));
+    addMode2Message('assistant', text);
+  } catch(e){
+    msgs.removeChild(loadingDiv);
+    addMode2Message('assistant', 'Não consegui processar. Tente novamente.');
   }
 }
 
@@ -7434,7 +7960,7 @@ function deleteCentricMode(e, id){
   renderCentricModes();
 }
 
-// ── ROLEFY v5.0 ONBOARDING ────────────────────────────────────────────────────
+// ── ROLEFY v5.1 ONBOARDING ────────────────────────────────────────────────────
 (function(){
   const ob = { ctx: null, fmt: null, role: null };
   const LABELS = { lazer:'Lazer', trabalho:'Trabalho', happyhour:'Happy Hour', presencial:'Presencial', online:'Online', hibrido:'Híbrido', participante:'Participante', proponente:'Proponente', organizador:'Organizador', comunidade:'Comunidade' };
