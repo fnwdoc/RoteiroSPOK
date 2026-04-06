@@ -1823,6 +1823,7 @@ window.addEventListener('message', (e) => {
     _supabaseSession = e.data.session;
     loadFromSupabase();
     loadCentralKey(); // carrega chave Groq central do Supabase
+    subscribeRealtime(); // sync em tempo real entre dispositivos
     // Verifica share via postMessage (vindo do dashboard Vercel)
     if(e.data.shareId) { loadSharedRoteiro(e.data.shareId); return; }
     // Verifica share pendente (sessionStorage fallback)
@@ -1889,6 +1890,64 @@ async function loadFromSupabase() {
       console.log('Roteiro carregado do Supabase');
     }
   } catch(e) { console.warn('loadFromSupabase failed', e); }
+}
+
+// ── SUPABASE REALTIME — sync entre dispositivos ───────────────────────────────
+let _realtimeWs = null;
+function subscribeRealtime() {
+  if(!_supabaseSession) return;
+  if(_realtimeWs) { try { _realtimeWs.close(); } catch(e){} }
+  const wsUrl = SUPABASE_URL.replace('https://', 'wss://') + '/realtime/v1/websocket?apikey=' + (SUPABASE_ANON_KEY) + '&vsn=1.0.0';
+  try {
+    _realtimeWs = new WebSocket(wsUrl);
+    _realtimeWs.onopen = () => {
+      // Autenticar
+      _realtimeWs.send(JSON.stringify({
+        topic: 'realtime:public:roteiros',
+        event: 'phx_join',
+        payload: { user_token: _supabaseSession.access_token },
+        ref: '1'
+      }));
+      // Subscribe na tabela roteiros filtrado pelo user_id
+      _realtimeWs.send(JSON.stringify({
+        topic: 'realtime:public:roteiros',
+        event: 'phx_join',
+        payload: {
+          config: {
+            broadcast: { self: false },
+            presence: { key: '' },
+            postgres_changes: [{
+              event: 'UPDATE',
+              schema: 'public',
+              table: 'roteiros',
+              filter: 'user_id=eq.' + _supabaseSession.user.id
+            }]
+          }
+        },
+        ref: '2'
+      }));
+      console.log('[Realtime] Conectado — sync ativo entre dispositivos');
+    };
+    _realtimeWs.onmessage = (msg) => {
+      try {
+        const data = JSON.parse(msg.data);
+        if(data.event === 'postgres_changes' && data.payload?.data?.record?.data) {
+          // Mudança detectada em outro dispositivo — recarrega
+          const loaded = migrateState(data.payload.data.record.data);
+          Object.keys(state).forEach(k=>delete state[k]);
+          Object.assign(state, loaded);
+          try { localStorage.setItem('roteirosp_state', JSON.stringify(state)); } catch(e){}
+          render(); renderBank(); renderBottomNav(); renderAffinityBar(); initOriginDisplay();
+          console.log('[Realtime] Estado atualizado de outro dispositivo');
+        }
+      } catch(e){}
+    };
+    _realtimeWs.onerror = (e) => { console.warn('[Realtime] Erro WebSocket', e); };
+    _realtimeWs.onclose = () => {
+      // Reconecta após 5s se sessão ainda ativa
+      if(_supabaseSession) setTimeout(subscribeRealtime, 5000);
+    };
+  } catch(e) { console.warn('[Realtime] Falha ao conectar', e); }
 }
 
 let _persistTimer = null;
