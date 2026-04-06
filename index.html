@@ -1996,9 +1996,15 @@ function migrateState(s) {
     if(!i.locals)     i.locals=[];
     if(!i.id)         i.id='inf'+Math.random().toString(36).slice(2,8);
   });
-  // migrate locais
+  // migrate locais + deduplicar por id
   ['semana','fds'].forEach(tab=>{
-    (s[tab]||[]).forEach(d=>{
+    const seen = new Set();
+    s[tab] = (s[tab]||[]).filter(d=>{
+      if(seen.has(d.id)) return false;
+      seen.add(d.id);
+      return true;
+    });
+    s[tab].forEach(d=>{
       if(!d.affinities)           d.affinities=[];
       if(!d.notes)                d.notes=[];
       if(!d.cats)                 d.cats=[];
