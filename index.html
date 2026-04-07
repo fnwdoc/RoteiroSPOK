@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ROLEFY v5.2.5 — U Know Ur Role</title>
+<title>ROLEFY v5.2.6 — U Know Ur Role</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f4f0;color:#1a1a18;min-height:100vh;-webkit-tap-highlight-color:transparent}
@@ -645,7 +645,7 @@ mark{background:#fff3cd;color:#1a1a18;border-radius:3px;padding:0 2px}
 .m2-card.m2-sel div{color:#3C3489!important;}
 .m2-panel-btn{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:9px;border:.5px solid #e5e4e0;background:#F7F6F2;font-size:12px;font-family:inherit;cursor:pointer;width:100%;text-align:left;transition:background .15s;}
 .m2-panel-btn:hover{background:#EEEDFE;border-color:#AFA9EC;}
-/* ── ROLEFY v5.2.5 ONBOARDING ─────────────────────────────────────────────── */
+/* ── ROLEFY v5.2.6 ONBOARDING ─────────────────────────────────────────────── */
 #rfy-onboard{position:fixed;inset:0;z-index:99999;background:#F7F6F2;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;font-family:system-ui,sans-serif;overflow-y:auto;}
 #rfy-onboard.hidden{display:none;}
 #rfy-onboard.dark{background:#0E0E0F;}
@@ -682,7 +682,7 @@ mark{background:#fff3cd;color:#1a1a18;border-radius:3px;padding:0 2px}
 </head>
 <body>
 
-<!-- ── ROLEFY v5.2.5 ONBOARDING OVERLAY ──────────────────────────────────── -->
+<!-- ── ROLEFY v5.2.6 ONBOARDING OVERLAY ──────────────────────────────────── -->
 <div id="rfy-onboard">
   <button class="rfy-ob-theme" onclick="rfyToggleTheme()" id="rfy-theme-btn">☾ Escuro</button>
   <div class="rfy-ob-inner">
@@ -1150,7 +1150,7 @@ mark{background:#fff3cd;color:#1a1a18;border-radius:3px;padding:0 2px}
     </div>
   </div>
 
-  <div style="text-align:center;padding:.75rem 0 1.5rem;font-size:11px;color:#ccc;letter-spacing:.03em">ROLEFY v5.2.5</div>
+  <div style="text-align:center;padding:.75rem 0 1.5rem;font-size:11px;color:#ccc;letter-spacing:.03em">ROLEFY v5.2.6</div>
   </div>
 
   <!-- MONETIZE -->
@@ -1834,6 +1834,7 @@ window.addEventListener('message', (e) => {
 
 async function saveToSupabase() {
   if(!_supabaseSession) return;
+  _isSaving = true;
   try {
     const now = new Date().toISOString();
     // PATCH faz update direto no registro existente (sem conflito 409)
@@ -1867,10 +1868,11 @@ async function saveToSupabase() {
         })
       });
     }
-    // Atualiza _lastUpdatedAt para o polling não sobrescrever o que acabamos de salvar
-    _lastUpdatedAt = now;
+    // Atualiza _lastSyncedAt para o polling não sobrescrever o que acabamos de salvar
+    _lastSyncedAt = new Date(now).getTime();
     console.log('Roteiro salvo no Supabase:', now);
   } catch(e) { console.warn('saveToSupabase failed', e); }
+  finally { _isSaving = false; }
 }
 
 async function loadFromSupabase() {
@@ -1889,7 +1891,7 @@ async function loadFromSupabase() {
       Object.keys(state).forEach(k=>delete state[k]);
       Object.assign(state, loaded);
       try { localStorage.setItem('roteirosp_state', JSON.stringify(state)); } catch(e){}
-      _lastUpdatedAt = rows[0].updated_at || null;
+      _lastSyncedAt = new Date(rows[0].updated_at || 0).getTime();
       render(); renderBank(); renderBottomNav(); renderAffinityBar(); initOriginDisplay();
       console.log('Roteiro carregado do Supabase');
     }
@@ -1897,8 +1899,9 @@ async function loadFromSupabase() {
 }
 
 // ── SYNC POLLING — sync entre dispositivos a cada 30s ───────────────────────
-let _syncTimer = null;
-let _lastUpdatedAt = null;
+let _syncTimer    = null;
+let _lastSyncedAt = 0;    // timestamp numérico da última versão conhecida
+let _isSaving     = false; // flag para não sobrescrever enquanto estamos salvando
 
 function subscribeRealtime() {
   if(!_supabaseSession) return;
@@ -1908,9 +1911,9 @@ function subscribeRealtime() {
 }
 
 async function pollSync() {
-  if(!_supabaseSession) return;
+  if(!_supabaseSession || _isSaving) return;
   try {
-    const r = await fetch(SUPABASE_URL + '/rest/v1/roteiros?user_id=eq.' + _supabaseSession.user.id + '&select=updated_at,data', {
+    const r = await fetch(SUPABASE_URL + '/rest/v1/roteiros?user_id=eq.' + _supabaseSession.user.id + '&select=updated_at', {
       headers: {
         'apikey': _supabaseSession.anon_key || SUPABASE_ANON_KEY,
         'Authorization': 'Bearer ' + _supabaseSession.access_token,
@@ -1919,23 +1922,14 @@ async function pollSync() {
     if(!r.ok) return;
     const rows = await r.json();
     if(!rows || !rows.length) return;
-    const serverUpdatedAt = rows[0].updated_at;
-    const serverTs = new Date(serverUpdatedAt).getTime();
-    const localTs  = _lastUpdatedAt ? new Date(_lastUpdatedAt).getTime() : 0;
-    // Se nunca sincronizou — só registra o timestamp, não recarrega
-    if(!_lastUpdatedAt) {
-      _lastUpdatedAt = serverUpdatedAt;
-      return;
-    }
-    // Se servidor tem versão mais nova — mudança de outro dispositivo
-    if(serverTs > localTs + 1000) {
-      const loaded = migrateState(rows[0].data);
-      Object.keys(state).forEach(k=>delete state[k]);
-      Object.assign(state, loaded);
-      try { localStorage.setItem('roteirosp_state', JSON.stringify(state)); } catch(e){}
-      render(); renderBank(); renderBottomNav(); renderAffinityBar(); initOriginDisplay();
-      console.log('[Sync] Estado atualizado de outro dispositivo:', serverUpdatedAt);
-      _lastUpdatedAt = serverUpdatedAt;
+    const serverTs = new Date(rows[0].updated_at).getTime();
+    // Primeira vez — só registra, não recarrega
+    if(_lastSyncedAt === 0) { _lastSyncedAt = serverTs; return; }
+    // Mudança de outro dispositivo (mais de 5s mais novo que nosso último save)
+    if(serverTs > _lastSyncedAt + 5000) {
+      console.log('[Sync] Mudança detectada — recarregando do Supabase');
+      await loadFromSupabase();
+      _lastSyncedAt = serverTs;
     }
   } catch(e) { console.warn('[Sync] Erro ao verificar:', e); }
 }
@@ -6313,7 +6307,7 @@ function showInvitePage(data){
         <!-- Card do rolê — aparece direto -->
         <div id="inv-event-card" style="margin-top:.5rem"></div>
       </div>
-      <div style="text-align:center;padding:1.5rem 0 .5rem;font-size:10px;color:#ccc">ROLEFY v5.2.5</div>
+      <div style="text-align:center;padding:1.5rem 0 .5rem;font-size:10px;color:#ccc">ROLEFY v5.2.6</div>
 
     </div>`;
 
@@ -8021,7 +8015,7 @@ function deleteCentricMode(e, id){
   renderCentricModes();
 }
 
-// ── ROLEFY v5.2.5 ONBOARDING ────────────────────────────────────────────────────
+// ── ROLEFY v5.2.6 ONBOARDING ────────────────────────────────────────────────────
 (function(){
   const ob = { ctx: null, fmt: null, role: null };
   const LABELS = { lazer:'Lazer', trabalho:'Trabalho', happyhour:'Happy Hour', presencial:'Presencial', online:'Online', hibrido:'Híbrido', participante:'Participante', proponente:'Proponente', organizador:'Organizador', comunidade:'Comunidade' };
