@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ROLEFY v5.2.1 — U Know Ur Role</title>
+<title>ROLEFY v5.2.2 — U Know Ur Role</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f4f0;color:#1a1a18;min-height:100vh;-webkit-tap-highlight-color:transparent}
@@ -645,7 +645,7 @@ mark{background:#fff3cd;color:#1a1a18;border-radius:3px;padding:0 2px}
 .m2-card.m2-sel div{color:#3C3489!important;}
 .m2-panel-btn{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:9px;border:.5px solid #e5e4e0;background:#F7F6F2;font-size:12px;font-family:inherit;cursor:pointer;width:100%;text-align:left;transition:background .15s;}
 .m2-panel-btn:hover{background:#EEEDFE;border-color:#AFA9EC;}
-/* ── ROLEFY v5.2.1 ONBOARDING ─────────────────────────────────────────────── */
+/* ── ROLEFY v5.2.2 ONBOARDING ─────────────────────────────────────────────── */
 #rfy-onboard{position:fixed;inset:0;z-index:99999;background:#F7F6F2;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;font-family:system-ui,sans-serif;overflow-y:auto;}
 #rfy-onboard.hidden{display:none;}
 #rfy-onboard.dark{background:#0E0E0F;}
@@ -682,7 +682,7 @@ mark{background:#fff3cd;color:#1a1a18;border-radius:3px;padding:0 2px}
 </head>
 <body>
 
-<!-- ── ROLEFY v5.2.1 ONBOARDING OVERLAY ──────────────────────────────────── -->
+<!-- ── ROLEFY v5.2.2 ONBOARDING OVERLAY ──────────────────────────────────── -->
 <div id="rfy-onboard">
   <button class="rfy-ob-theme" onclick="rfyToggleTheme()" id="rfy-theme-btn">☾ Escuro</button>
   <div class="rfy-ob-inner">
@@ -1150,7 +1150,7 @@ mark{background:#fff3cd;color:#1a1a18;border-radius:3px;padding:0 2px}
     </div>
   </div>
 
-  <div style="text-align:center;padding:.75rem 0 1.5rem;font-size:11px;color:#ccc;letter-spacing:.03em">ROLEFY v5.2.1</div>
+  <div style="text-align:center;padding:.75rem 0 1.5rem;font-size:11px;color:#ccc;letter-spacing:.03em">ROLEFY v5.2.2</div>
   </div>
 
   <!-- MONETIZE -->
@@ -1873,7 +1873,7 @@ async function saveToSupabase() {
 async function loadFromSupabase() {
   if(!_supabaseSession) return;
   try {
-    const r = await fetch(SUPABASE_URL + '/rest/v1/roteiros?user_id=eq.' + _supabaseSession.user.id + '&select=data', {
+    const r = await fetch(SUPABASE_URL + '/rest/v1/roteiros?user_id=eq.' + _supabaseSession.user.id + '&select=data,updated_at', {
       headers: {
         'apikey': _supabaseSession.anon_key || SUPABASE_ANON_KEY,
         'Authorization': 'Bearer ' + _supabaseSession.access_token,
@@ -1886,68 +1886,50 @@ async function loadFromSupabase() {
       Object.keys(state).forEach(k=>delete state[k]);
       Object.assign(state, loaded);
       try { localStorage.setItem('roteirosp_state', JSON.stringify(state)); } catch(e){}
+      _lastUpdatedAt = rows[0].updated_at || null;
       render(); renderBank(); renderBottomNav(); renderAffinityBar(); initOriginDisplay();
       console.log('Roteiro carregado do Supabase');
     }
   } catch(e) { console.warn('loadFromSupabase failed', e); }
 }
 
-// ── SUPABASE REALTIME — sync entre dispositivos ───────────────────────────────
-let _realtimeWs = null;
+// ── SYNC POLLING — sync entre dispositivos a cada 30s ───────────────────────
+let _syncTimer = null;
+let _lastUpdatedAt = null;
+
 function subscribeRealtime() {
   if(!_supabaseSession) return;
-  if(_realtimeWs) { try { _realtimeWs.close(); } catch(e){} }
-  const wsUrl = SUPABASE_URL.replace('https://', 'wss://') + '/realtime/v1/websocket?apikey=' + (SUPABASE_ANON_KEY) + '&vsn=1.0.0';
+  if(_syncTimer) clearInterval(_syncTimer);
+  _syncTimer = setInterval(pollSync, 30000);
+  console.log('[Sync] Polling ativo — verifica mudanças a cada 30s');
+}
+
+async function pollSync() {
+  if(!_supabaseSession) return;
   try {
-    _realtimeWs = new WebSocket(wsUrl);
-    _realtimeWs.onopen = () => {
-      // Autenticar
-      _realtimeWs.send(JSON.stringify({
-        topic: 'realtime:public:roteiros',
-        event: 'phx_join',
-        payload: { user_token: _supabaseSession.access_token },
-        ref: '1'
-      }));
-      // Subscribe na tabela roteiros filtrado pelo user_id
-      _realtimeWs.send(JSON.stringify({
-        topic: 'realtime:public:roteiros',
-        event: 'phx_join',
-        payload: {
-          config: {
-            broadcast: { self: false },
-            presence: { key: '' },
-            postgres_changes: [{
-              event: 'UPDATE',
-              schema: 'public',
-              table: 'roteiros',
-              filter: 'user_id=eq.' + _supabaseSession.user.id
-            }]
-          }
-        },
-        ref: '2'
-      }));
-      console.log('[Realtime] Conectado — sync ativo entre dispositivos');
-    };
-    _realtimeWs.onmessage = (msg) => {
-      try {
-        const data = JSON.parse(msg.data);
-        if(data.event === 'postgres_changes' && data.payload?.data?.record?.data) {
-          // Mudança detectada em outro dispositivo — recarrega
-          const loaded = migrateState(data.payload.data.record.data);
-          Object.keys(state).forEach(k=>delete state[k]);
-          Object.assign(state, loaded);
-          try { localStorage.setItem('roteirosp_state', JSON.stringify(state)); } catch(e){}
-          render(); renderBank(); renderBottomNav(); renderAffinityBar(); initOriginDisplay();
-          console.log('[Realtime] Estado atualizado de outro dispositivo');
-        }
-      } catch(e){}
-    };
-    _realtimeWs.onerror = (e) => { console.warn('[Realtime] Erro WebSocket', e); };
-    _realtimeWs.onclose = () => {
-      // Reconecta após 5s se sessão ainda ativa
-      if(_supabaseSession) setTimeout(subscribeRealtime, 5000);
-    };
-  } catch(e) { console.warn('[Realtime] Falha ao conectar', e); }
+    const r = await fetch(SUPABASE_URL + '/rest/v1/roteiros?user_id=eq.' + _supabaseSession.user.id + '&select=updated_at,data', {
+      headers: {
+        'apikey': _supabaseSession.anon_key || SUPABASE_ANON_KEY,
+        'Authorization': 'Bearer ' + _supabaseSession.access_token,
+      }
+    });
+    if(!r.ok) return;
+    const rows = await r.json();
+    if(!rows || !rows.length) return;
+    const serverUpdatedAt = rows[0].updated_at;
+    // Se nunca sincronizou ou servidor tem versão mais nova
+    if(_lastUpdatedAt && serverUpdatedAt === _lastUpdatedAt) return;
+    if(_lastUpdatedAt && serverUpdatedAt > _lastUpdatedAt) {
+      // Mudança detectada — recarrega estado
+      const loaded = migrateState(rows[0].data);
+      Object.keys(state).forEach(k=>delete state[k]);
+      Object.assign(state, loaded);
+      try { localStorage.setItem('roteirosp_state', JSON.stringify(state)); } catch(e){}
+      render(); renderBank(); renderBottomNav(); renderAffinityBar(); initOriginDisplay();
+      console.log('[Sync] Estado atualizado de outro dispositivo:', serverUpdatedAt);
+    }
+    _lastUpdatedAt = serverUpdatedAt;
+  } catch(e) { console.warn('[Sync] Erro ao verificar:', e); }
 }
 
 let _persistTimer = null;
@@ -6317,7 +6299,7 @@ function showInvitePage(data){
         <!-- Card do rolê — aparece direto -->
         <div id="inv-event-card" style="margin-top:.5rem"></div>
       </div>
-      <div style="text-align:center;padding:1.5rem 0 .5rem;font-size:10px;color:#ccc">ROLEFY v5.2.1</div>
+      <div style="text-align:center;padding:1.5rem 0 .5rem;font-size:10px;color:#ccc">ROLEFY v5.2.2</div>
 
     </div>`;
 
@@ -8025,7 +8007,7 @@ function deleteCentricMode(e, id){
   renderCentricModes();
 }
 
-// ── ROLEFY v5.2.1 ONBOARDING ────────────────────────────────────────────────────
+// ── ROLEFY v5.2.2 ONBOARDING ────────────────────────────────────────────────────
 (function(){
   const ob = { ctx: null, fmt: null, role: null };
   const LABELS = { lazer:'Lazer', trabalho:'Trabalho', happyhour:'Happy Hour', presencial:'Presencial', online:'Online', hibrido:'Híbrido', participante:'Participante', proponente:'Proponente', organizador:'Organizador', comunidade:'Comunidade' };
