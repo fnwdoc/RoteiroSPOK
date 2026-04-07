@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ROLEFY v5.2.4 — U Know Ur Role</title>
+<title>ROLEFY v5.2.5 — U Know Ur Role</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f4f0;color:#1a1a18;min-height:100vh;-webkit-tap-highlight-color:transparent}
@@ -645,7 +645,7 @@ mark{background:#fff3cd;color:#1a1a18;border-radius:3px;padding:0 2px}
 .m2-card.m2-sel div{color:#3C3489!important;}
 .m2-panel-btn{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:9px;border:.5px solid #e5e4e0;background:#F7F6F2;font-size:12px;font-family:inherit;cursor:pointer;width:100%;text-align:left;transition:background .15s;}
 .m2-panel-btn:hover{background:#EEEDFE;border-color:#AFA9EC;}
-/* ── ROLEFY v5.2.4 ONBOARDING ─────────────────────────────────────────────── */
+/* ── ROLEFY v5.2.5 ONBOARDING ─────────────────────────────────────────────── */
 #rfy-onboard{position:fixed;inset:0;z-index:99999;background:#F7F6F2;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;font-family:system-ui,sans-serif;overflow-y:auto;}
 #rfy-onboard.hidden{display:none;}
 #rfy-onboard.dark{background:#0E0E0F;}
@@ -682,7 +682,7 @@ mark{background:#fff3cd;color:#1a1a18;border-radius:3px;padding:0 2px}
 </head>
 <body>
 
-<!-- ── ROLEFY v5.2.4 ONBOARDING OVERLAY ──────────────────────────────────── -->
+<!-- ── ROLEFY v5.2.5 ONBOARDING OVERLAY ──────────────────────────────────── -->
 <div id="rfy-onboard">
   <button class="rfy-ob-theme" onclick="rfyToggleTheme()" id="rfy-theme-btn">☾ Escuro</button>
   <div class="rfy-ob-inner">
@@ -1150,7 +1150,7 @@ mark{background:#fff3cd;color:#1a1a18;border-radius:3px;padding:0 2px}
     </div>
   </div>
 
-  <div style="text-align:center;padding:.75rem 0 1.5rem;font-size:11px;color:#ccc;letter-spacing:.03em">ROLEFY v5.2.4</div>
+  <div style="text-align:center;padding:.75rem 0 1.5rem;font-size:11px;color:#ccc;letter-spacing:.03em">ROLEFY v5.2.5</div>
   </div>
 
   <!-- MONETIZE -->
@@ -1920,18 +1920,23 @@ async function pollSync() {
     const rows = await r.json();
     if(!rows || !rows.length) return;
     const serverUpdatedAt = rows[0].updated_at;
-    // Se nunca sincronizou ou servidor tem versão mais nova
-    if(_lastUpdatedAt && serverUpdatedAt === _lastUpdatedAt) return;
-    if(_lastUpdatedAt && serverUpdatedAt > _lastUpdatedAt) {
-      // Mudança detectada — recarrega estado
+    const serverTs = new Date(serverUpdatedAt).getTime();
+    const localTs  = _lastUpdatedAt ? new Date(_lastUpdatedAt).getTime() : 0;
+    // Se nunca sincronizou — só registra o timestamp, não recarrega
+    if(!_lastUpdatedAt) {
+      _lastUpdatedAt = serverUpdatedAt;
+      return;
+    }
+    // Se servidor tem versão mais nova — mudança de outro dispositivo
+    if(serverTs > localTs + 1000) {
       const loaded = migrateState(rows[0].data);
       Object.keys(state).forEach(k=>delete state[k]);
       Object.assign(state, loaded);
       try { localStorage.setItem('roteirosp_state', JSON.stringify(state)); } catch(e){}
       render(); renderBank(); renderBottomNav(); renderAffinityBar(); initOriginDisplay();
       console.log('[Sync] Estado atualizado de outro dispositivo:', serverUpdatedAt);
+      _lastUpdatedAt = serverUpdatedAt;
     }
-    _lastUpdatedAt = serverUpdatedAt;
   } catch(e) { console.warn('[Sync] Erro ao verificar:', e); }
 }
 
@@ -6308,7 +6313,7 @@ function showInvitePage(data){
         <!-- Card do rolê — aparece direto -->
         <div id="inv-event-card" style="margin-top:.5rem"></div>
       </div>
-      <div style="text-align:center;padding:1.5rem 0 .5rem;font-size:10px;color:#ccc">ROLEFY v5.2.4</div>
+      <div style="text-align:center;padding:1.5rem 0 .5rem;font-size:10px;color:#ccc">ROLEFY v5.2.5</div>
 
     </div>`;
 
@@ -8016,7 +8021,7 @@ function deleteCentricMode(e, id){
   renderCentricModes();
 }
 
-// ── ROLEFY v5.2.4 ONBOARDING ────────────────────────────────────────────────────
+// ── ROLEFY v5.2.5 ONBOARDING ────────────────────────────────────────────────────
 (function(){
   const ob = { ctx: null, fmt: null, role: null };
   const LABELS = { lazer:'Lazer', trabalho:'Trabalho', happyhour:'Happy Hour', presencial:'Presencial', online:'Online', hibrido:'Híbrido', participante:'Participante', proponente:'Proponente', organizador:'Organizador', comunidade:'Comunidade' };
