@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ROLEFY v5.2.2 — U Know Ur Role</title>
+<title>ROLEFY v5.2.3 — U Know Ur Role</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f4f0;color:#1a1a18;min-height:100vh;-webkit-tap-highlight-color:transparent}
@@ -645,7 +645,7 @@ mark{background:#fff3cd;color:#1a1a18;border-radius:3px;padding:0 2px}
 .m2-card.m2-sel div{color:#3C3489!important;}
 .m2-panel-btn{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:9px;border:.5px solid #e5e4e0;background:#F7F6F2;font-size:12px;font-family:inherit;cursor:pointer;width:100%;text-align:left;transition:background .15s;}
 .m2-panel-btn:hover{background:#EEEDFE;border-color:#AFA9EC;}
-/* ── ROLEFY v5.2.2 ONBOARDING ─────────────────────────────────────────────── */
+/* ── ROLEFY v5.2.3 ONBOARDING ─────────────────────────────────────────────── */
 #rfy-onboard{position:fixed;inset:0;z-index:99999;background:#F7F6F2;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;font-family:system-ui,sans-serif;overflow-y:auto;}
 #rfy-onboard.hidden{display:none;}
 #rfy-onboard.dark{background:#0E0E0F;}
@@ -682,7 +682,7 @@ mark{background:#fff3cd;color:#1a1a18;border-radius:3px;padding:0 2px}
 </head>
 <body>
 
-<!-- ── ROLEFY v5.2.2 ONBOARDING OVERLAY ──────────────────────────────────── -->
+<!-- ── ROLEFY v5.2.3 ONBOARDING OVERLAY ──────────────────────────────────── -->
 <div id="rfy-onboard">
   <button class="rfy-ob-theme" onclick="rfyToggleTheme()" id="rfy-theme-btn">☾ Escuro</button>
   <div class="rfy-ob-inner">
@@ -1150,7 +1150,7 @@ mark{background:#fff3cd;color:#1a1a18;border-radius:3px;padding:0 2px}
     </div>
   </div>
 
-  <div style="text-align:center;padding:.75rem 0 1.5rem;font-size:11px;color:#ccc;letter-spacing:.03em">ROLEFY v5.2.2</div>
+  <div style="text-align:center;padding:.75rem 0 1.5rem;font-size:11px;color:#ccc;letter-spacing:.03em">ROLEFY v5.2.3</div>
   </div>
 
   <!-- MONETIZE -->
@@ -1933,11 +1933,17 @@ async function pollSync() {
 }
 
 let _persistTimer = null;
-function persist() {
+function persist(immediate) {
   try { localStorage.setItem('roteirosp_state', JSON.stringify(state)); } catch(e){ console.warn('persist failed', e); }
   if(_supabaseSession) {
     clearTimeout(_persistTimer);
-    _persistTimer = setTimeout(saveToSupabase, 2000);
+    if(immediate) {
+      // Salva imediatamente — usado em ações críticas (ativar, arquivar, etc)
+      saveToSupabase();
+    } else {
+      // Delay de 2s para ações menos críticas (edições de texto etc)
+      _persistTimer = setTimeout(saveToSupabase, 2000);
+    }
   }
 }
 
@@ -2716,7 +2722,7 @@ function setStatus(tab,id,status){
   const item=state[tab].find(d=>d.id===id);if(!item)return;
   item.status=status;
   if(status!=='agendado'){item.schedDate=null;item.schedNote=null;}
-  persist();render();if(status!=='ativo')showView('bank');
+  persist(true);render();if(status!=='ativo')showView('bank');
 }
 function deleteLocal(tab,id){
   const item=state[tab].find(d=>d.id===id);if(!item)return;
@@ -2727,7 +2733,7 @@ function deleteLocal(tab,id){
   (state.people||[]).forEach(p=>{p.locals=(p.locals||[]).filter(l=>l!==id);});
   (state.influencers||[]).forEach(inf=>{inf.locals=(inf.locals||[]).filter(l=>l!==id);});
   if(state.affiliates) delete state.affiliates[id];
-  persist();render();
+  persist(true);render();
 }
 function melTogglePill(type, id, btn, bg, color){
   const d=_editLocalCtx&&(state[_editLocalCtx.tab]||[]).find(x=>x.id===_editLocalCtx.id);
@@ -6299,7 +6305,7 @@ function showInvitePage(data){
         <!-- Card do rolê — aparece direto -->
         <div id="inv-event-card" style="margin-top:.5rem"></div>
       </div>
-      <div style="text-align:center;padding:1.5rem 0 .5rem;font-size:10px;color:#ccc">ROLEFY v5.2.2</div>
+      <div style="text-align:center;padding:1.5rem 0 .5rem;font-size:10px;color:#ccc">ROLEFY v5.2.3</div>
 
     </div>`;
 
@@ -8007,7 +8013,7 @@ function deleteCentricMode(e, id){
   renderCentricModes();
 }
 
-// ── ROLEFY v5.2.2 ONBOARDING ────────────────────────────────────────────────────
+// ── ROLEFY v5.2.3 ONBOARDING ────────────────────────────────────────────────────
 (function(){
   const ob = { ctx: null, fmt: null, role: null };
   const LABELS = { lazer:'Lazer', trabalho:'Trabalho', happyhour:'Happy Hour', presencial:'Presencial', online:'Online', hibrido:'Híbrido', participante:'Participante', proponente:'Proponente', organizador:'Organizador', comunidade:'Comunidade' };
